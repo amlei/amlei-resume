@@ -35,59 +35,59 @@
     --font-mono:'JetBrains Mono','SF Mono',ui-monospace,Menlo,Consolas,monospace;
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  body{background:var(--bg);color:var(--ink);font-family:var(--font-sans);font-size:12.5px;line-height:1.58;-webkit-font-smoothing:antialiased;font-feature-settings:'tnum' on;text-rendering:optimizeLegibility}
+  body{background:var(--bg);color:var(--ink);font-family:var(--font-sans);font-size:14px;line-height:1.58;-webkit-font-smoothing:antialiased;font-feature-settings:'tnum' on;text-rendering:optimizeLegibility}
   /* Header */
   .resume-header{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center;padding-bottom:12px;border-bottom:1.5px solid var(--ink)}
   .name-row{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
-  .name-row .name{font-weight:700;font-size:25px;letter-spacing:.04em}
-  .name-row .role{font-size:12px;font-weight:600;color:var(--accent-ink)}
-  .contact{margin-top:8px;font-family:var(--font-mono);font-size:10px;color:var(--muted)}
+  .name-row .name{font-weight:700;font-size:26px;letter-spacing:.04em}
+  .name-row .role{font-size:13px;font-weight:600;color:var(--accent-ink)}
+  .contact{margin-top:8px;font-family:var(--font-mono);font-size:11px;color:var(--muted)}
   .contact .sep{color:var(--accent);margin:0 6px}
   .contact a{color:var(--accent-ink);text-decoration:none}
   .photo{width:26mm;height:36mm;border:1px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:var(--faint);overflow:hidden}
   .photo img{width:100%;height:100%;object-fit:cover;display:block}
   .photo svg{width:26px;height:26px;opacity:.45}
-  .photo span{font-size:9px;letter-spacing:.1em}
+  .photo span{font-size:10px;letter-spacing:.1em}
   /* SectionHead */
   .sec-head{display:flex;align-items:center;gap:9px;margin-top:15px;margin-bottom:8px}
   .sec-head .ico{width:15px;height:15px;color:var(--accent);flex-shrink:0}
-  .sec-head h2{font-weight:700;font-size:12.5px;color:var(--ink);letter-spacing:.1em}
-  .sec-head h2 .en{font-weight:400;font-size:10px;color:var(--faint);letter-spacing:.12em;margin-left:6px}
+  .sec-head h2{font-weight:700;font-size:14px;color:var(--ink);letter-spacing:.1em}
+  .sec-head h2 .en{font-weight:400;font-size:11px;color:var(--faint);letter-spacing:.12em;margin-left:6px}
   .sec-head::after{content:"";flex:1;height:1px;background:var(--hair)}
   /* Summary / Interests */
-  .summary p{font-size:11.5px;line-height:1.75;text-align:justify;text-wrap:pretty}
+  .summary p{font-size:13px;line-height:1.75;text-align:justify;text-wrap:pretty}
   .summary p b,.summary p strong{color:var(--accent-ink);font-weight:600}
   .interests{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
-  .interests .it{font-size:11px;color:var(--accent-ink);background:oklch(95% .01 258);border:1px solid var(--border);padding:2px 8px}
+  .interests .it{font-size:12.5px;color:var(--accent-ink);background:oklch(95% .01 258);border:1px solid var(--border);padding:2px 8px}
   /* Entry */
   .entry{margin-bottom:8px}
   .entry-main{display:grid;grid-template-columns:1fr auto;align-items:baseline;gap:14px}
   .entry-title{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
-  .entry-title .org,.entry-title .proj{font-weight:700;font-size:12.5px}
-  .entry-title .role{font-size:11.5px;color:var(--accent-ink)}
-  .entry-date{font-family:var(--font-mono);font-size:10px;color:var(--faint);white-space:nowrap}
-  .entry-meta{margin-top:2px;font-size:10.5px;color:var(--muted);display:flex;gap:14px;flex-wrap:wrap}
+  .entry-title .org,.entry-title .proj{font-weight:700;font-size:14px}
+  .entry-title .role{font-size:13px;color:var(--accent-ink)}
+  .entry-date{font-family:var(--font-mono);font-size:11px;color:var(--faint);white-space:nowrap}
+  .entry-meta{margin-top:2px;font-size:11.5px;color:var(--muted);display:flex;gap:14px;flex-wrap:wrap}
   .entry-meta b{color:var(--ink);font-weight:600}
   .entry-list{list-style:none;margin-top:4px}
-  .entry-list li{position:relative;padding-left:13px;font-size:11px;line-height:1.62;color:var(--ink);margin-bottom:2px;text-align:justify;text-wrap:pretty}
+  .entry-list li{position:relative;padding-left:13px;font-size:12.5px;line-height:1.62;color:var(--ink);margin-bottom:2px;text-align:justify;text-wrap:pretty}
   .entry-list li::before{content:"•";position:absolute;left:1px;top:5px;color:var(--accent);font-size:10px;line-height:1}
   .entry-list .num{font-family:var(--font-mono);color:var(--accent-ink);font-weight:600}
   /* Pubs */
   .pubs{list-style:none}
-  .pubs li{font-size:11px;line-height:1.6;padding:5px 0 5px 26px;border-bottom:1px dashed var(--hair);position:relative;text-align:justify;text-wrap:pretty}
-  .pubs li .tag{position:absolute;left:0;top:6px;font-family:var(--font-mono);font-size:9.5px;color:var(--accent-ink);font-weight:600}
+  .pubs li{font-size:12.5px;line-height:1.6;padding:5px 0 5px 26px;border-bottom:1px dashed var(--hair);position:relative;text-align:justify;text-wrap:pretty}
+  .pubs li .tag{position:absolute;left:0;top:6px;font-family:var(--font-mono);font-size:10.5px;color:var(--accent-ink);font-weight:600}
   .pubs li .ven{font-style:italic;color:var(--accent-ink)}
   .pubs li .yr{font-family:var(--font-mono);color:var(--faint)}
   .pubs li .me{text-decoration:underline;text-decoration-color:var(--accent);text-underline-offset:2px}
   /* Awards */
   .awards{display:grid;grid-template-columns:1fr 1fr;gap:2px 22px}
-  .award{display:grid;grid-template-columns:42px 1fr auto;gap:8px;align-items:baseline;font-size:11px;padding:3px 0;border-bottom:1px dashed var(--hair)}
-  .award .yr{font-family:var(--font-mono);font-size:9.5px;color:var(--accent)}
-  .award .lvl{font-size:10px;color:var(--accent-ink);font-weight:600}
+  .award{display:grid;grid-template-columns:42px 1fr auto;gap:8px;align-items:baseline;font-size:12.5px;padding:3px 0;border-bottom:1px dashed var(--hair)}
+  .award .yr{font-family:var(--font-mono);font-size:10.5px;color:var(--accent)}
+  .award .lvl{font-size:11px;color:var(--accent-ink);font-weight:600}
   /* Skills */
   .skills-row{display:grid;grid-template-columns:84px 1fr;gap:12px;padding:4px 0;border-bottom:1px dashed var(--hair)}
-  .skills-row .cat{font-size:11px;font-weight:600;color:var(--muted)}
-  .skills-row .tags{font-size:11px;color:var(--ink)}
+  .skills-row .cat{font-size:12.5px;font-weight:600;color:var(--muted)}
+  .skills-row .tags{font-size:12.5px;color:var(--ink)}
   .skills-row .tags b{color:var(--accent-ink)}
 </style>
 ```

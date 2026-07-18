@@ -2,12 +2,12 @@
 """amlei-resume-gen 的个人资料管理（KV 存储）。
 
 个人资料是简历生成的素材库，**写错不可撤回**——所以：
-  · 位置优先项目级 <cwd>/.amlei-skill/resume-gen/memory.json，
-    否则用户根目录 ~/.amlei-skill/resume-gen/memory.json。
-  · init 不覆盖已有；add/update/profile/target 写前自动备份**带时间戳**，保留最近 N 份。
+  · 位置优先项目级 <cwd>/.amlei-skill/resume-gen/profile.json，
+    否则用户根目录 ~/.amlei-skill/resume-gen/profile.json。
+  · init 不覆盖已有；add/update/profile/preference/target 写前自动备份**带时间戳**，保留最近 N 份。
   · 调用写入命令前，Agent 必须已征得用户同意（本脚本不替你问）。
 
-退出码：0 正常；1 记忆不存在 / 条目不存在 / 已存在不覆盖 / 参数错。
+退出码：0 正常；1 资料不存在 / 条目不存在 / 已存在不覆盖 / 参数错。
 """
 
 import argparse
@@ -18,7 +18,7 @@ import shutil
 import sys
 from datetime import datetime
 
-FILE = "memory.json"
+FILE = "profile.json"
 KEEP_BACKUPS = 10
 
 
@@ -70,7 +70,8 @@ def _save(path, data):
 def _empty():
     now = datetime.now().isoformat(timespec="seconds")
     return {"_meta": {"created": now, "last_updated": now},
-            "profile": {}, "targets": {}, "companies": {}, "abilities": {}, "projects": {}}
+            "profile": {}, "preferences": {}, "targets": {}, "companies": {},
+            "abilities": {}, "projects": {}}
 
 
 def _section(data, type_):
@@ -106,6 +107,21 @@ def cmd_profile(args):
     data.setdefault("profile", {}).update(given)
     _save(p, data)
     print(f"✓ profile 已更新字段：{', '.join(given)}（写前已时间戳备份）")
+
+
+def cmd_preference(args):
+    p = require()
+    data = _load(p)
+    fields = {"city": args.city, "job_type": args.job_type,
+              "salary": args.salary, "exp": args.exp, "degree": args.degree,
+              "scale": args.scale, "industry": args.industry}
+    given = {k: v for k, v in fields.items() if v is not None}
+    if not given:
+        print(json.dumps(data.get("preferences", {}), ensure_ascii=False, indent=2))
+        return
+    data.setdefault("preferences", {}).update(given)
+    _save(p, data)
+    print(f"✓ 求职偏好已更新字段：{', '.join(given)}（写前已时间戳备份）")
 
 
 def cmd_target(args):
@@ -277,6 +293,11 @@ def main():
     for f in ("name", "gender", "phone", "email", "city", "github", "site", "avatar"):
         s.add_argument(f"--{f}")
     s.set_defaults(func=cmd_profile)
+
+    s = sub.add_parser("preference")
+    for f in ("city", "job_type", "salary", "exp", "degree", "scale", "industry"):
+        s.add_argument(f"--{f}")
+    s.set_defaults(func=cmd_preference)
 
     s = sub.add_parser("target")
     s.add_argument("action", choices=["add", "list", "rm"])

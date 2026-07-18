@@ -33,7 +33,7 @@
     --font-sans:'PingFang SC','HarmonyOS Sans SC','Microsoft YaHei','Hiragino Sans GB',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
     --font-mono:'JetBrains Mono','SF Mono',ui-monospace,Menlo,Consolas,monospace;
   }
-  body{background:var(--bg);color:var(--ink);font-family:var(--font-sans);font-size:13.5px;line-height:1.6;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  body{background:var(--bg);color:var(--ink);font-family:var(--font-sans);font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
   .page{background:var(--paper)}
   .page-content{padding:0 !important}                 /* 覆写外壳内边距，让 two-col 满铺整页 */
   .two-col{position:absolute;inset:0;display:grid;grid-template-columns:64mm 1fr}
@@ -42,33 +42,33 @@
   .photo img{width:100%;height:100%;object-fit:cover;display:block}
   .photo svg{width:34px;height:34px;opacity:.4}
   .photo span{font-size:10px;letter-spacing:.1em}
-  .side-block h3{font-size:11px;font-weight:700;letter-spacing:.2em;color:var(--accent-ink);margin-bottom:9px}
-  .side-block .row{font-size:12px;color:var(--ink);line-height:1.8}
-  .side-block .row .k{color:var(--faint);font-size:11px;margin-right:5px}
+  .side-block h3{font-size:12px;font-weight:700;letter-spacing:.2em;color:var(--accent-ink);margin-bottom:9px}
+  .side-block .row{font-size:13px;color:var(--ink);line-height:1.8}
+  .side-block .row .k{color:var(--faint);font-size:12px;margin-right:5px}
   .side-block .row a{color:var(--accent-ink);text-decoration:none}
   .tools{display:flex;flex-wrap:wrap;gap:5px}
-  .tools .t{font-size:11px;color:var(--ink);background:var(--paper);border:1px solid var(--border);padding:3px 8px}
+  .tools .t{font-size:12.5px;color:var(--ink);background:var(--paper);border:1px solid var(--border);padding:3px 8px}
   .main{padding:15mm 14mm 15mm}
   .head{padding-bottom:13px;border-bottom:2px solid var(--ink);margin-bottom:14px}
   .head .name{font-size:29px;font-weight:700;letter-spacing:.04em}
   .head .role{font-size:14px;font-weight:600;color:var(--accent-ink);margin-top:4px}
-  .head .one{font-size:12px;color:var(--muted);margin-top:6px}
+  .head .one{font-size:13px;color:var(--muted);margin-top:6px}
   .sec-h{display:flex;align-items:center;gap:9px;margin-top:17px;margin-bottom:9px}
   .sec-h .ico{width:15px;height:15px;color:var(--accent);flex-shrink:0}
-  .sec-h h2{font-size:13px;font-weight:700;letter-spacing:.14em;color:var(--ink)}
+  .sec-h h2{font-size:14px;font-weight:700;letter-spacing:.14em;color:var(--ink)}
   .sec-h::after{content:"";flex:1;height:1px;background:var(--hair)}
-  .summary{font-size:12px;line-height:1.8;text-align:justify;text-wrap:pretty}
+  .summary{font-size:13px;line-height:1.8;text-align:justify;text-wrap:pretty}
   .summary b{color:var(--accent-ink)}
   .entry{margin-bottom:13px}
   .entry-main{display:grid;grid-template-columns:1fr auto;align-items:baseline;gap:10px}
   .entry-title{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
-  .entry-title .org,.entry-title .proj{font-size:13px;font-weight:700}
-  .entry-title .role{font-size:12px;color:var(--accent-ink)}
-  .entry-date{font-family:var(--font-mono);font-size:10px;color:var(--faint);white-space:nowrap}
-  .entry-meta{font-size:11px;color:var(--muted);margin-top:2px}
+  .entry-title .org,.entry-title .proj{font-size:14px;font-weight:700}
+  .entry-title .role{font-size:13px;color:var(--accent-ink)}
+  .entry-date{font-family:var(--font-mono);font-size:11px;color:var(--faint);white-space:nowrap}
+  .entry-meta{font-size:12px;color:var(--muted);margin-top:2px}
   .entry-meta b{color:var(--ink)}
   .entry-list{list-style:none;margin-top:4px}
-  .entry-list li{position:relative;padding-left:13px;font-size:11.5px;line-height:1.7;margin-bottom:2px;text-align:justify;text-wrap:pretty}
+  .entry-list li{position:relative;padding-left:13px;font-size:12.5px;line-height:1.7;margin-bottom:2px;text-align:justify;text-wrap:pretty}
   .entry-list li::before{content:"•";position:absolute;left:1px;top:5px;color:var(--accent);font-size:10px;line-height:1}
   .entry-list .num{font-family:var(--font-mono);color:var(--accent-ink);font-weight:600}
 </style>
