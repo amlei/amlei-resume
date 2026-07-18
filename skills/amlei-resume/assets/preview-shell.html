@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>{{TITLE}} · 简历 A4 预览</title>
+<!--
+  主题无关的预览外壳（chrome）：
+    · 顶部"导出 PDF"工具条（屏幕可见 / 打印隐藏）
+    · A4 舞台（.viewport/.doc-stage/.scaler/.page）+ 自动分页 JS
+    · 打印规则（每页严格 A4、工具条隐藏）
+  主题的视觉（设计令牌 + 组件 class 样式）由 wrap_preview.py 把
+  渲染产物里的 <style> 注入到下方的 <!--RESUME_STYLE--> 槽位。
+  本文件不持有任何主题色 / 组件样式，换主题无需改这里。
+-->
+<style>
+  /* —— 工具条（chrome，用字面色，不依赖主题令牌）—— */
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    background:#e9ebef;
+    font-family:'PingFang SC','HarmonyOS Sans SC','Microsoft YaHei',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+    color:#1b1f24;
+    -webkit-font-smoothing:antialiased;
+  }
+  .rv-toolbar{
+    position:sticky;top:0;z-index:99;
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:10px 18px;background:#fff;border-bottom:1px solid #d7dbe0;
+    box-shadow:0 1px 10px rgba(20,24,30,.05);
+  }
+  .rv-toolbar .rv-hint{font-size:12.5px;color:#5a6470;line-height:1.4}
+  .rv-toolbar .rv-hint b{color:#1b1f24}
+  .rv-toolbar .rv-actions{display:flex;align-items:center;gap:8px}
+  .rv-btn{
+    border:1px solid #d7dbe0;background:#fff;color:#1b1f24;
+    border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600;
+    font-family:inherit;cursor:pointer;white-space:nowrap;line-height:1;
+    transition:background .15s,border-color .15s,transform .06s;
+  }
+  .rv-btn:hover{background:#eef1f4;border-color:#aab2bb}
+  .rv-btn:active{transform:translateY(1px)}
+  .rv-btn--primary{background:#2b5bd6;color:#fff;border-color:#2b5bd6}
+  .rv-btn--primary:hover{background:#234cba;border-color:#234cba}
+  .rv-toast{
+    position:fixed;top:60px;left:50%;transform:translateX(-50%);
+    background:#1b1f24;color:#fff;padding:10px 18px;border-radius:9px;
+    font-size:13px;font-weight:600;opacity:0;pointer-events:none;
+    transition:opacity .25s;z-index:100;box-shadow:0 6px 20px rgba(20,24,30,.25);
+    max-width:88vw;text-align:center;
+  }
+  .rv-toast.show{opacity:1}
+
+  /* —— 配色方案切换：覆盖主题点缀色 --accent*（soe 的 --navy* 跟随）——
+     :root[data-scheme] 特异性 (0,2,0) > 主题 :root (0,1,0)，故总能盖过主题原色。
+     不选（默认）= 主题原色。选了就实时换色，打印 / 导出 PDF 沿用当前配色。 */
+  .rv-scheme{display:flex;align-items:center;gap:5px;font-size:12px;color:#5a6470;user-select:none}
+  .rv-select{
+    border:1px solid #d7dbe0;background:#fff;color:#1b1f24;border-radius:7px;
+    padding:6px 8px;font-size:12.5px;font-family:inherit;cursor:pointer;line-height:1.4;
+  }
+  .rv-select:hover{border-color:#aab2bb}
+  :root[data-scheme="ink"]{--accent:oklch(40% .14 255);--accent-ink:oklch(34% .12 255);--accent-soft:oklch(96% .022 255);--navy:var(--accent);--navy-deep:var(--accent-ink);--navy-soft:var(--accent-soft)}
+  :root[data-scheme="tech"]{--accent:oklch(46% .17 242);--accent-ink:oklch(38% .15 242);--accent-soft:oklch(95% .03 242);--navy:var(--accent);--navy-deep:var(--accent-ink);--navy-soft:var(--accent-soft)}
+  :root[data-scheme="green"]{--accent:oklch(42% .07 155);--accent-ink:oklch(32% .06 155);--accent-soft:oklch(95% .022 155);--navy:var(--accent);--navy-deep:var(--accent-ink);--navy-soft:var(--accent-soft)}
+  :root[data-scheme="burgundy"]{--accent:oklch(40% .13 25);--accent-ink:oklch(33% .12 25);--accent-soft:oklch(95% .022 25);--navy:var(--accent);--navy-deep:var(--accent-ink);--navy-soft:var(--accent-soft)}
+  :root[data-scheme="navy"]{--accent:oklch(33% .06 258);--accent-ink:oklch(26% .06 258);--accent-soft:oklch(95% .012 258);--navy:var(--accent);--navy-deep:var(--accent-ink);--navy-soft:var(--accent-soft)}
+  :root[data-scheme="purple"]{--accent:oklch(42% .12 295);--accent-ink:oklch(34% .11 295);--accent-soft:oklch(95% .022 295);--navy:var(--accent);--navy-deep:var(--accent-ink);--navy-soft:var(--accent-soft)}
+  :root[data-scheme="amber"]{--accent:oklch(55% .13 60);--accent-ink:oklch(45% .12 60);--accent-soft:oklch(95% .03 60);--navy:var(--accent);--navy-deep:var(--accent-ink);--navy-soft:var(--accent-soft)}
+  :root[data-scheme="graphite"]{--accent:oklch(28% .006 250);--accent-ink:oklch(22% .006 250);--accent-soft:oklch(95% .004 250);--navy:var(--accent);--navy-deep:var(--accent-ink);--navy-soft:var(--accent-soft)}
+
+  /* —— A4 舞台结构（所有主题共用）—— */
+  .viewport{width:100%;overflow-x:auto;overflow-y:visible}
+  .doc-stage{position:relative;width:100%;margin:0 auto}
+  .scaler{
+    display:flex;flex-direction:column;align-items:center;gap:26px;
+    padding:30px 0;width:210mm;margin:0 auto;
+    transform:scale(var(--scale,1));transform-origin:top center;
+  }
+  .page{
+    width:210mm;height:297mm;background:#fff;position:relative;
+    overflow:hidden;flex-shrink:0;
+    box-shadow:0 1px 2px rgba(20,24,30,.05),0 18px 44px -22px rgba(20,24,30,.28);
+  }
+  .page-content{position:absolute;inset:0;padding:14mm 16mm 13mm}
+  .page-content>*:first-child{margin-top:0!important}
+  #source{position:absolute;left:-100000px;top:0;width:178mm;opacity:0;pointer-events:none}
+
+  /* —— 打印 / 导出 PDF —— */
+  @media print{
+    @page{size:A4;margin:0}
+    html,body{background:#fff!important}
+    .rv-toolbar,.rv-toast{display:none!important}
+    .viewport{overflow:visible!important}
+    .doc-stage{height:auto!important}
+    .scaler{transform:none!important;gap:0!important;padding:0!important;width:auto!important;display:block!important}
+    .page{width:210mm!important;height:297mm!important;box-shadow:none!important;page-break-after:always;break-after:page}
+    .page:last-child{page-break-after:auto;break-after:auto}
+  }
+</style>
+<!--RESUME_STYLE-->
+</head>
+<body data-od-id="resume-preview">
+
+  <!-- 顶部工具条：屏幕可见，打印隐藏 -->
+  <div class="rv-toolbar">
+    <span class="rv-hint">👇 下方是 A4 简历效果 · 点右侧 <b>导出 PDF</b> 可直接打印或另存为 PDF</span>
+    <div class="rv-actions">
+      <label class="rv-scheme">配色
+        <select id="rvScheme" class="rv-select" title="切换简历点缀色（导出 PDF 沿用）">
+          <option value="">主题原色</option>
+          <option value="ink">墨蓝</option>
+          <option value="tech">工程蓝</option>
+          <option value="green">森林绿</option>
+          <option value="burgundy">酒红</option>
+          <option value="navy">藏青</option>
+          <option value="purple">紫</option>
+          <option value="amber">琥珀</option>
+          <option value="graphite">石墨黑</option>
+        </select>
+      </label>
+      <button class="rv-btn" id="rvZoomOut" title="缩小查看">－</button>
+      <button class="rv-btn" id="rvZoomIn" title="放大查看">＋</button>
+      <button class="rv-btn rv-btn--primary" id="rvPdfBtn" onclick="rvPrint()">📄 导出 PDF</button>
+    </div>
+  </div>
+  <div class="rv-toast" id="rvToast"></div>
+
+  <!-- A4 舞台：分页 JS 把 #source 里的原子分配到各 .page -->
+  <div class="viewport" id="viewport"><div class="doc-stage" id="docStage"><div class="scaler" id="scaler"></div></div></div>
+
+  <!-- 简历正文原子（由 wrap_preview.py 注入；渲染器=LLM 按所选主题的组件库装配） -->
+  <div id="source">
+<!--RESUME_BODY-->
+  </div>
+
+  <script>
+    var rvUserScale=1;
+    function rvShowToast(msg){
+      var t=document.getElementById('rvToast');
+      t.textContent=msg;t.classList.add('show');
+      clearTimeout(t._timer);t._timer=setTimeout(function(){t.classList.remove('show');},2600);
+    }
+    function rvPrint(){
+      rvShowToast('在弹出的打印窗口里选"另存为 PDF"即可导出 A4 简历');
+      setTimeout(function(){ window.print(); },120);
+    }
+
+    /* 配色方案切换：覆盖主题点缀色，记住选择；打印 / 导出 PDF 沿用当前配色 */
+    (function(){
+      var KEY='resume-color-scheme', html=document.documentElement, sel=document.getElementById('rvScheme');
+      var store={
+        get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},
+        set:function(k,v){try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}}
+      };
+      var saved=store.get(KEY);
+      if(saved){ html.dataset.scheme=saved; if(sel) sel.value=saved; }
+      if(sel){
+        sel.addEventListener('change',function(){
+          var v=sel.value;
+          if(v){ html.dataset.scheme=v; store.set(KEY,v); }
+          else { delete html.dataset.scheme; store.set(KEY,null); }
+        });
+      }
+    })();
+
+    /* ============================================================
+       A4 自动分页：测量 #source 每个原子高度，按可用内容高分配页。
+       data-stick="1" 的 sec-head 不会和紧随其后的条目被拆到两页。
+       ============================================================ */
+    (function(){
+      var PX_PER_MM=96/25.4,PAGE_H_MM=297,PAD_TOP_MM=14,PAD_BOTTOM_MM=13;
+      var CONTENT_H_PX=(PAGE_H_MM-PAD_TOP_MM-PAD_BOTTOM_MM)*PX_PER_MM;
+      var GAP_PX=26,PAD_STAGE_PX=30;
+      var source=document.getElementById('source'),
+          scaler=document.getElementById('scaler'),
+          docStage=document.getElementById('docStage'),
+          viewport=document.getElementById('viewport');
+      function collect(){
+        return Array.prototype.slice.call(source.children).filter(function(el){
+          return el.nodeType===1;
+        });
+      }
+      function candidate(){
+        var nameEl=source.querySelector('.name-row .name')||source.querySelector('.head .name')
+          ||source.querySelector('.name-block .cn')||source.querySelector('.name')||source.querySelector('.cn')||source.querySelector('h1');
+        var roleEl=source.querySelector('.name-row .role')||source.querySelector('.head .role')||source.querySelector('.role');
+        var name=nameEl?nameEl.textContent.trim():'简历';
+        var role='';
+        if(roleEl){
+          role=roleEl.textContent.trim()
+            .replace(/^(意向岗位|求职意向|目标岗位|申请方向)\s*[：:·.\-\s]*/,'')
+            .split(/\s*[\/·—,，]\s*/)[0]
+            .replace(/[（(][^）)]*[）)]\s*$/,'')
+            .replace(/\s+/g,'');
+        }
+        return role?(name+'-'+role):(name+' · 简历');
+      }
+      function outerHeight(el){
+        var st=getComputedStyle(el);
+        return el.offsetHeight+parseFloat(st.marginTop||0)+parseFloat(st.marginBottom||0);
+      }
+      function distribute(atoms){
+        var heights=atoms.map(outerHeight),pages=[[]],used=0;
+        for(var i=0;i<atoms.length;i++){
+          var h=heights[i],
+              stick=atoms[i].getAttribute && atoms[i].getAttribute('data-stick')==='1',
+              nextH=(i+1<atoms.length)?heights[i+1]:0,
+              placeOnNew=false;
+          if(used!==0){
+            if(used+h>CONTENT_H_PX) placeOnNew=true;
+            else if(stick && nextH>0 && (used+h+nextH>CONTENT_H_PX)) placeOnNew=true;
+          }
+          if(placeOnNew){pages.push([]);used=0;}
+          pages[pages.length-1].push(i);used+=h;
+        }
+        return pages;
+      }
+      function makePage(){
+        var p=document.createElement('section');p.className='page';
+        p.innerHTML='<div class="page-content"></div>';return p;
+      }
+      function render(){
+        var atoms=collect(); if(!atoms.length){fitScale();return;}
+        var pages=distribute(atoms);
+        scaler.innerHTML='';
+        pages.forEach(function(idxs){
+          var page=makePage(),content=page.querySelector('.page-content');
+          idxs.forEach(function(i){content.appendChild(atoms[i].cloneNode(true));});
+          scaler.appendChild(page);
+        });
+        fitScale();
+      }
+      function fitScale(){
+        var pageWPx=210*PX_PER_MM,s=Math.min(1,viewport.clientWidth/pageWPx)*rvUserScale;
+        scaler.style.setProperty('--scale',s);
+        var n=scaler.querySelectorAll('.page').length,
+            fullH=PAD_STAGE_PX*2+n*(297*PX_PER_MM)+Math.max(0,n-1)*GAP_PX;
+        docStage.style.height=(fullH*s)+'px';
+      }
+      function init(){render();try{document.title=candidate();}catch(e){}}
+      if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+      if(document.fonts&&document.fonts.ready)document.fonts.ready.then(render);
+      window.addEventListener('load',render);
+      window.addEventListener('resize',fitScale);
+      document.getElementById('rvZoomIn').addEventListener('click',function(){
+        rvUserScale=Math.min(2,+(rvUserScale+0.1).toFixed(2));fitScale();});
+      document.getElementById('rvZoomOut').addEventListener('click',function(){
+        rvUserScale=Math.max(0.5,+(rvUserScale-0.1).toFixed(2));fitScale();});
+    })();
+  </script>
+</body>
+</html>
