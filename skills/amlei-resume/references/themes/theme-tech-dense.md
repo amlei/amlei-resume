@@ -41,6 +41,7 @@
   .contact{margin-top:8px;font-family:var(--font-mono);font-size:11px;color:var(--muted)}
   .contact .sep{color:var(--accent);margin:0 6px}
   .contact a{color:var(--accent-ink);text-decoration:none}
+  .edu-line{margin-top:6px;font-family:var(--font-sans);font-size:12px;color:var(--accent-ink);font-weight:500}
   .photo{width:26mm;height:36mm;border:1px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:var(--faint);overflow:hidden}
   .photo img{width:100%;height:100%;object-fit:cover;display:block}
   .photo svg{width:26px;height:26px;opacity:.45}
@@ -73,6 +74,10 @@
   .entry-list li{position:relative;padding-left:13px;font-size:12.5px;line-height:1.68;color:var(--ink);margin-bottom:2px;text-align:justify;text-wrap:pretty}
   .entry-list li::before{content:"•";position:absolute;left:1px;top:5px;color:var(--accent);font-size:10px;line-height:1}
   .entry-list .num,.entry-list .kw{font-family:var(--font-mono);color:var(--accent-ink);font-weight:600}
+  /* Bullet（独立原子，自由换页） */
+  .bullet{position:relative;padding-left:13px;font-size:12.5px;line-height:1.68;color:var(--ink);margin-bottom:2px;text-align:justify;text-wrap:pretty}
+  .bullet::before{content:"•";position:absolute;left:1px;top:5px;color:var(--accent);font-size:10px;line-height:1}
+  .bullet .num,.bullet .kw{font-family:var(--font-mono);color:var(--accent-ink);font-weight:600}
   /* 论文 / 竞赛 */
   .pub{font-size:12.5px;line-height:1.55;padding:4px 0;border-bottom:1px dashed var(--hair)}
   .pub .ven{font-style:italic;color:var(--accent-ink)}
@@ -93,12 +98,13 @@
 <header class="resume-header">
   <div class="ident">
     <div class="name-row"><span class="name">{{name}}</span><span class="role">{{role}}</span></div>
-    <div class="contact">{{age}} 岁 · {{gender}}<span class="sep">·</span>{{location}}<span class="sep">·</span>{{phone}}<span class="sep">·</span>{{email}}<span class="sep">·</span><a href="{{github-url}}">{{github}}</a></div>
+    <div class="edu-line">{{education}}</div>
+    <div class="contact">{{gender}}<span class="sep">·</span>{{location}}<span class="sep">·</span>{{phone}}<span class="sep">·</span>{{email}}<span class="sep">·</span><a href="{{github-url}}">{{github}}</a></div>
   </div>
   {{photo}}
 </header>
 ```
-`{{role}}` = 求职意向（带浅底胶囊）。联系方式按 self-intro 实际字段拼，字段间用 `<span class="sep">·</span>`，缺的字段连同 sep 删。
+`{{role}}` = 求职意向（带浅底胶囊）。`{{education}}` 单独一行，来自 `education:` 字段（如学校 · 专业 · 学历 · 届）。联系方式按 self-intro 实际字段拼，字段间用 `<span class="sep">·</span>`，缺的字段连同 sep 删。
 
 ### 2. SectionHead（无英文标签）
 ```html
@@ -119,22 +125,27 @@
 ```
 最熟的技能加 `class="chip strong"`。每类一个 `.stack-row`。
 
-### 5. Entry（教育 / 实习 / 工作；项目用 `.proj` + `.badge`）
+### 5. Entry header（教育 / 实习 / 工作头；项目用 `.proj` + `.badge`）
 ```html
-<div class="entry">
+<div class="entry" data-stick="1">
   <div class="entry-main"><div class="entry-title"><span class="org">{{org}}</span><span class="role">{{role}}</span></div><span class="entry-date">{{date}}</span></div>
   <div class="entry-meta"><span>{{meta}}</span></div>
-  <ul class="entry-list"><li>{{bullet}}</li></ul>
 </div>
 ```
-项目经历把 `<span class="org">` 换成 `<span class="proj">{{项目名}}</span>`，并加 `<span class="badge">{{开源 · 1.2k★}}</span>`（无可删）。bullet 里数字/术语用 `<span class="num">` 或 `<span class="kw">`。
+项目经历把 `<span class="org">` 换成 `<span class="proj">{{项目名}}</span>`，并加 `<span class="badge">{{开源 · 1.2k★}}</span>`（无可删）。`data-stick="1"` 让 header 和第一条 bullet 同页不分家。
 
-### 6. Pub（论文，单行 div）
+### 6. Bullet（单条经历要点 — 独立原子，自由换页）
+```html
+<div class="bullet">{{text}}</div>
+```
+数字/术语用 `<span class="num">` 或 `<span class="kw">`。每条 `- bullet` 拆一个独立原子。
+
+### 7. Pub（论文，单行 div）
 ```html
 <div class="pub">{{authors}} <span class="ven">{{venue}}</span> {{note}}<span class="yr">{{year}}</span></div>
 ```
 
-### 7. Awards（竞赛 / 证书，按 tag 分组）
+### 8. Awards（竞赛 / 证书，按 tag 分组）
 ```html
 <div class="awards"><div class="award"><span class="tag">{{ACM-ICPC}}</span><span>{{name}}</span><span class="lvl">{{level}}</span></div></div>
 ```
@@ -143,4 +154,4 @@
 Header → 技术栈（**建议前置**）→ 个人简介 → 教育/实习/项目（按 MD 模块顺序）→ 论文与竞赛。每模块先 SectionHead 再正文组件。
 
 ## MD → 组件映射
-`# self-intro`→Header；`# 技术栈`下`类别: A, B, C`→`.stack-row`（最熟项标 strong）；`# 个人简介`→Summary；`## org|role`→Entry；`date:/meta:/- bullet`→Entry 内；论文行→`.pub`；`tag | name | level`→`.award`。
+`# self-intro`→Header；`# 技术栈`下`类别: A, B, C`→`.stack-row`（最熟项标 strong）；`# 个人简介`→Summary；`## org|role`→Entry header（`data-stick="1"`）；`date:/meta:`→Entry 内；`- bullet`→每条独立 `.bullet`；论文行→`.pub`；`tag | name | level`→`.award`。

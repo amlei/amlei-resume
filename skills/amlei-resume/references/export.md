@@ -8,7 +8,7 @@
 
 ## 校验
 
-用 `scripts/validate_resume.py <简历.md>` 校验，ERROR 清零才算通过。校验不过不往下走。校验项：self-intro 首模块 / name 必填 / 标题层级 / 空模块 / date 格式。
+用 `scripts/validate_resume.py <简历.md>` 校验，ERROR 清零才算通过。校验不过不往下走。校验项：self-intro 首模块 / name 必填 / 教育背景 / 标题层级 / 空模块 / date 格式。
 
 ## 选主题
 
@@ -26,20 +26,35 @@
 
 按主题库的简历骨架装配：主题 `<style>`（整段照抄）放最前，再依次：
 
-1. `# self-intro` → **Header** 组件（name/role/contact/photo；不渲染成 SectionHead）。
+1. `# self-intro` → **Header** 组件（name/role/education/contact/photo；不渲染成 SectionHead）。`education:` 字段单独一行 `.edu-line`，子项用 ` · ` 拼接（如「学校 · 专业 · 学历 · 届」），不在 contact 行混排。
 2. 每个 `# 模块` → **SectionHead**（icon 按 icons.md 选，`data-stick="1"` 必带）+ 模块正文组件。
-3. `## 机构 | 角色` → **Entry**；其下 `date:` / `meta:` / `- bullets` 收进同一个 Entry。
+3. `## 机构 | 角色` → **Entry**（加 `data-stick="1"`，防末尾孤立）；
+   `- bullet` → 每条拆成独立 **Bullet** 原子（不再包在 Entry 内）。
+   `##` 下的描述段（项目说明文字）→ `<p class="desc">` **放在 Entry 内**（与 header 同原子），不单独置于外部。
 4. 行内强调：`**词**` → 强调字色；关键数字 → 等宽强调（如 `<span class="num">`）。
 
 产物 = `<style>…</style>` + 各原子，**不要**包 `<!DOCTYPE>/<html>/<head>/<body>`（预览壳负责）。
+
+## 装配后审查
+
+读取产物 HTML 和 `简历.md`，逐模块对比结构、模块标题、bullet 内容，确认无遗漏、无顺序错乱。发现缺失回「装配 HTML」修复，通过才走下一步。
 
 ## 套预览壳
 
 用 `scripts/wrap_preview.py`（`--help` 看参数）。产出 `resume/{姓名}/{求职岗位}/预览.html`（自动建目录，带「导出 PDF」工具条 + A4 自动分页），`document.title` = `姓名-岗位`（=「另存为 PDF」默认文件名）；用 `--name` 覆盖。
 
-## 交付
+**预览后检查**：
 
-打开 `resume/{姓名}/{求职岗位}/预览.html` →「导出 PDF」→ 浏览器选「另存为 PDF」即得 A4 简历。换主题：回「选主题」重选，重新装配 + 校验 + 套壳。
+1. **打开浏览器预览页**（可用 Playwright 自动化检查）。
+2. **确认 bullet 已原子化**：`#source` 里每一条 `- bullet` 是独立 `.bullet` 原子，而非包在 `<ul>` 内。若未拆分，先拆再继续。
+3. **检查页数**：Playwright 统计 `#scaler .page` 个数和每页填充率。参考标准：
+   - 应届/初级：≤ 2 页
+   - 有经验/资深：≤ 3 页
+4. **检查末页填充率**：
+   - ≥ 50% → 合理
+   - 30–50% → 可接受
+   - < 30% → 精简 bullet 内容重装（不调 spacing）
+5. **检查行尾空白**（逐条 bullet 扫描）：单行 bullet `getClientRects()` 填充率 < 55% 视为过短，合并相邻短 bullet 或补全内容后重装。
 
 参考产物：[sample-preview.html](../assets/sample-preview.html)（academic 主题渲染 sample-resume.md）。
 

@@ -34,6 +34,7 @@
   .name-block .cn{font-weight:900;font-size:32px;color:var(--navy-deep);letter-spacing:.14em;line-height:1}
   .name-block .en{font-weight:500;font-size:11px;color:var(--faint);letter-spacing:.32em;margin-top:6px}
   .name-block .intent{margin-top:11px;font-size:13px;color:var(--ink)}
+  .name-block .edu-line{margin-top:6px;font-family:var(--font-sans);font-size:12px;color:var(--navy-deep);font-weight:500}
   .name-block .intent b{color:var(--navy-deep);font-weight:700}
   .name-block .intent .sep{color:var(--faint);margin:0 8px}
   .photo{width:27mm;height:38mm;border:1px solid var(--rule);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:var(--faint);overflow:hidden}
@@ -62,6 +63,10 @@
   .entry-list li{position:relative;padding-left:13px;font-size:12.5px;line-height:1.72;color:var(--ink);margin-bottom:2px;text-align:justify;text-wrap:pretty}
   .entry-list li::before{content:"•";position:absolute;left:1px;top:6px;color:var(--navy);font-size:10px;line-height:1}
   .entry-list .num{font-family:var(--font-mono);color:var(--navy-deep);font-weight:600}
+  /* Bullet（独立原子，自由换页） */
+  .bullet{position:relative;padding-left:13px;font-size:12.5px;line-height:1.72;color:var(--ink);margin-bottom:2px;text-align:justify;text-wrap:pretty}
+  .bullet::before{content:"•";position:absolute;left:1px;top:6px;color:var(--navy);font-size:10px;line-height:1}
+  .bullet .num{font-family:var(--font-mono);color:var(--navy-deep);font-weight:600}
   .awards{display:grid;grid-template-columns:1fr 1fr;gap:3px 24px}
   .award{display:grid;grid-template-columns:40px 1fr auto;gap:8px;align-items:baseline;font-size:12.5px;padding:4px 0;border-bottom:1px dashed var(--hair)}
   .award .yr{font-family:var(--font-mono);font-size:11px;color:var(--navy)}
@@ -84,6 +89,7 @@
   <div class="name-block">
     <div class="cn">{{name}}</div>
     <div class="en">{{CHEN SIYUAN}} · {{学位}}</div>
+    <div class="edu-line">{{education}}</div>
     <div class="intent">求职意向：<b>{{银行管培生 / 央企储备干部}}</b><span class="sep">·</span>期望地 {{city}}<span class="sep">·</span>到岗 {{time}}</div>
   </div>
   {{photo}}
@@ -106,22 +112,27 @@
 <div class="sec-head" data-stick="1">{{icon}}<h2>{{title}}<span class="en">{{EDUCATION}}</span></h2></div>
 ```
 
-### 3. Entry（教育 / 实习 / 课题 / 校园；项目/课题用 `.proj` + `.badge`）
+### 3. Entry header（教育 / 实习 / 课题 / 校园头；项目/课题用 `.proj` + `.badge`）
 ```html
-<div class="entry">
+<div class="entry" data-stick="1">
   <div class="entry-main"><div class="entry-title"><span class="org">{{org}}</span><span class="role">{{role}}</span></div><span class="entry-date">{{date}}</span></div>
   <div class="entry-meta"><span>{{meta，关键 <b>}}</span></div>
-  <ul class="entry-list"><li>{{bullet，数字 <span class="num">}}</li></ul>
 </div>
 ```
-课题/学生工作用 `<span class="proj">{{项目/组织}}</span>` + 可选 `<span class="badge">{{课题主笔 / 党支部书记}}</span>`。
+课题/学生工作用 `<span class="proj">{{项目/组织}}</span>` + 可选 `<span class="badge">{{课题主笔 / 党支部书记}}</span>`。`data-stick="1"` 让 header 和第一条 bullet 同页。
 
-### 4. Awards（荣誉奖项，按年份；含「优秀共产党员」等）
+### 4. Bullet（单条经历要点 — 独立原子，自由换页）
+```html
+<div class="bullet">{{text，数字 <span class="num">}}</div>
+```
+每条 `- bullet` 拆一个独立原子。
+
+### 5. Awards（荣誉奖项，按年份；含「优秀共产党员」等）
 ```html
 <div class="awards"><div class="award"><span class="yr">{{year}}</span><span>{{name}}</span><span class="lvl">{{level}}</span></div></div>
 ```
 
-### 5. Skills（技能与证书，类别 + 标签）
+### 6. Skills（技能与证书，类别 + 标签）
 ```html
 <div class="skills">
   <div class="row"><span class="cat">{{专业技能}}</span><span class="tags"><b>{{财务建模}}</b> · {{估值分析}} · …</span></div>
@@ -130,7 +141,7 @@
 ```
 资格证书单独一行，已取得的用 `<b>`。
 
-### 6. Summary（自我评价，左竖条引用块，**放末尾**）
+### 7. Summary（自我评价，左竖条引用块，**放末尾**）
 ```html
 <div class="summary"><p>{{自我评价，关键 <b>}}</p></div>
 ```
@@ -139,4 +150,4 @@
 Header（含基本信息表）→ 教育背景 → 实习经历 → 课题与研究项目 → 校园经历与学生工作 → 荣誉奖项 → 技能与证书 → 自我评价（末尾）。
 
 ## MD → 组件映射
-`# self-intro`→Header（`political/birth/hometown/ethnicity` 等填进 `bio-form`）；`# 教育背景`等→SectionHead；`## org|role`→Entry；`date:/meta:/- bullet`→Entry 内；`年份|name|level`→`.award`；`类别: 值`→`.skills .row`；`# 自我评价`→末尾 Summary 引用块。
+`# self-intro`→Header（`political/birth/hometown/ethnicity` 等填进 `bio-form`）；`# 教育背景`等→SectionHead；`## org|role`→Entry header（`data-stick="1"`）；`date:/meta:`→Entry 内；`- bullet`→每条独立 `.bullet`；`年份|name|level`→`.award`；`类别: 值`→`.skills .row`；`# 自我评价`→末尾 Summary 引用块。

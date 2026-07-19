@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""amlei-resume-gen 的个人资料管理（KV 存储）。
+"""amlei-resume 的个人资料管理（KV 存储）。
 
 个人资料是简历生成的素材库——所以：
-  · 位置优先项目级 <cwd>/.amlei-skill/resume-gen/profile.json，
-    否则用户根目录 ~/.amlei-skill/resume-gen/profile.json。
+  · 位置优先项目级 <cwd>/.amlei-skill/resume/profile.json，
+    否则用户根目录 ~/.amlei-skill/resume/profile.json。
    · **优先使用 batch**（单次保存一份备份）；add/update 单条命令也保留但每次各写一份备份。
    · init 不覆盖已有；add/update/profile/preference/target/experience 写前自动备份**带时间戳**，保留最近 N 份。
   · 调用写入命令前，Agent 必须已征得用户同意（本脚本不替你问）。
@@ -25,8 +25,8 @@ KEEP_BACKUPS = 10
 
 def _paths():
     return {
-        "project": os.path.join(os.getcwd(), ".amlei-skill", "resume-gen", FILE),
-        "root": os.path.join(os.path.expanduser("~"), ".amlei-skill", "resume-gen", FILE),
+        "project": os.path.join(os.getcwd(), ".amlei-skill", "resume", FILE),
+        "root": os.path.join(os.path.expanduser("~"), ".amlei-skill", "resume", FILE),
     }
 
 

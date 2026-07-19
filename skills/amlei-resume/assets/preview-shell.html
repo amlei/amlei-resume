@@ -123,7 +123,9 @@
       </label>
       <button class="rv-btn" id="rvZoomOut" title="缩小查看">－</button>
       <button class="rv-btn" id="rvZoomIn" title="放大查看">＋</button>
+      <button class="rv-btn" id="rvEditBtn">✏️ 编辑</button>
       <button class="rv-btn rv-btn--primary" id="rvPdfBtn" onclick="rvPrint()">📄 导出 PDF</button>
+      <button class="rv-btn rv-btn--primary" id="rvSaveBtn" style="display:none">📝 源码</button>
     </div>
   </div>
   <div class="rv-toast" id="rvToast"></div>
@@ -249,6 +251,9 @@
       function init(){
         source.style.width=(PAGE_W_MM*PX_PER_MM-PAD_LEFT_PX-PAD_RIGHT_PX)+'px';
         render();try{document.title=candidate();}catch(e){}
+        // 初始渲染完成后解除重绘事件（避免编辑模式被覆盖）
+        if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){});
+        window.removeEventListener('load',render);
       }
       if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
       if(document.fonts&&document.fonts.ready)document.fonts.ready.then(render);
@@ -257,7 +262,176 @@
       document.getElementById('rvZoomIn').addEventListener('click',function(){
         rvUserScale=Math.min(2,+(rvUserScale+0.1).toFixed(2));fitScale();});
       document.getElementById('rvZoomOut').addEventListener('click',function(){
-        rvUserScale=Math.max(0.5,+(rvUserScale-0.1).toFixed(2));fitScale();});
+        rvUserScale=Math.min(2,+(rvUserScale+0.1).toFixed(2));fitScale();});
+
+      // 暴露给编辑模式：按当前页面内容重新分页（保留编辑后的 DOM 节点）
+      window.__reflow = function(){
+        var allAtoms=[];
+        document.querySelectorAll('#scaler .page-content').forEach(function(c){
+          Array.from(c.children).forEach(function(el){allAtoms.push(el);});
+        });
+        if(!allAtoms.length) return;
+        var heights=allAtoms.map(outerHeight), pages=distribute(allAtoms);
+        scaler.innerHTML='';
+        pages.forEach(function(idxs){
+          var page=makePage(), content=page.querySelector('.page-content');
+          idxs.forEach(function(i){content.appendChild(allAtoms[i]);});
+          scaler.appendChild(page);
+        });
+        fitScale();
+        // 重新挂 contenteditable
+        var sel='.bullet,.summary p,.desc,.entry-title,.entry-meta span,.name,.role,.edu-line,.contact,.name-block .cn,.name-block .en,.one';
+        document.querySelectorAll('#scaler '+sel).forEach(function(el){
+          if(window.__editing){ el.contentEditable=true; el.style.outline='1px dashed var(--accent, #888)'; }
+        });
+      };
+    })();
+
+    /* —— 编辑模式：contenteditable + 自动隐藏空行 + 重排 + 保存 —— */
+    (function(){
+      var editing=false, editBtn=document.getElementById('rvEditBtn'), saveBtn=document.getElementById('rvSaveBtn');
+      var reflowTimer=null;
+
+      function setEditable(on){
+        window.__editing=on;
+        var sel='.bullet,.summary p,.desc,.entry-title,.entry-meta span,.name,.role,.edu-line,.contact,.name-block .cn,.name-block .en,.one';
+        document.querySelectorAll('#scaler '+sel).forEach(function(el){
+          el.contentEditable=on;
+          el.style.outline=on?'1px dashed var(--accent, #888)':'';
+        });
+        // 技能 chip 编辑：删除按钮 + 新增按钮
+        document.querySelectorAll('#scaler .stack').forEach(function(stack){
+          stack.querySelectorAll('.chips').forEach(function(chips){
+            // 清除旧按钮避免重复
+            chips.querySelectorAll('.chip-del,.chip-add').forEach(function(b){b.remove();});
+            if(on){
+              // 每个 chip 右上角删除
+              chips.querySelectorAll('.chip').forEach(function(chip){
+                var del=document.createElement('span');
+                del.className='chip-del';
+                del.textContent='×';
+                del.style.cssText='cursor:pointer;margin-left:4px;font-size:11px;color:var(--accent,#888);line-height:1';
+                del.onclick=function(e){e.stopPropagation();chip.remove();};
+                chip.appendChild(del);
+              });
+              // 末尾新增按钮
+              var add=document.createElement('span');
+              add.className='chip-add';
+              add.textContent='+';
+              add.style.cssText='cursor:pointer;font-family:var(--font-mono,monospace);font-size:14px;color:var(--accent,#888);border:1px dashed var(--accent,#888);padding:1.5px 8px;line-height:1.4';
+              add.onclick=function(){
+                var newChip=document.createElement('span');
+                newChip.className='chip';
+                newChip.contentEditable=true;
+                newChip.textContent='新技能';
+                var del=document.createElement('span');
+                del.className='chip-del';
+                del.textContent='×';
+                del.style.cssText='cursor:pointer;margin-left:4px;font-size:11px;color:var(--accent,#888);line-height:1';
+                del.onclick=function(e){e.stopPropagation();newChip.remove();};
+                newChip.appendChild(del);
+                chips.insertBefore(newChip,add);
+                newChip.focus();
+                // 选中文字方便直接输入
+                var r=document.createRange();r.selectNodeContents(newChip);var s=window.getSelection();s.removeAllRanges();s.addRange(r);
+              };
+              chips.appendChild(add);
+            }
+          });
+        });
+      }
+
+      function afterEdit(){
+        // 隐藏空 bullet
+        document.querySelectorAll('#scaler .bullet').forEach(function(b){
+          b.style.display=b.textContent.trim()?'':'none';
+        });
+        // 防抖重排
+        if(reflowTimer) clearTimeout(reflowTimer);
+        reflowTimer=setTimeout(function(){
+          if(window.__reflow) window.__reflow();
+          // 重排后重新隐藏空 bullet
+          document.querySelectorAll('#scaler .bullet').forEach(function(b){
+            b.style.display=b.textContent.trim()?'':'none';
+          });
+        }, 400);
+      }
+
+      var pdfBtn=document.getElementById('rvPdfBtn');
+      editBtn.addEventListener('click',function(){
+        editing=!editing;
+        editBtn.textContent=editing?'查看':'✏️ 编辑';
+        pdfBtn.style.display=editing?'none':'';
+        saveBtn.style.display=editing?'':'none';
+        setEditable(editing);
+        if(editing){
+          document.querySelector('#scaler').addEventListener('input',afterEdit);
+        } else {
+          document.querySelector('#scaler').removeEventListener('input',afterEdit);
+        }
+      });
+
+      saveBtn.addEventListener('click',function(){
+        var md='';
+        document.querySelectorAll('#scaler .page').forEach(function(page){
+          page.querySelectorAll('.page-content>*').forEach(function(atom){
+            var tag=atom.tagName.toLowerCase();
+            if(atom.classList.contains('resume-header')){
+              md+='# self-intro\n';
+              var name=atom.querySelector('.name'), role=atom.querySelector('.role');
+              if(name) md+='name: '+name.textContent.trim()+'\n';
+              if(role) md+='role: '+role.textContent.trim()+'\n';
+              var edu=atom.querySelector('.edu-line');
+              if(edu) md+='education: '+edu.textContent.trim()+'\n';
+              var contact=atom.querySelector('.contact');
+              if(contact) md+='contact: '+contact.textContent.trim()+'\n\n';
+            } else if(atom.classList.contains('sec-head')){
+              var title=atom.querySelector('h2');
+              if(title) md+='\n# '+title.textContent.trim()+'\n';
+            } else if(atom.classList.contains('bullet')){
+              md+='- '+atom.textContent.trim()+'\n';
+            } else if(atom.classList.contains('entry')){
+              var org=atom.querySelector('.org,.proj'), role=atom.querySelector('.entry-title .role');
+              if(org) md+='\n## '+org.textContent.trim();
+              if(role) md+=' | '+role.textContent.trim();
+              md+='\n';
+              var date=atom.querySelector('.entry-date');
+              if(date) md+='date: '+date.textContent.trim()+'\n';
+              var meta=atom.querySelector('.entry-meta span');
+              if(meta) md+='meta: '+meta.textContent.trim()+'\n';
+            } else if(atom.classList.contains('desc')){
+              md+=atom.textContent.trim()+'\n';
+            } else if(atom.classList.contains('summary')){
+              md+=atom.textContent.trim()+'\n';
+            } else if(atom.classList.contains('stack')){
+              atom.querySelectorAll('.stack-row').forEach(function(row){
+                var cat=row.querySelector('.cat');
+                if(cat) md+='- '+cat.textContent.trim()+': ';
+                var chips=row.querySelectorAll('.chip');
+                md+=Array.from(chips).map(function(c){return c.textContent.trim();}).join(' · ')+'\n';
+              });
+            }
+          });
+        });
+        // show result
+        var ta=document.getElementById('rvMdOutput');
+        if(!ta){
+          ta=document.createElement('textarea');
+          ta.id='rvMdOutput';
+          ta.style.cssText='position:fixed;top:56px;right:12px;width:420px;height:70vh;z-index:100;font-family:monospace;font-size:12px;padding:10px;border:1px solid #d7dbe0;border-radius:8px;background:#fff;box-shadow:0 8px 30px rgba(0,0,0,.12);resize:both;white-space:pre;line-height:1.5';
+          var close=document.createElement('div');
+          close.textContent='✕';
+          close.style.cssText='position:fixed;top:56px;right:440px;z-index:101;cursor:pointer;font-size:18px;color:#888;padding:4px 8px';
+          close.onclick=function(){ta.remove();close.remove();};
+          document.body.appendChild(close);
+          document.body.appendChild(ta);
+        }
+        ta.value=md;
+        ta.style.display='block';
+        ta.focus();
+        ta.select();
+        rvShowToast('已生成 Markdown，可复制');
+      });
     })();
   </script>
 </body>

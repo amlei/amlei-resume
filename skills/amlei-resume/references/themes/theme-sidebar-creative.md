@@ -53,6 +53,7 @@
   .head .name{font-size:29px;font-weight:700;letter-spacing:.04em}
   .head .role{font-size:14px;font-weight:600;color:var(--accent-ink);margin-top:4px}
   .head .one{font-size:13px;color:var(--muted);margin-top:6px}
+  .head .edu-line{font-size:13px;color:var(--accent-ink);font-weight:500;margin-top:4px}
   .sec-h{display:flex;align-items:center;gap:9px;margin-top:17px;margin-bottom:9px}
   .sec-h .ico{width:15px;height:15px;color:var(--accent);flex-shrink:0}
   .sec-h h2{font-size:14px;font-weight:700;letter-spacing:.14em;color:var(--ink)}
@@ -71,6 +72,10 @@
   .entry-list li{position:relative;padding-left:13px;font-size:12.5px;line-height:1.7;margin-bottom:2px;text-align:justify;text-wrap:pretty}
   .entry-list li::before{content:"•";position:absolute;left:1px;top:5px;color:var(--accent);font-size:10px;line-height:1}
   .entry-list .num{font-family:var(--font-mono);color:var(--accent-ink);font-weight:600}
+  /* Bullet（此主题不原子化——保留以供引用；实际渲染不拆分） */
+  .bullet{position:relative;padding-left:13px;font-size:12.5px;line-height:1.7;margin-bottom:2px;text-align:justify;text-wrap:pretty}
+  .bullet::before{content:"•";position:absolute;left:1px;top:5px;color:var(--accent);font-size:10px;line-height:1}
+  .bullet .num{font-family:var(--font-mono);color:var(--accent-ink);font-weight:600}
 </style>
 ```
 
@@ -113,14 +118,16 @@
 <div class="side-block"><h3>{{设计工具}}</h3><div class="tools"><span class="t">{{Figma}}</span><span class="t">{{Sketch}}</span></div></div>
 ```
 
-### 主体 · head（姓名 / 方向 / 一句话）
+### 主体 · head（姓名 / 方向 / 教育 / 一句话）
 ```html
 <div class="head">
   <div class="name">{{name}}</div>
   <div class="role">{{求职意向 · UI/UX 交互设计师}}</div>
+  <div class="edu-line">{{education}}</div>
   <div class="one">{{学校 · 专业 · 一两句亮点}}</div>
 </div>
 ```
+`{{education}}` 可选单独行（来自 `education:` 字段），无则删整行。
 
 ### 主体 · sec-h（章节标题，注意是 `.sec-h`）
 ```html

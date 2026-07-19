@@ -38,6 +38,7 @@
   .name-row .role{font-size:13px;font-weight:600;color:var(--accent-ink)}
   .contact{margin-top:8px;font-family:var(--font-mono);font-size:11px;color:var(--muted)}
   .contact .sep{color:var(--accent);margin:0 6px}
+  .edu-line{margin-top:5px;font-family:var(--font-sans);font-size:12px;color:var(--accent-ink);font-weight:500}
   .photo{width:26mm;height:36mm;border:1px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:var(--faint);overflow:hidden}
   .photo img{width:100%;height:100%;object-fit:cover;display:block}
   .photo svg{width:26px;height:26px;opacity:.45}
@@ -59,6 +60,11 @@
   .entry-list li::before{content:"•";position:absolute;left:1px;top:4px;color:var(--accent);font-size:10px;line-height:1}
   .entry-list .num{font-family:var(--font-mono);color:var(--accent-ink);font-weight:600}
   .entry-list b{color:var(--ink);font-weight:600}
+  /* Bullet（独立原子，自由换页） */
+  .bullet{position:relative;padding-left:13px;font-size:12.5px;line-height:1.48;color:var(--ink);margin-bottom:2px;text-align:justify;text-wrap:pretty}
+  .bullet::before{content:"•";position:absolute;left:1px;top:4px;color:var(--accent);font-size:10px;line-height:1}
+  .bullet .num{font-family:var(--font-mono);color:var(--accent-ink);font-weight:600}
+  .bullet b{color:var(--ink);font-weight:600}
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:3px 22px}
   .skill-line{display:grid;grid-template-columns:96px 1fr;gap:10px;padding:3px 0;border-bottom:1px dashed var(--hair);font-size:12.5px}
   .skill-line .k{font-weight:600;color:var(--accent-ink)}
@@ -72,11 +78,13 @@
 <header class="resume-header">
   <div class="ident">
     <div class="name-row"><span class="name">{{Name}} · {{中文名}}</span><span class="role">{{Target Role}}</span></div>
+    <div class="edu-line">{{education}}</div>
     <div class="contact">{{City}}<span class="sep">·</span>{{Phone}}<span class="sep">·</span>{{email}}<span class="sep">·</span><a href="{{linkedin-url}}">{{linkedin}}</a><span class="sep">·</span>{{Open to relocation}}</div>
   </div>
   {{photo}}
 </header>
 ```
+`{{education}}` on its own line (school · degree · class year from `education:` field), remove the whole line if absent.
 `{{photo}}` 占位 span 写 `PHOTO`（大写）。
 
 ### 2. SectionHead（写正常大小写，CSS 自动全大写）
@@ -90,16 +98,21 @@
 ```
 关键短语用 `<strong>`。
 
-### 4. Entry（Education / Experience / Leadership；role 斜体）
+### 4. Entry header（Education / Experience / Leadership；role 斜体）
 ```html
-<div class="entry">
+<div class="entry" data-stick="1">
   <div class="entry-main"><div class="entry-title"><span class="org">{{Org}}</span><span class="role">{{Role — detail}}</span></div><span class="entry-date">{{Sep 2024 — Dec 2024}}</span></div>
-  <ul class="entry-list"><li>{{bullet with <span class="num">metrics</span> and <b>key terms</b>}}</li></ul>
 </div>
 ```
-日期写英文月份（`Sep 2024 — Dec 2024`）。无 `meta` 行组件（本主题把 GPA 等放进首条 bullet，用 `<b>`）。
+日期写英文月份（`Sep 2024 — Dec 2024`）。无 `meta` 行组件（本主题把 GPA 等放进首条 bullet，用 `<b>`）。`data-stick="1"` 让 header 和第一条 bullet 同页。
 
-### 5. Skills（双列 key:value 行）
+### 5. Bullet（single achievement — independent atom）
+```html
+<div class="bullet">{{bullet with <span class="num">metrics</span> and <b>key terms</b>}}</div>
+```
+Each `- bullet` becomes one `.bullet` atom. Numbers → `<span class="num">`, key terms → `<b>`.
+
+### 6. Skills（双列 key:value 行）
 ```html
 <div class="grid2">
   <div class="skill-line"><span class="k">{{Analytics}}</span><span>{{Excel · SQL · Tableau}}</span></div>
@@ -111,4 +124,4 @@
 Header → Profile → Education → Experience → Leadership & Projects → Skills & Languages（按 MD 模块顺序；无单独 Awards 模块时并入 Experience/Skills）。
 
 ## MD → 组件映射
-`# self-intro`→Header（内容译成英文）；`# Profile/个人简介`→Summary；`## Org | Role`→Entry（role 斜体）；`- bullet`→`.entry-list li`（数字 `<span class="num">`，关键术语 `<b>`）；`# Skills`下`Key: value`→`.skill-line`（放 `.grid2` 内）。
+`# self-intro`→Header（内容译成英文）；`# Profile/个人简介`→Summary；`## Org | Role`→Entry header（`data-stick="1"`，role 斜体）；`- bullet`→每条独立 `.bullet`（数字 `<span class="num">`，关键术语 `<b>`）；`# Skills`下`Key: value`→`.skill-line`（放 `.grid2` 内）。

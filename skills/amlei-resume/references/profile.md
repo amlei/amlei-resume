@@ -2,8 +2,8 @@
 
 个人资料是由 `scripts/profile.py` 管理，位置优先项目级、否则用户根目录：
 
-- 项目级：`<项目>/.amlei-skill/resume-gen/profile.json`
-- 根目录：`~/.amlei-skill/resume-gen/profile.json`
+- 项目级：`<项目>/.amlei-skill/resume/profile.json`
+- 根目录：`~/.amlei-skill/resume/profile.json`
 
 全部命令见 `python3 scripts/profile.py --help`，每条 `<命令> --help` 看参数。
 

@@ -14,8 +14,9 @@ KNOWN_INTRO_KEYS = {                      # 已知键（出现未知键只提示
     "name", "role", "gender", "location", "phone", "phone-number",
     "email", "site", "github", "csdn", "blog", "website", "linkedin",
     "portfolio", "avatar", "age", "birth", "political", "hometown",
-    "ethnicity", "education-level", "platform",
+    "ethnicity", "education-level", "platform", "education", "links",
 }
+EDUCATION_SLUGS = {"教育", "教育背景", "education", "学历", "学习经历"}
 H1_RE = re.compile(r"^#\s+(.+?)\s*$")
 H2_RE = re.compile(r"^##\s+(.+?)\s*$")
 H_DEEP_RE = re.compile(r"^#{3,}\s+")      # ### 及更深：只支持 # 和 ##
@@ -44,10 +45,28 @@ def validate_md(text, name):
     intro_end = h1_idx[1] if len(h1_idx) > 1 else len(lines)
     intro_lines = lines[h1_idx[0] + 1:intro_end]
     intro_kv = {}
-    for ln in intro_lines:
-        m = KV_RE.match(ln.strip())
+    last_kv_key = None
+    for i, ln in enumerate(intro_lines):
+        raw = ln.strip()
+        abs_line = h1_idx[0] + 1 + i
+        if not raw:
+            continue
+        m = KV_RE.match(raw)
         if m:
-            intro_kv[m.group(1).lower()] = m.group(2).strip()
+            k, v = m.group(1).lower(), m.group(2).strip()
+            intro_kv[k] = v
+            last_kv_key = k
+        elif re.match(r'^[A-Za-z一-龥][\w一-龥\-]*\s*:\s*$', raw):
+            k = raw.split(":")[0].strip().lower()
+            intro_kv.setdefault(k, "")
+            last_kv_key = k
+        elif raw.startswith("- ") and last_kv_key:
+            # 缩进子项（links / education 等），追加到当前 KV 值
+            sub = raw[2:].strip()
+            if intro_kv[last_kv_key]:
+                intro_kv[last_kv_key] += "\n" + sub
+            else:
+                intro_kv[last_kv_key] = sub
     for k in REQUIRED_INTRO_KEYS:
         if k not in intro_kv or not intro_kv[k]:
             errors.append(f"self-intro 缺必填字段 `name:`（简历必须有姓名）")
@@ -61,6 +80,25 @@ def validate_md(text, name):
         base_dir = os.path.dirname(os.path.abspath(name)) if name != "<stdin>" else "."
         if not os.path.isfile(os.path.join(base_dir, avatar)):
             warnings.append(f"self-intro 的 avatar 路径不存在: {avatar}")
+
+    # —— 教育背景（兼容三种格式：`# 教育背景` 模块 / self-intro `education: 学校 · 专业` / 缩进子项）——
+    has_edu_module = bool([i for i, ln in enumerate(lines)
+                          if H1_RE.match(ln) and H1_RE.match(ln).group(1).strip().lower() in EDUCATION_SLUGS])
+    edu_val = intro_kv.get("education", "").strip()
+    has_edu_field = bool(edu_val)
+    if not has_edu_module and not has_edu_field:
+        errors.append("缺少教育信息——请加 `# 教育背景` 模块或 self-intro 的 `education:` 字段")
+    if has_edu_module:
+        edu_idx = [i for i, ln in enumerate(lines)
+                   if H1_RE.match(ln) and H1_RE.match(ln).group(1).strip().lower() in EDUCATION_SLUGS][0]
+        edu_end = edu_idx + 1
+        while edu_end < len(lines) and not H1_RE.match(lines[edu_end]):
+            edu_end += 1
+        edu_text = "\n".join(lines[edu_idx:edu_end])
+        has_year_graduation = bool(re.search(r"\d{4}届", edu_text))
+        has_date_with_end_year = bool(re.search(r"date:.*\d{4}\.\d{2}\s*[-—–]\s*\d{4}\.\d{2}", edu_text))
+        if not has_year_graduation and not has_date_with_end_year:
+            errors.append("教育背景缺少毕业年份——标注如 `2026届` 或 date 中写明毕业年月")
 
     # —— 标题层级 / 空标题 ——
     for i, ln in enumerate(lines):

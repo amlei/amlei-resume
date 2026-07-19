@@ -5,13 +5,14 @@
 供 Agent 以 subprocess 方式复用。
 
 用法:
-  boss_zhipin.py login                        登录 → APP 扫码 → 保存状态
-  boss_zhipin.py resume-session               恢复会话
-  boss_zhipin.py fetch-jd <名称> <job_id> [目录]  抓取完整 JD（含薪资）
+   boss_zhipin.py login                        登录 → APP 扫码 → 保存状态
+   boss_zhipin.py resume-session               恢复会话
+   boss_zhipin.py check-messages               检查消息回复
+   boss_zhipin.py fetch-jd <名称> <job_id> [目录]  抓取完整 JD（含薪资）
   boss_zhipin.py batch-jds <目录> <名称:job_id>... 批量抓取
   boss_zhipin.py search <关键词> [--city ...] [--salary ...]  搜索岗位
   boss_zhipin.py state-path                     打印状态文件路径
-  状态文件：<cwd>/.amlei-skill/resume-gen/boss_state.json 或 ~/.amlei-skill/resume-gen/
+  状态文件：<cwd>/.amlei-skill/resume/boss_state.json 或 ~/.amlei-skill/resume/
 """
 
 import argparse
@@ -37,10 +38,10 @@ _SCRIPT_DIR = Path(__file__).parent.resolve()
 def _find_state():
     """优先项目级，否则用户根目录（与 profile.py 统一）。"""
     for base in (Path.cwd(), Path.home()):
-        p = base / ".amlei-skill" / "resume-gen" / "boss_state.json"
+        p = base / ".amlei-skill" / "resume" / "boss_state.json"
         if p.exists():
             return p
-    return Path.cwd() / ".amlei-skill" / "resume-gen" / "boss_state.json"
+    return Path.cwd() / ".amlei-skill" / "resume" / "boss_state.json"
 
 STATE_FILE = _find_state()
 
@@ -357,13 +358,27 @@ def cmd_login():
         print("  请打开手机 Boss 直聘 APP 扫码登录。")
         print("=" * 60 + "\n")
 
+        # Stage 1: 等待扫码完成
+        print("⏳ 等待扫码...", file=sys.stderr)
         for _ in range(100):
             time.sleep(3)
-            body = page.inner_text("body")
-            if "登录/注册" not in body or "退出" in body:
+            scanned = page.query_selector(".login-step-box")
+            if scanned:
+                title_el = scanned.query_selector(".login-step-title")
+                if title_el and "扫描成功" in (title_el.inner_text() or ""):
+                    print("✓ 扫码成功，请在手机上确认登录...", file=sys.stderr)
+                    _sleep(*SLEEP_AFTER_CLICK)
+                    break
+        else:
+            die("扫码超时（5 分钟）。")
+
+        # Stage 2: 等待确认登录（页面跳离 /user/）
+        for _ in range(100):
+            time.sleep(3)
+            if "user" not in page.url:
                 break
         else:
-            die("登录超时（5 分钟）。")
+            die("登录确认超时（5 分钟）。")
 
         humanize(page)
         ctx.storage_state(path=str(STATE_FILE))
@@ -562,6 +577,57 @@ def cmd_chat(job_id: str):
 
 # ── 主入口 ────────────────────────────────────────────────────────────────
 
+def cmd_check_messages():
+    """检查消息列表，检测谁回复了。"""
+    _ensure_state_or_login()
+
+    ctx = launch_context(storage_state=str(STATE_FILE), headless=False)
+    try:
+        page = ctx.new_page()
+        page.goto("https://www.zhipin.com/web/geek/chat", wait_until="domcontentloaded", timeout=60000)
+        _sleep(*SLEEP_NAV)
+        humanize(page)
+        _sleep(*SLEEP_AFTER_CLICK)
+
+        conversations = page.evaluate("""
+            Array.from(document.querySelectorAll('.friend-content')).map(el => {
+                const nameEl = el.querySelector('.name-text');
+                const lastMsgText = el.querySelector('.last-msg-text');
+                const statusEl = el.querySelector('.message-status.status-delivery');
+                const vline = el.querySelector('.vline');
+                const timeEl = el.querySelector('.time');
+
+                let company = '';
+                if (vline && vline.nextSibling) {
+                    company = (vline.nextSibling.textContent || '').trim();
+                }
+
+                return {
+                    name: nameEl ? nameEl.innerText.trim() : '',
+                    company: company,
+                    lastMessage: lastMsgText ? lastMsgText.innerText.trim() : '',
+                    hasReply: !statusEl,
+                    time: timeEl ? timeEl.innerText.trim() : '',
+                };
+            })
+        """)
+
+        if not conversations:
+            print(json.dumps({"total": 0, "replied": [], "waiting": []}, ensure_ascii=False, indent=2), file=sys.stderr)
+            return
+
+        replied = [c for c in conversations if c.get("hasReply")]
+        sent = [c for c in conversations if not c.get("hasReply")]
+
+        result = {
+            "total": len(conversations),
+            "replied": replied,
+            "waiting": sent,
+        }
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+    finally:
+        ctx.close()
+
 def main():
     ap = argparse.ArgumentParser(description="Boss直聘 × CloakBrowser")
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -569,6 +635,7 @@ def main():
     sub.add_parser("login")
     sub.add_parser("resume-session")
     sub.add_parser("state-path")
+    sub.add_parser("check-messages", help="检查消息列表，检测谁回复了")
 
     p = sub.add_parser("chat")
     p.add_argument("job_id")
@@ -596,6 +663,7 @@ def main():
 
     {"login": cmd_login, "resume-session": cmd_resume_session,
      "state-path": cmd_state_path,
+     "check-messages": cmd_check_messages,
      "chat": lambda: cmd_chat(args.job_id),
      "fetch-jd": lambda: cmd_fetch_jd(args.name, args.job_id, args.out_dir),
      "batch-jds": lambda: cmd_batch_jds(args.out_dir, args.entries),

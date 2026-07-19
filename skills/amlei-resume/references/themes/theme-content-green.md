@@ -36,6 +36,7 @@
   .name-row .role{font-size:13px;font-weight:600;color:var(--accent-ink)}
   .contact{margin-top:8px;font-family:var(--font-mono);font-size:11px;color:var(--muted)}
   .contact .sep{color:var(--accent);margin:0 6px}
+  .edu-line{margin-top:5px;font-family:var(--font-sans);font-size:12px;color:var(--accent-ink);font-weight:500}
   .photo{width:26mm;height:36mm;border:1px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:var(--faint);overflow:hidden}
   .photo img{width:100%;height:100%;object-fit:cover;display:block}
   .photo svg{width:26px;height:26px;opacity:.45}
@@ -59,6 +60,10 @@
   .entry-list li{position:relative;padding-left:13px;font-size:12.5px;line-height:1.58;color:var(--ink);margin-bottom:2px;text-align:justify;text-wrap:pretty}
   .entry-list li::before{content:"•";position:absolute;left:1px;top:5px;color:var(--accent);font-size:10px;line-height:1}
   .entry-list .num{font-family:var(--font-mono);color:var(--accent-ink);font-weight:600}
+  /* Bullet（独立原子，自由换页） */
+  .bullet{position:relative;padding-left:13px;font-size:12.5px;line-height:1.58;color:var(--ink);margin-bottom:2px;text-align:justify;text-wrap:pretty}
+  .bullet::before{content:"•";position:absolute;left:1px;top:5px;color:var(--accent);font-size:10px;line-height:1}
+  .bullet .num{font-family:var(--font-mono);color:var(--accent-ink);font-weight:600}
   .awards{display:grid;grid-template-columns:1fr 1fr;gap:3px 24px}
   .award{display:grid;grid-template-columns:38px 1fr auto;gap:8px;align-items:baseline;font-size:12.5px;padding:4px 0;border-bottom:1px dashed var(--hair)}
   .award .yr{font-family:var(--font-mono);font-size:10.5px;color:var(--accent)}
@@ -79,12 +84,13 @@
 <header class="resume-header">
   <div class="ident">
     <div class="name-row"><span class="name">{{name}}</span><span class="role">{{role}}</span></div>
+    <div class="edu-line">{{education}}</div>
     <div class="contact">{{location}}<span class="sep">·</span>{{phone}}<span class="sep">·</span>{{email}}<span class="sep">·</span>{{platform}}<span class="sep">·</span>{{age}} 岁<span class="sep">·</span>{{political}}</div>
   </div>
   {{photo}}
 </header>
 ```
-按实际字段拼；`{{platform}}` 可放小红书/公众号等，`{{political}}` 政治面貌（中共党员等，没有就删）。
+`{{education}}` 单独一行（来自 `education:` 字段），无则删整行。按实际字段拼；`{{platform}}` 可放小红书/公众号等，`{{political}}` 政治面貌（中共党员等，没有就删）。
 
 ### 2. SectionHead（无英文标签）
 ```html
@@ -97,22 +103,27 @@
 ```
 关键短语用 `<strong>`。
 
-### 4. Entry（教育 / 实习 / 项目；项目用 `.proj`，可加 `.badge`）
+### 4. Entry header（教育 / 实习 / 项目头；项目用 `.proj`，可加 `.badge`）
 ```html
-<div class="entry">
+<div class="entry" data-stick="1">
   <div class="entry-main"><div class="entry-title"><span class="org">{{org}}</span><span class="role">{{role}}</span><span class="badge">{{badge}}</span></div><span class="entry-date">{{date}}</span></div>
   <div class="entry-meta"><span>{{meta}}</span></div>
-  <ul class="entry-list"><li>{{bullet}}</li></ul>
 </div>
 ```
-项目用 `<span class="proj">{{项目名}}</span>`；`.badge`（如「辅修 交互设计」「产品负责人」）可加可不加。数字用 `<span class="num">`。
+项目用 `<span class="proj">{{项目名}}</span>`；`.badge`（如「辅修 交互设计」「产品负责人」）可加可不加。`data-stick="1"` 让 header 和第一条 bullet 同页。
 
-### 5. Awards（获奖与证书，按年份）
+### 5. Bullet（单条经历要点 — 独立原子，自由换页）
+```html
+<div class="bullet">{{text}}</div>
+```
+每条 `- bullet` 拆一个独立原子。数字用 `<span class="num">`。
+
+### 6. Awards（获奖与证书，按年份）
 ```html
 <div class="awards"><div class="award"><span class="yr">{{year}}</span><span>{{name}}</span><span class="lvl">{{level}}</span></div></div>
 ```
 
-### 6. Skills（相关技能，浅底标签）
+### 7. Skills（相关技能，浅底标签）
 ```html
 <div class="skills">
   <div class="skill-row"><span class="cat">{{category}}</span><div class="tags"><span class="tag strong">{{skill}}</span><span class="tag">{{skill}}</span></div></div>
@@ -124,4 +135,4 @@
 Header → 个人简介 → 教育背景 → 实习经历 → 项目经历 → 获奖与证书 → 相关技能（按 MD 模块顺序）。
 
 ## MD → 组件映射
-`# self-intro`→Header；`# 个人简介`→Summary；`## org|role`→Entry（项目用 proj+badge）；`- bullet`→`.entry-list li`；`年份 | name | level`→`.award`；`类别: A, B`→`.skill-row`（最熟标 strong）。
+`# self-intro`→Header；`# 个人简介`→Summary；`## org|role`→Entry header（`data-stick="1"`，项目用 proj+badge）；`- bullet`→每条独立 `.bullet`；`年份 | name | level`→`.award`；`类别: A, B`→`.skill-row`（最熟标 strong）。

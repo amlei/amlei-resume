@@ -44,6 +44,7 @@
   .contact{margin-top:8px;font-family:var(--font-mono);font-size:11px;color:var(--muted)}
   .contact .sep{color:var(--accent);margin:0 6px}
   .contact a{color:var(--accent-ink);text-decoration:none}
+  .edu-line{margin-top:5px;font-family:var(--font-sans);font-size:12px;color:var(--accent-ink);font-weight:500}
   .photo{width:26mm;height:36mm;border:1px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:var(--faint);overflow:hidden}
   .photo img{width:100%;height:100%;object-fit:cover;display:block}
   .photo svg{width:26px;height:26px;opacity:.45}
@@ -72,6 +73,10 @@
   .entry-list li{position:relative;padding-left:13px;font-size:12.5px;line-height:1.62;color:var(--ink);margin-bottom:2px;text-align:justify;text-wrap:pretty}
   .entry-list li::before{content:"•";position:absolute;left:1px;top:5px;color:var(--accent);font-size:10px;line-height:1}
   .entry-list .num{font-family:var(--font-mono);color:var(--accent-ink);font-weight:600}
+  /* Bullet（独立原子，自由换页） */
+  .bullet{position:relative;padding-left:13px;font-size:12.5px;line-height:1.62;color:var(--ink);margin-bottom:2px;text-align:justify;text-wrap:pretty}
+  .bullet::before{content:"•";position:absolute;left:1px;top:5px;color:var(--accent);font-size:10px;line-height:1}
+  .bullet .num{font-family:var(--font-mono);color:var(--accent-ink);font-weight:600}
   /* Pubs */
   .pubs{list-style:none}
   .pubs li{font-size:12.5px;line-height:1.6;padding:5px 0 5px 26px;border-bottom:1px dashed var(--hair);position:relative;text-align:justify;text-wrap:pretty}
@@ -96,12 +101,13 @@
 
 ## 组件库（带 `{{占位符}}`，class 与上面 `<style>` 对应）
 
-### 1. Header（姓名 / 方向 / 联系方式 / 证件照）—— `self-intro` 模块用它
+### 1. Header（姓名 / 方向 / 教育 / 联系方式 / 证件照）—— `self-intro` 模块用它
 
 ```html
 <header class="resume-header">
   <div class="ident">
     <div class="name-row"><span class="name">{{name}}</span><span class="role">{{role}}</span></div>
+    <div class="edu-line">{{education}}</div>
     <div class="contact">{{gender}}<span class="sep">·</span>{{location}}<span class="sep">·</span>{{phone}}<span class="sep">·</span>{{email}}<span class="sep">·</span><a href="{{site-url}}">{{site}}</a></div>
   </div>
   {{photo}}
@@ -109,6 +115,7 @@
 ```
 
 - `{{role}}` = 求职/申请方向（如"申请方向 · 计算机科学 直博"），无则连同 `<span class="role">` 一起删。
+- `{{education}}` 单独一行（如"学校 · 专业 · 学历 · 届"），来自 `education:` 字段，无则删整行。
 - `{{photo}}`：有真实头像用 `<div class="photo"><img src="{{avatar}}" alt="证件照"></div>`；没有用 [icons.md](icons.md) 里的证件照占位。
 - 联系方式字段**按 `self-intro` 里实际有的拼**，字段之间用 `<span class="sep">·</span>` 分隔；没有的字段（如无 site）连同它的 `sep` 一起删，不要留空段。
 
@@ -138,28 +145,32 @@
 
 （每个标签一个 `<span class="it">`，按 MD 里给的标签数量增减。）
 
-### 5. Entry（教育 / 科研 / 实习 / 工作 / 项目条目）—— `##` 子标题用它
+### 5. Entry header（教育 / 科研 / 实习 / 工作头）—— `##` 子标题用它
 
 ```html
-<div class="entry">
+<div class="entry" data-stick="1">
   <div class="entry-main">
     <div class="entry-title"><span class="org">{{org}}</span><span class="role">{{role}}</span></div>
     <span class="entry-date">{{date}}</span>
   </div>
   <div class="entry-meta"><span>{{meta-item-1}}</span><span>{{meta-item-2}}</span></div>
-  <ul class="entry-list">
-    <li>{{bullet-1}}</li>
-    <li>{{bullet-2}}</li>
-  </ul>
 </div>
 ```
 
 - `{{org}}` = `##` 标题里 `|` 左侧（机构/公司/学校）；`{{role}}` = `|` 右侧（岗位/方向/学位）。`##` 不含 `|` 时 `{{role}}` 连 `<span class="role">` 删除。
 - `{{date}}` 来自 `##` 下的 `date:` 行；没有则删 `.entry-date`。
 - `.entry-meta`：来自 `meta:` 行或 GPA/排名等；关键数字用 `<b>`，无 meta 整个 div 删。
-- `.entry-list`：`-` bullets，每条一个 `<li>`；**STAR 法则、量化结果**，关键数字/术语用 `<span class="num">…</span>` 加重（等宽 + 强调色）。无 bullets 则删 `<ul>`。
+- `data-stick="1"` 让 header 和第一条 bullet 同页不分家。
 
-### 6. Pubs（论文发表，可选）—— 论文模块用
+### 6. Bullet（单条经历要点 — 独立原子，自由换页）
+
+```html
+<div class="bullet">{{text}}</div>
+```
+
+每条 `- bullet` 拆一个独立原子。STAR 法则、量化结果，关键数字/术语用 `<span class="num">…</span>` 加重（等宽 + 强调色）。
+
+### 7. Pubs（论文发表，可选）—— 论文模块用
 
 ```html
 <ul class="pubs">
@@ -171,7 +182,7 @@
 - 本人名字用 `<span class="me">…</span>` 加下划线；共一/一作用括注。
 - 每篇一个 `<li>`。
 
-### 7. Awards（荣誉奖项网格，可选）—— 获奖模块用
+### 8. Awards（荣誉奖项网格，可选）—— 获奖模块用
 
 ```html
 <div class="awards">
@@ -181,7 +192,7 @@
 
 每项一个 `.award`；`{{level}}` = 国家级/省级/校级/金牌 等，无则删 `.lvl`。
 
-### 8. Skills（技能 / 英语，类别 + 标签）
+### 9. Skills（技能 / 英语，类别 + 标签）
 
 ```html
 <div class="skills">
@@ -197,12 +208,12 @@
 <header class="resume-header"> … </header>          ← 由 self-intro 装配（姓名/方向/联系方式/证件照）
 （按简历 MD 里 # 模块的顺序，每个模块依次：）
   <div class="sec-head" data-stick="1"> … </div>     ← SectionHead（icon 按模块语义选）
-  <该模块的正文组件>                                  ← Summary / Interests / Entry×N / Pubs / Awards / Skills
+  <该模块的正文组件>                                  ← Summary / Interests / Entry×N / Bullet×N / Pubs / Awards / Skills
 ```
 
 - **模块顺序 = MD 里 `#` 出现的顺序**（self-intro 永远第一，且不渲染成 SectionHead，而是渲染成 Header）。
 - 每个 `# 模块` 都先出 SectionHead，再出该模块的正文组件。
-- `## 子标题` 下的 `date:` / `meta:` / `- bullets` 都收进同一个 Entry 组件。
+- `## 子标题`：header（`.entry`）一条，`- bullet` 每条独立 `.bullet` 原子。
 
 ## Markdown → 组件映射规则表
 
@@ -212,13 +223,13 @@
 | `# 其它模块标题` | SectionHead（2.） | icon 按模块语义从 icons.md 选；英文标签可选 |
 | 模块下纯文本段 | Summary（3.） | 关键短语 `<b>` |
 | 模块下"标签, 标签, 标签"单行 | Interests（4.） | 研究兴趣/方向 |
-| `## org \| role` | Entry（5.）的 org/role 行 | `|` 分割；无 `|` 则只有 org |
+| `## org \| role` | Entry header（5.）的 org/role | `|` 分割；无 `|` 则只有 org |
 | `##` 下 `date: …` | Entry 的 `.entry-date` | |
 | `##` 下 `meta: …` | Entry 的 `.entry-meta` | 关键数字 `<b>` |
-| `##` 下 `- bullet` | Entry 的 `.entry-list > li` | STAR + 量化；数字 `<span class="num">` |
-| 论文模块条目 | Pubs（6.） | 类型标/venue/年份/本人下划线 |
-| 获奖模块条目 | Awards（7.） | 年/名/级别 |
-| `- 类别: 值`（技能） | Skills（8.）的 `.skills-row` | cat + tags |
+| `##` 下 `- bullet` | 独立 Bullet（6.） | 每条一条；STAR + 量化；数字 `<span class="num">` |
+| 论文模块条目 | Pubs（7.） | 类型标/venue/年份/本人下划线 |
+| 获奖模块条目 | Awards（8.） | 年/名/级别 |
+| `- 类别: 值`（技能） | Skills（9.）的 `.skills-row` | cat + tags |
 
 ## 配色约束（本主题已遵守，换色时保持）
 
