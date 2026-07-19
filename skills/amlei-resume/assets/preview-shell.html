@@ -90,12 +90,14 @@
   @media print{
     @page{size:A4;margin:0}
     html,body{background:#fff!important}
+    *{print-color-adjust:exact;-webkit-print-color-adjust:exact}
     .rv-toolbar,.rv-toast{display:none!important}
     .viewport{overflow:visible!important}
     .doc-stage{height:auto!important}
     .scaler{transform:none!important;gap:0!important;padding:0!important;width:auto!important;display:block!important}
     .page{width:210mm!important;height:297mm!important;box-shadow:none!important;page-break-after:always;break-after:page}
     .page:last-child{page-break-after:auto;break-after:auto}
+    .page .page-content{background:var(--paper,#fff)!important}
   }
 </style>
 <!--RESUME_STYLE-->
@@ -169,8 +171,14 @@
        data-stick="1" 的 sec-head 不会和紧随其后的条目被拆到两页。
        ============================================================ */
     (function(){
-      var PX_PER_MM=96/25.4,PAGE_H_MM=297,PAD_TOP_MM=14,PAD_BOTTOM_MM=13;
-      var CONTENT_H_PX=(PAGE_H_MM-PAD_TOP_MM-PAD_BOTTOM_MM)*PX_PER_MM;
+      var PX_PER_MM=96/25.4,PAGE_H_MM=297,PAGE_W_MM=210;
+      var tmp=document.createElement('div');tmp.className='page-content';tmp.style.position='absolute';tmp.style.left='-9999px';
+      document.body.appendChild(tmp);
+      var cs=getComputedStyle(tmp);
+      var PAD_LEFT_PX=parseFloat(cs.paddingLeft),PAD_RIGHT_PX=parseFloat(cs.paddingRight);
+      var PAD_TOP_PX=parseFloat(cs.paddingTop),PAD_BOTTOM_PX=parseFloat(cs.paddingBottom);
+      tmp.remove();
+      var CONTENT_H_PX=(PAGE_H_MM*PX_PER_MM)-PAD_TOP_PX-PAD_BOTTOM_PX;
       var GAP_PX=26,PAD_STAGE_PX=30;
       var source=document.getElementById('source'),
           scaler=document.getElementById('scaler'),
@@ -238,7 +246,10 @@
             fullH=PAD_STAGE_PX*2+n*(297*PX_PER_MM)+Math.max(0,n-1)*GAP_PX;
         docStage.style.height=(fullH*s)+'px';
       }
-      function init(){render();try{document.title=candidate();}catch(e){}}
+      function init(){
+        source.style.width=(PAGE_W_MM*PX_PER_MM-PAD_LEFT_PX-PAD_RIGHT_PX)+'px';
+        render();try{document.title=candidate();}catch(e){}
+      }
       if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
       if(document.fonts&&document.fonts.ready)document.fonts.ready.then(render);
       window.addEventListener('load',render);
