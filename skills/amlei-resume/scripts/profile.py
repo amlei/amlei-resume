@@ -5,7 +5,7 @@
   · 位置优先项目级 <cwd>/.amlei-skill/resume/profile.json，
     否则用户根目录 ~/.amlei-skill/resume/profile.json。
    · **优先使用 batch**（单次保存一份备份）；add/update 单条命令也保留但每次各写一份备份。
-   · init 不覆盖已有；add/update/profile/preference/target/experience 写前自动备份**带时间戳**，保留最近 N 份。
+   · init 不覆盖已有；add/update/profile/preference/target/experience/education 写前自动备份**带时间戳**，保留最近 N 份。
   · 调用写入命令前，Agent 必须已征得用户同意（本脚本不替你问）。
 
 退出码：0 正常；1 资料不存在 / 条目不存在 / 已存在不覆盖 / 参数错。
@@ -72,7 +72,7 @@ def _empty():
     now = datetime.now().isoformat(timespec="seconds")
     return {"_meta": {"created": now, "last_updated": now},
             "profile": {}, "preferences": {}, "targets": {}, "target_companies": {},
-            "experiences": {}, "abilities": {}, "projects": {}}
+            "experiences": {}, "educations": {}, "abilities": {}, "projects": {}}
 
 
 def _section(data, type_):
@@ -108,6 +108,38 @@ def cmd_profile(args):
     data.setdefault("profile", {}).update(given)
     _save(p, data)
     print(f"✓ profile 已更新字段：{', '.join(given)}（写前已时间戳备份）")
+
+
+def cmd_education(args):
+    p = require()
+    data = _load(p)
+    data.setdefault("educations", {})
+    now = datetime.now().isoformat(timespec="seconds")
+    if args.action == "list":
+        if not data["educations"]:
+            print("（暂无教育经历）")
+        else:
+            for k, v in data["educations"].items():
+                deg = v.get("degree", "")
+                grad = v.get("graduation", "")
+                major = v.get("major", "")
+                print(f"  · {k}  {deg}{' · '+major if major else ''}  {grad}")
+    elif args.action == "add":
+        if not args.key:
+            print("✗ education add 需要学校名"); sys.exit(1)
+        entry = {"degree": args.degree or "", "major": args.major or "",
+                 "graduation": args.graduation or "",
+                 "added": data["educations"].get(args.key, {}).get("added", now),
+                 "last_updated": now}
+        data["educations"][args.key] = entry
+        _save(p, data)
+        print(f"✓ 已添加教育经历：{args.key}（写前已时间戳备份）")
+    elif args.action == "rm":
+        if args.key not in data["educations"]:
+            print(f"✗ 没有这所学校：{args.key}"); sys.exit(1)
+        del data["educations"][args.key]
+        _save(p, data)
+        print(f"✓ 已移除教育经历：{args.key}（写前已时间戳备份）")
 
 
 def cmd_preference(args):
@@ -392,6 +424,12 @@ def main():
     s.add_argument("--key"); s.add_argument("--position"); s.add_argument("--period")
     s.add_argument("--industry")
     s.set_defaults(func=cmd_experience)
+
+    s = sub.add_parser("education")
+    s.add_argument("action", choices=["add", "list", "rm"])
+    s.add_argument("--key"); s.add_argument("--degree"); s.add_argument("--major")
+    s.add_argument("--graduation")
+    s.set_defaults(func=cmd_education)
 
     s = sub.add_parser("time"); s.add_argument("--key"); s.set_defaults(func=cmd_time)
 
