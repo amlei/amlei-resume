@@ -88,6 +88,13 @@ def die(msg: str):
     sys.exit(1)
 
 
+def _ensure_state_or_login():
+    if STATE_FILE.exists():
+        return
+    print("⚠ 未检测到登录状态，即将打开浏览器扫码登录...", file=sys.stderr)
+    cmd_login()
+
+
 def _sleep(lo: float, hi: float):
     time.sleep(random.uniform(lo, hi))
 
@@ -367,8 +374,7 @@ def cmd_login():
 
 
 def cmd_resume_session():
-    if not STATE_FILE.exists():
-        die(f"状态文件不存在: {STATE_FILE.resolve()}\n先运行 login。")
+    _ensure_state_or_login()
 
     ctx = launch_context(storage_state=str(STATE_FILE))
     try:
@@ -382,8 +388,7 @@ def cmd_resume_session():
 
 
 def cmd_fetch_jd(name: str, job_id: str, out_dir: str = "."):
-    if not STATE_FILE.exists():
-        die(f"状态文件不存在: {STATE_FILE.resolve()}\n先运行 login。")
+    _ensure_state_or_login()
 
     url = f"https://www.zhipin.com/job_detail/{job_id}/"
     ctx = launch_context(storage_state=str(STATE_FILE))
@@ -423,8 +428,7 @@ def cmd_batch_jds(out_dir: str, entries: list[str]):
 
 def cmd_search(keyword: str, city: str, job_type: str, salary: str,
                exp: str, degree: str, scale: str, industry: str):
-    if not STATE_FILE.exists():
-        die(f"状态文件不存在: {STATE_FILE.resolve()}\n先运行 login。")
+    _ensure_state_or_login()
 
     params = [f"query={keyword}"]
     city_code = CITY.get(city, "")
@@ -493,8 +497,7 @@ def _handle_startchat_dialog(page):
 
 def cmd_chat(job_id: str):
     """打开岗位详情 → 点「立即沟通」/「继续沟通」→ 发送招呼语。"""
-    if not STATE_FILE.exists():
-        die(f"状态文件不存在: {STATE_FILE.resolve()}\n先运行 login。")
+    _ensure_state_or_login()
 
     url = f"https://www.zhipin.com/job_detail/{job_id}/"
     ctx = launch_context(storage_state=str(STATE_FILE), headless=False)

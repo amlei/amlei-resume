@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """amlei-resume-gen 的个人资料管理（KV 存储）。
 
-个人资料是简历生成的素材库，**写错不可撤回**——所以：
+个人资料是简历生成的素材库——所以：
   · 位置优先项目级 <cwd>/.amlei-skill/resume-gen/profile.json，
     否则用户根目录 ~/.amlei-skill/resume-gen/profile.json。
-  · init 不覆盖已有；add/update/profile/preference/target 写前自动备份**带时间戳**，保留最近 N 份。
+   · **优先使用 batch**（单次保存一份备份）；add/update 单条命令也保留但每次各写一份备份。
+   · init 不覆盖已有；add/update/profile/preference/target/experience 写前自动备份**带时间戳**，保留最近 N 份。
   · 调用写入命令前，Agent 必须已征得用户同意（本脚本不替你问）。
 
 退出码：0 正常；1 资料不存在 / 条目不存在 / 已存在不覆盖 / 参数错。
@@ -41,7 +42,7 @@ def resolve():
 def require():
     p = resolve()
     if not p:
-        print("✗ 记忆不存在。先 init --location project|root 创建。")
+        print("✗ profile 不存在。先 init --location project|root 创建。")
         sys.exit(1)
     return p
 
@@ -70,8 +71,8 @@ def _save(path, data):
 def _empty():
     now = datetime.now().isoformat(timespec="seconds")
     return {"_meta": {"created": now, "last_updated": now},
-            "profile": {}, "preferences": {}, "targets": {}, "companies": {},
-            "abilities": {}, "projects": {}}
+            "profile": {}, "preferences": {}, "targets": {}, "target_companies": {},
+            "experiences": {}, "abilities": {}, "projects": {}}
 
 
 def _section(data, type_):
@@ -91,7 +92,7 @@ def cmd_init(args):
     os.makedirs(os.path.dirname(p), exist_ok=True)
     with open(p, "w", encoding="utf-8") as f:
         json.dump(_empty(), f, ensure_ascii=False, indent=2)
-    print(f"✓ 已创建记忆：{p}")
+    print(f"✓ 已创建 profile：{p}")
 
 
 def cmd_profile(args):
@@ -156,13 +157,13 @@ def cmd_target(args):
 def cmd_company(args):
     p = require()
     data = _load(p)
-    data.setdefault("companies", {})
+    data.setdefault("target_companies", {})
     now = datetime.now().isoformat(timespec="seconds")
     if args.action == "list":
-        if not data["companies"]:
+        if not data["target_companies"]:
             print("（暂无关注公司）")
         else:
-            for k, v in data["companies"].items():
+            for k, v in data["target_companies"].items():
                 jd = v.get("jd", "")[:60]
                 print(f"  · {k}  行业={v.get('industry','-')}  岗位={v.get('position','-')}  JD={jd}{'...' if len(v.get('jd','')) > 60 else ''}")
     elif args.action == "add":
@@ -170,15 +171,15 @@ def cmd_company(args):
             print("✗ company add 需要公司名"); sys.exit(1)
         entry = {"position": args.position or "", "industry": args.industry or "",
                  "jd": args.jd or "", "url": args.url or "",
-                 "added": data["companies"].get(args.key, {}).get("added", now),
+                 "added": data["target_companies"].get(args.key, {}).get("added", now),
                  "last_updated": now}
-        data["companies"][args.key] = entry
+        data["target_companies"][args.key] = entry
         _save(p, data)
         print(f"✓ 已添加关注公司：{args.key}（写前已时间戳备份）")
     elif args.action == "rm":
-        if args.key not in data["companies"]:
+        if args.key not in data["target_companies"]:
             print(f"✗ 没有这家公司：{args.key}"); sys.exit(1)
-        del data["companies"][args.key]
+        del data["target_companies"][args.key]
         _save(p, data)
         print(f"✓ 已移除公司：{args.key}（写前已时间戳备份）")
 
@@ -214,6 +215,35 @@ def cmd_time(args):
     print(f"{ts}  （{_age(ts)}）")
 
 
+def cmd_experience(args):
+    p = require()
+    data = _load(p)
+    data.setdefault("experiences", {})
+    now = datetime.now().isoformat(timespec="seconds")
+    if args.action == "list":
+        if not data["experiences"]:
+            print("（暂无工作经历）")
+        else:
+            for k, v in data["experiences"].items():
+                print(f"  · {k}  岗位={v.get('position','-')}  时间={v.get('period','-')}")
+    elif args.action == "add":
+        if not args.key:
+            print("✗ experience add 需要公司名"); sys.exit(1)
+        entry = {"position": args.position or "", "period": args.period or "",
+                 "industry": args.industry or "",
+                 "added": data["experiences"].get(args.key, {}).get("added", now),
+                 "last_updated": now}
+        data["experiences"][args.key] = entry
+        _save(p, data)
+        print(f"✓ 已添加工作经历：{args.key}（写前已时间戳备份）")
+    elif args.action == "rm":
+        if args.key not in data["experiences"]:
+            print(f"✗ 没有这家公司：{args.key}"); sys.exit(1)
+        del data["experiences"][args.key]
+        _save(p, data)
+        print(f"✓ 已移除工作经历：{args.key}（写前已时间戳备份）")
+
+
 def cmd_find(args):
     p = require()
     data = _load(p)
@@ -230,6 +260,52 @@ def cmd_find(args):
                 continue
             out.append({"type": t, "key": k, **v, "age": _age(v.get("last_updated", ""))})
     print(json.dumps(out, ensure_ascii=False, indent=2) if out else "（无匹配）")
+
+
+def cmd_batch(args):
+    """批量写入多条条目，一次保存（一份备份）。"""
+    import json as _json
+    p = require()
+    data = _load(p)
+
+    if args.json:
+        entries = _json.loads(args.json)
+    else:
+        entries = _json.loads(sys.stdin.read())
+
+    now = datetime.now().isoformat(timespec="seconds")
+    count = 0
+    for entry in entries:
+        action = entry.pop("action", "add")
+        type_ = entry.pop("type", "ability")
+        key = entry.pop("key", "")
+        if not key:
+            continue
+        sec = _section(data, type_)
+        if action == "add":
+            if key in sec:
+                print(f"  ⚠ 跳过已存在：{type_}/{key}", file=sys.stderr)
+                continue
+            entry.setdefault("last_updated", now)
+            sec[key] = entry
+        elif action == "update":
+            if key not in sec:
+                print(f"  ⚠ 跳过不存在：{type_}/{key}", file=sys.stderr)
+                continue
+            field = entry.pop("field", "")
+            if field:
+                val = entry.pop("value", "")
+                if field in ("tags", "tech"):
+                    val = val.split(",")
+                elif field == "long_term":
+                    val = val.lower() in ("true", "1", "yes", "y")
+                sec[key][field] = val
+            else:
+                sec[key].update(entry)
+            sec[key]["last_updated"] = now
+        count += 1
+    _save(p, data)
+    print(f"✓ 批次完成，共处理 {count} 条（写前已时间戳备份）")
 
 
 def cmd_add(args):
@@ -280,7 +356,7 @@ def cmd_update(args):
 
 
 def main():
-    ap = argparse.ArgumentParser(description="个人能力记忆管理（KV）。")
+    ap = argparse.ArgumentParser(description="个人资料管理（KV）。")
     sub = ap.add_subparsers(dest="cmd", required=True)
 
     s = sub.add_parser("path"); s.set_defaults(func=cmd_path)
@@ -305,11 +381,17 @@ def main():
     s.add_argument("--city"); s.add_argument("--years"); s.add_argument("--tags")
     s.set_defaults(func=cmd_target)
 
-    s = sub.add_parser("company")
+    s = sub.add_parser("target-company", help="管理目标公司 target_companies")
     s.add_argument("action", choices=["add", "list", "rm"])
     s.add_argument("--key"); s.add_argument("--position"); s.add_argument("--industry")
     s.add_argument("--jd"); s.add_argument("--url")
     s.set_defaults(func=cmd_company)
+
+    s = sub.add_parser("experience")
+    s.add_argument("action", choices=["add", "list", "rm"])
+    s.add_argument("--key"); s.add_argument("--position"); s.add_argument("--period")
+    s.add_argument("--industry")
+    s.set_defaults(func=cmd_experience)
 
     s = sub.add_parser("time"); s.add_argument("--key"); s.set_defaults(func=cmd_time)
 
@@ -318,6 +400,10 @@ def main():
     s.add_argument("--category", choices=["hard", "soft"])
     s.add_argument("--type", choices=["ability", "project"])
     s.set_defaults(func=cmd_find)
+
+    s = sub.add_parser("batch", help="(优先) 批量处理多条操作，一次保存。传 --json 字符串或 stdin 管道")
+    s.add_argument("--json", help="JSON 字符串（不传则读 stdin）")
+    s.set_defaults(func=cmd_batch)
 
     s = sub.add_parser("add")
     s.add_argument("--type", choices=["ability", "project"], required=True)
