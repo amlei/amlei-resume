@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""amlei-resume 的个人资料管理（KV 存储）。
+"""amlei-resume 的个人能力记忆管理（KV 存储）。
 
-个人资料是简历生成的素材库——所以：
+个人能力记忆是你跨会话认识用户的唯一长期记忆（不是写简历时才翻的素材库）——所以：
   · 位置优先项目级 <cwd>/.amlei-skill/resume/profile.json，
     否则用户根目录 ~/.amlei-skill/resume/profile.json。
    · **优先使用 batch**（单次保存一份备份）；add/update 单条命令也保留但每次各写一份备份。

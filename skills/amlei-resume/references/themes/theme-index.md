@@ -2,7 +2,7 @@
 
 > **主题信息的单一来源**。每个"主题"= 一套完整组件库（设计令牌 + 各组件 HTML + 简历骨架 + MD→组件映射），文件在 `references/theme-{标识}.md`。选题、登记、回归都以本表为准。
 >
-> 每个主题是一套**自包含**的组件库（设计令牌 + `<style>` + 组件 + 骨架 + MD→组件映射），不依赖外部源文件。**想看某主题效果**：用 `assets/sample-resume.md` 渲染该主题（→ `validate_resume.py` → `wrap_preview.py`）生成预览 HTML 即可。
+> 每个主题是一套**自包含**的组件库（设计令牌 + `<style>` + 组件 + 骨架 + MD→组件映射），不依赖外部源文件。**想看某主题效果**：用 `assets/sample-resume.md` 渲染该主题（→ `wrap_preview.py`）生成预览 HTML 即可。
 
 ## 主题清单
 
@@ -43,4 +43,4 @@
 
 1. 写成 `references/theme-{标识}.md`，含上面 5 个部分。
 2. 在本表登记一行（主题 / 标识 / 主色 / 适用场景 / 文件）。
-3. **查看效果 = 用 `assets/sample-resume.md` 渲染该主题 → `validate_resume.py` → `wrap_preview.py` → 浏览器打开预览**，确认可用。
+3. **查看效果 = 用 `assets/sample-resume.md` 渲染该主题 → `wrap_preview.py` → 浏览器打开预览**，确认可用。

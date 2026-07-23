@@ -85,7 +85,7 @@ def main():
     leftover = PLACEHOLDER_RE.findall(out)
     if leftover:
         print(f"⚠️  预览页里仍有 {len(leftover)} 处未填充占位符 {set(leftover)}——"
-              f"建议先跑 validate_resume.py 查未填的 {{...}}")
+              f"检查未填充的 {{...}} 占位符")
 
     # 4) 输出路径：默认 resume/<姓名>/<求职岗位>/预览.html（证件照/MD 也放该目录）
     if args.output:
