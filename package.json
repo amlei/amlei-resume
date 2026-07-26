@@ -1,0 +1,30 @@
+{
+  "name": "amlei-resume",
+  "version": "0.1.0",
+  "description": "简历全流程 skill — 事实层 + 强调层 + 快照层，装配 HTML 导出 A4 PDF",
+  "main": "index.js",
+  "scripts": {},
+  "keywords": [
+    "claude-code",
+    "claude",
+    "skills",
+    "resume",
+    "boss-zhipin",
+    "求职",
+    "ai-resume"
+  ],
+  "files": [
+    ".claude-plugin/plugin.json",
+    "skills/amlei-resume/SKILL.md",
+    "skills/amlei-resume/assets/",
+    "skills/amlei-resume/references/",
+    "skills/amlei-resume/scripts/",
+    "skills/amlei-profile/"
+  ],
+  "author": "amlei",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/amlei/amlei-resume.git"
+  }
+}

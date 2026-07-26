@@ -1,0 +1,13 @@
+.DS_Store
+idea/
+resume/
+test/
+.opencode/
+.claude/
+boss_state.json
+*.docx
+*.pdf
+.amlei-skill/
+.agents/
+__pycache__/
+.playwright-cli/

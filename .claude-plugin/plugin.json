@@ -1,0 +1,16 @@
+{
+  "name": "amlei-resume",
+  "description": "简历全流程：0→1 写/改/换岗/迭代 + Boss直聘搜岗 + 装配 HTML 导出 A4 PDF",
+  "skills": [
+    {
+      "name": "amlei-profile",
+      "file-path": "skills/amlei-profile/SKILL.md",
+      "description": "用户的个人能力记忆——跨会话认识用户的长期事实档案（身份/经历/项目/能力四类事实）"
+    },
+    {
+      "name": "amlei-resume",
+      "file-path": "skills/amlei-resume/SKILL.md",
+      "description": "简历全流程：写/改/换岗/迭代 + Boss直聘搜岗 + 装配 HTML 导出 A4 PDF"
+    }
+  ]
+}
