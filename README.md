@@ -2,18 +2,14 @@
 
 简历全流程 Claude Code skill —— 从事实沉淀到 A4 PDF 导出的完整工作流。
 
-拆自 [`amlei-skills`](https://github.com/amlei/amlei-skills)（后者现只保留可复用 utility skill）。这是一个**独立产品**：三层模型 + Paged.js 装配 + 评估闭环，不是单一 utility。
+## Skills
 
-## 四个 skill（同仓自包含）
-
-| skill | 职责 |
+| skill | 说明 |
 |-------|------|
-| `amlei-profile` | **事实层**：跨会话的个人能力记忆（身份 / 经历 / 项目 / 能力四类事实），独立于任何求职方向 |
-| `amlei-resume` | **强调层 + 快照层**：消费 profile 的事实，投影成具体方向的简历，装配 HTML → A4 PDF |
-| `amlei-text-polish` | 润色 **subagent**：被 resume 工作流调用，逐行优化简历文字表达 |
-| `amlei-job-market-research` | 就业市场调研 **subagent**：被 resume 调用，联网收集岗位薪资 / 能力 / 技术栈 / 趋势 |
-
-`amlei-resume` 消费 `amlei-profile`，并以 subagent 方式调用 `amlei-text-polish` / `amlei-job-market-research`。四个 skill 同仓，自包含、零跨仓依赖。
+| `amlei-profile` | 用户的个人能力记忆——跨会话认识用户的长期事实档案（身份 / 经历 / 项目 / 能力四类事实），独立于任何求职方向 |
+| `amlei-resume` | 简历全流程：0→1 写/改/换岗/迭代 + Boss直聘搜岗 + 装配 HTML 导出 A4 PDF |
+| `amlei-text-polish` | 润色文本——逐行分析上下文，根据润色目标选用合适的词语和描述，在不改变原意的前提下让文字更清晰有力 |
+| `amlei-job-market-research` | 收集指定岗位和城市的就业市场信息——薪资范围、能力要求、技术栈、软硬技能概览、行业趋势与最新动向 |
 
 ## 能力
 
@@ -21,7 +17,7 @@
 - 多身份：同一份事实投影出后端 / AI Agent / 全栈等不同方向的简历
 - Paged.js 装配：MD → 主题组件 → A4 多页 HTML，浏览器「导出 PDF」出矢量 PDF
 - 6 套主题（academic / tech-dense / content-green / english-mnc / sidebar-creative / soe-formal）
-- 6 维度评估闭环 + 润色（调 amlei-text-polish）
+- 6 维度评估闭环 + 润色
 - Boss 直聘搜岗（`boss_zhipin.py`）+ 求职招呼语
 
 ## 安装
@@ -30,12 +26,6 @@
 claude plugin add amlei/amlei-resume
 ```
 
-> 自包含：润色（amlei-text-polish）、就业市场调研（amlei-job-market-research）已内置为 subagent skill，装这一个 plugin 就够全流程。
-
 ## 用法
 
 跟 Claude 说「写简历 / 改简历 / 换岗 / 把简历导出成 A4 PDF」即可触发。详细工作流见各 `SKILL.md` 与 `references/`。
-
-## 相关
-
-- Utility skill 仓库：[amlei/amlei-skills](https://github.com/amlei/amlei-skills)
