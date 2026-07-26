@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://amlei.dev/skills/amlei-profile/schemas/emphasis-narrative.json",
+  "title": "Emphasis — Narrative (per identity)",
+  "description": "某身份下的自述 / self-intro / 顶部 pitch。完全 per-identity，无事实层引用。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["_meta", "self_intro"],
+  "properties": {
+    "_meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["needs_review"],
+      "properties": {
+        "needs_review": { "type": "boolean", "description": "narrative 不引用 fact，通常为 false" }
+      }
+    },
+    "self_intro": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role"],
+      "properties": {
+        "role": { "type": "string", "description": "身份岗位名（如 '后端开发'）" },
+        "pitch": { "type": "string", "description": "1-2 段自我介绍" },
+        "tags": {
+          "type": "array",
+          "description": "研究兴趣 / 方向标签",
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """把渲染好的简历正文（<style> + 原子）包进带「导出 PDF」工具条的 A4 预览页。
 
-主题无关的机械包装：产物开头的 <style> 注入外壳 <head>、其余原子注入 #source；姓名 / 岗位自动抽取做文件名与 document.title。按钮 / 分页 JS / 打印规则都在外壳里——导出的 A4 / PDF 不含工具条。默认输出 resume/<姓名>/<求职岗位>/预览.html（自动建目录）。
+主题无关的机械包装：产物开头的 <style> 注入外壳 <head>、其余原子注入 #source；姓名 / 岗位自动抽取做 document.title（= PDF 默认文件名）。按钮 / 分页 JS / 打印规则都在外壳里——导出的 A4 / PDF 不含工具条。默认输出与 body.html 同目录的 预览.html；--output 覆盖。
 """
 
 import argparse
@@ -87,17 +87,16 @@ def main():
         print(f"⚠️  预览页里仍有 {len(leftover)} 处未填充占位符 {set(leftover)}——"
               f"检查未填充的 {{...}} 占位符")
 
-    # 4) 输出路径：默认 resume/<姓名>/<求职岗位>/预览.html（证件照/MD 也放该目录）
+    # 4) 输出路径：默认写到 <body 所在目录>/预览.html（与 body.html 同目录，
+    #   即 identities/{identity-id}/resumes/{app-id}/预览.html）；--output 覆盖
     if args.output:
         out_path = args.output
-    elif safe_role:
-        out_path = os.path.join("resume", safe_name, safe_role, "预览.html")
     else:
-        out_path = os.path.join("resume", safe_name, "预览.html")
+        out_path = os.path.join(os.path.dirname(args.body) or ".", "预览.html")
     os.makedirs(os.path.dirname(out_path) or ".", exist_ok=True)
     open(out_path, "w", encoding="utf-8").write(out)
     print(f"✓ 已生成 A4 预览页: {out_path}")
-    print(f"  目录 = resume/<姓名>/<求职岗位>/；document.title = {title}（PDF 默认文件名）。")
+    print(f"  document.title = {title}（PDF 默认文件名）。")
 
 
 if __name__ == "__main__":

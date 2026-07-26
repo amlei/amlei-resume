@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://amlei.dev/skills/amlei-profile/schemas/capabilities.json",
+  "title": "Capabilities Facts",
+  "description": "能力证明。每条必须带 proven_by 引用至少一个 project id（无证据的能力不下沉到事实层）。能力是跨项目抽象，一个 claim 可被多个项目共同证明。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["_meta", "items"],
+  "properties": {
+    "_meta": { "$ref": "#/$defs/meta" },
+    "items": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/capability" }
+    }
+  },
+  "$defs": {
+    "meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["facts_version", "schema_version"],
+      "properties": {
+        "facts_version": { "type": "string", "format": "date-time" },
+        "schema_version": { "type": "integer", "const": 2 },
+        "created": { "type": "string", "format": "date-time" }
+      }
+    },
+    "capability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "claim", "proven_by"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^cap_[a-z0-9_]+$" },
+        "claim": {
+          "type": "string",
+          "minLength": 1,
+          "description": "能力声明，中粒度（如 '并发系统设计'，不过于泛化也不过细）"
+        },
+        "proven_by": {
+          "type": "array",
+          "minItems": 1,
+          "description": "证明此能力的 project id 列表。空数组在 schema 层即被拒绝",
+          "items": { "type": "string", "pattern": "^prj_[a-z0-9_]+$" }
+        },
+        "evidence_grain": {
+          "type": "string",
+          "enum": ["project", "milestone", "technique", "module", "version", "other"],
+          "description": "证据所在的 granularity 档位"
+        },
+        "added": { "type": "string", "format": "date-time" },
+        "last_updated": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

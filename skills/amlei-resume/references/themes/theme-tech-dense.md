@@ -65,6 +65,7 @@
   .entry-main{display:grid;grid-template-columns:1fr auto;align-items:baseline;gap:14px}
   .entry-title{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
   .entry-title .org,.entry-title .proj{font-size:14px;font-weight:700}
+  .entry-title .company{font-size:12px;color:var(--muted);font-weight:500}
   .entry-title .role{font-size:13px;color:var(--accent-ink);font-weight:500}
   .entry-title .badge{font-family:var(--font-mono);font-size:10.5px;color:var(--accent-ink);border:1px solid var(--accent);padding:1px 6px}
   .entry-date{font-family:var(--font-mono);font-size:11px;color:var(--faint);white-space:nowrap}
@@ -125,14 +126,14 @@
 ```
 最熟的技能加 `class="chip strong"`。每类一个 `.stack-row`。
 
-### 5. Entry header（教育 / 实习 / 工作头；项目用 `.proj` + `.badge`）
+### 5. Entry header（教育 / 实习 / 工作头；项目用 `.proj` + `.company` + `.badge`）
 ```html
 <div class="entry" data-stick="1">
   <div class="entry-main"><div class="entry-title"><span class="org">{{org}}</span><span class="role">{{role}}</span></div><span class="entry-date">{{date}}</span></div>
   <div class="entry-meta"><span>{{meta}}</span></div>
 </div>
 ```
-项目经历把 `<span class="org">` 换成 `<span class="proj">{{项目名}}</span>`，并加 `<span class="badge">{{开源 · 1.2k★}}</span>`（无可删）。`data-stick="1"` 让 header 和第一条 bullet 同页不分家。
+项目经历把 `<span class="org">` 换成 `<span class="proj">{{项目名}}</span>`，并在 `.proj` 和 `.role` 之间加 `<span class="company">@ {{公司简称}}</span>`（公司非空时；个人项目无公司则删 `.company`）。公司简称一律来自 emphasis 的 `company_display`（如「广州蚁群」），不用 fact 层全称。可再加 `<span class="badge">{{开源 · 1.2k★}}</span>`（无可删）。`data-stick="1"` 让 header 和第一条 bullet 同页不分家。
 
 ### 6. Bullet（单条经历要点 — 独立原子，自由换页）
 ```html

@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://amlei.dev/skills/amlei-profile/schemas/emphasis-capabilities.json",
+  "title": "Emphasis — Capabilities & Skill Axis (per identity)",
+  "description": "某身份下选中哪些 capability，以及如何归类到 skill_axis 标签。同一 capability 在不同身份可归类到不同 skill label。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["_meta"],
+  "properties": {
+    "_meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["facts_version_at_last_sync", "needs_review"],
+      "properties": {
+        "facts_version_at_last_sync": { "type": "string", "format": "date-time" },
+        "needs_review": { "type": "boolean" }
+      }
+    },
+    "selected": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^cap_[a-z0-9_]+$" }
+    },
+    "skill_axis": {
+      "type": "array",
+      "description": "技能标签分组，渲染为简历的技能区",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["label", "capability_refs"],
+        "properties": {
+          "label": { "type": "string", "minLength": 1 },
+          "capability_refs": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string", "pattern": "^cap_[a-z0-9_]+$" }
+          }
+        }
+      }
+    }
+  }
+}

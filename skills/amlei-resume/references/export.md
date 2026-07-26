@@ -4,7 +4,7 @@
 
 ## 产物目录
 
-所有产物归集到 `resume/{姓名}/{求职岗位}/`——相对引用不会断、换岗位/换照片互不干扰。
+所有产物归集到 `identities/{identity-id}/resumes/{app-id}/`——相对引用不会断、换身份/换照片互不干扰。
 
 ## 选主题
 
@@ -37,7 +37,7 @@
 
 ## 套预览壳
 
-用 `scripts/wrap_preview.py`（`--help` 看参数）。产出 `resume/{姓名}/{求职岗位}/预览.html`（自动建目录，带「导出 PDF」工具条 + A4 自动分页），`document.title` = `姓名-岗位`（=「另存为 PDF」默认文件名）；用 `--name` 覆盖。
+用 `scripts/wrap_preview.py`（`--help` 看参数）。产出 `identities/{identity-id}/resumes/{app-id}/预览.html`（自动建目录，带「导出 PDF」工具条 + A4 自动分页），`document.title` = `姓名-岗位`（=「另存为 PDF」默认文件名）；用 `--name` 覆盖。
 
 **预览后检查**：
 

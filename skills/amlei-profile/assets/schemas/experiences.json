@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://amlei.dev/skills/amlei-profile/schemas/experiences.json",
+  "title": "Experiences Facts (tree)",
+  "description": "经历事实，树形：每个 experience 内嵌其 projects。跨经历项目通过 cross_project_refs 引用。项目 id 全局唯一。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["_meta", "items"],
+  "properties": {
+    "_meta": { "$ref": "#/$defs/meta" },
+    "items": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/experience" }
+    }
+  },
+  "$defs": {
+    "meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["facts_version", "schema_version"],
+      "properties": {
+        "facts_version": { "type": "string", "format": "date-time" },
+        "schema_version": { "type": "integer", "const": 2 },
+        "created": { "type": "string", "format": "date-time" }
+      }
+    },
+    "experience": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "company"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^exp_[a-z0-9_]+$" },
+        "company": { "type": "string" },
+        "position": { "type": "string" },
+        "period": { "type": "string", "description": "如 2024.07 — 2025.03" },
+        "industry": { "type": "string" },
+        "team_context": { "type": "string" },
+        "projects": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/project" }
+        },
+        "cross_project_refs": {
+          "type": "array",
+          "description": "本项目在别处（主经历）的 project id 列表。物理住在主经历下，这里只引用",
+          "items": { "type": "string", "pattern": "^prj_[a-z0-9_]+$" }
+        },
+        "source_refs": {
+          "type": "array",
+          "description": "原始素材文件名（相对 _shared/files/）",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "project": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^prj_[a-z0-9_]+$" },
+        "name": { "type": "string" },
+        "period": { "type": "string", "description": "项目级时间段（如 '2025.06 — 2026.03'）；不设则继承父 experience.period" },
+        "my_role": { "type": "string" },
+        "tech_stack": { "type": "array", "items": { "type": "string" } },
+        "outcome_metrics": {
+          "type": "object",
+          "description": "量化成果，键值对（如 p99_latency, qps_peak）",
+          "additionalProperties": { "type": ["string", "number"] }
+        },
+        "granularity": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["grain", "text"],
+            "properties": {
+              "grain": {
+                "type": "string",
+                "description": "开放枚举：project / milestone / technique / module / version 等",
+                "enum": ["project", "milestone", "technique", "module", "version", "other"]
+              },
+              "text": {
+                "type": "string",
+                "description": "中性客观描述，非简历 bullet（无修辞、无 JD 关键词）"
+              }
+            }
+          }
+        },
+        "source_refs": { "type": "array", "items": { "type": "string" } },
+        "added": { "type": "string", "format": "date-time" },
+        "last_updated": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

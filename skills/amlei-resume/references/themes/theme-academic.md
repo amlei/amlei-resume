@@ -65,6 +65,7 @@
   .entry-main{display:grid;grid-template-columns:1fr auto;align-items:baseline;gap:14px}
   .entry-title{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
   .entry-title .org,.entry-title .proj{font-weight:700;font-size:14px}
+  .entry-title .company{font-size:12px;color:var(--muted);font-weight:500}
   .entry-title .role{font-size:13px;color:var(--accent-ink)}
   .entry-date{font-family:var(--font-mono);font-size:11px;color:var(--faint);white-space:nowrap}
   .entry-meta{margin-top:2px;font-size:11.5px;color:var(--muted);display:flex;gap:14px;flex-wrap:wrap}
@@ -158,6 +159,7 @@
 ```
 
 - `{{org}}` = `##` 标题里 `|` 左侧（机构/公司/学校）；`{{role}}` = `|` 右侧（岗位/方向/学位）。`##` 不含 `|` 时 `{{role}}` 连 `<span class="role">` 删除。
+- 项目经历：把 `.org` 换成 `.proj`（项目名），并在 `.proj` 和 `.role` 之间加 `<span class="company">@ {{公司简称}}</span>`（公司非空时；简称取自 emphasis 的 `company_display`，不用 fact 层全称）。
 - `{{date}}` 来自 `##` 下的 `date:` 行；没有则删 `.entry-date`。
 - `.entry-meta`：来自 `meta:` 行或 GPA/排名等；关键数字用 `<b>`，无 meta 整个 div 删。
 - `data-stick="1"` 让 header 和第一条 bullet 同页不分家。

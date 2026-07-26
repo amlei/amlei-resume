@@ -64,6 +64,7 @@
   .entry-main{display:grid;grid-template-columns:1fr auto;align-items:baseline;gap:10px}
   .entry-title{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
   .entry-title .org,.entry-title .proj{font-size:14px;font-weight:700}
+  .entry-title .company{font-size:12px;color:var(--muted);font-weight:500}
   .entry-title .role{font-size:13px;color:var(--accent-ink)}
   .entry-date{font-family:var(--font-mono);font-size:11px;color:var(--faint);white-space:nowrap}
   .entry-meta{font-size:12px;color:var(--muted);margin-top:2px}
@@ -139,7 +140,9 @@
 <div class="summary">{{text，关键短语用 <b>}}</div>
 ```
 
-### 主体 · entry / entry-list（同单栏结构；项目用 `.proj`）
+### 主体 · entry / entry-list（同单栏结构；项目用 `.proj`，可加 `.company`）
+
+注：`.company` 用于项目经历显示公司简称（@ 广州蚁群），位于 `.proj` 和 `.role` 之间，简称取自 emphasis 的 `company_display`。
 ```html
 <div class="entry">
   <div class="entry-main"><div class="entry-title"><span class="org">{{org}}</span><span class="role">{{role}}</span></div><span class="entry-date">{{date}}</span></div>

@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://amlei.dev/skills/amlei-profile/schemas/emphasis-experiences.json",
+  "title": "Emphasis — Experiences (per identity)",
+  "description": "某身份下对 experiences 的选材、排序、headline 改写。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["_meta", "selected"],
+  "properties": {
+    "_meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["facts_version_at_last_sync", "needs_review"],
+      "properties": {
+        "facts_version_at_last_sync": { "type": "string", "format": "date-time" },
+        "needs_review": { "type": "boolean" }
+      }
+    },
+    "selected": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^exp_[a-z0-9_]+$" }
+    },
+    "ordering": {
+      "type": "array",
+      "description": "渲染顺序；若与 selected 同则可省",
+      "items": { "type": "string", "pattern": "^exp_[a-z0-9_]+$" }
+    },
+    "framing": {
+      "type": "object",
+      "patternProperties": {
+        "^exp_[a-z0-9_]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "headline": { "type": "string", "description": "经历标题改写（如 '字节跳动 · 后端开发实习生'）" },
+            "summary": { "type": "string", "description": "该经历的总体职责描述" },
+            "company_display": { "type": "string", "description": "公司简称（如 '广州蚁群' 而非 '广州蚁群信息科技有限公司'）。渲染项目时用此值；未设则回退到 fact 层 experience.company" }
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -51,6 +51,7 @@
   .entry-main{display:grid;grid-template-columns:1fr auto;align-items:baseline;gap:14px}
   .entry-title{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
   .entry-title .org,.entry-title .proj{font-size:14px;font-weight:700}
+  .entry-title .company{font-size:12px;color:var(--muted);font-weight:500}
   .entry-title .role{font-size:13px;font-weight:500;color:var(--accent-ink)}
   .entry-title .badge{font-size:11px;font-weight:600;color:var(--accent-ink);background:var(--accent-soft);padding:2px 7px}
   .entry-date{font-family:var(--font-mono);font-size:11px;color:var(--faint);white-space:nowrap}
@@ -110,7 +111,7 @@
   <div class="entry-meta"><span>{{meta}}</span></div>
 </div>
 ```
-项目用 `<span class="proj">{{项目名}}</span>`；`.badge`（如「辅修 交互设计」「产品负责人」）可加可不加。`data-stick="1"` 让 header 和第一条 bullet 同页。
+项目用 `<span class="proj">{{项目名}}</span>`；项目可在 `.proj` 和 `.role` 之间加 `<span class="company">@ {{公司简称}}</span>`（公司非空时；简称取自 emphasis 的 `company_display`）。`.badge`（如「辅修 交互设计」「产品负责人」）可加可不加。`data-stick="1"` 让 header 和第一条 bullet 同页。
 
 ### 5. Bullet（单条经历要点 — 独立原子，自由换页）
 ```html

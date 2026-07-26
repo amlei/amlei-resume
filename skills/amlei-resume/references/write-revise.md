@@ -4,15 +4,17 @@
 
 ## 收集就业市场信息
 
-以 subagent 方式调用 amlei-job-market-research skill（输入：求职岗位 + 目标城市），产出市场报告（薪资、能力要求、行业趋势等），写入 `resume/{姓名}/{求职岗位}/市场报告.md`，作为后续简历定位与改写的依据。
+以 subagent 方式调用 amlei-job-market-research skill（输入：求职岗位 + 目标城市），产出市场报告（薪资、能力要求、行业趋势等），写入 `identities/{identity-id}/resumes/{app-id}/市场报告.md`，作为后续简历定位与改写的依据。
 
 ## 分析用户项目资料
 
-以 subagent 方式分析用户提供的项目资料（项目地址、项目文件），拆解用户做过什么、成果是什么。分析报告写入 `resume/{姓名}/{求职岗位}/分析.md`。
+以 subagent 方式分析用户提供的项目资料（项目地址、项目文件），拆解用户做过什么、成果是什么。分析报告写入 `identities/{identity-id}/resumes/{app-id}/分析.md`。
 
 **⏸️ 人工确认**：展示分析报告，由用户确认准确性。用户指出遗漏或误读时，补充修正后再次确认。
 
-**回写 profile（强制，最易遗漏）**：分析中挖到的真实能力 / 项目 / 成果，不能只写进 `分析.md` / `materials.md` 就交差——那两份是任务局部的。必须按 [profile.md](profile.md) 的写入流程，经评估 agent + 用户确认后回写到 profile（个人能力记忆），否则这些发现随任务结束而丢失，你下次会话又得从零认识用户。**项目资料探索（GitHub、博客、飞书知识库、文档等）是回写的高发场景**——分析完就触发回写，不要拖到「讨论补充」阶段甚至完全漏掉。
+**回写 amlei-profile 事实层（强制，最易遗漏）**：分析中挖到的**真实客观事实**（新能力 claim + 证据、新项目、修正的 metric），不能只写进 `分析.md` / `materials.md` 就交差——那两份是任务局部的。必须按 amlei-profile 的 [fact-evaluator.md](../../amlei-profile/references/fact-evaluator.md) 流程，经评估 agent + 用户确认后回写到 `_shared/`（事实层），否则这些发现随任务结束而丢失。
+
+注意区分：客观事实 → amlei-profile；framing（怎么讲、bullet 措辞）→ 本 skill 的 emphasis。详见 amlei-profile SKILL.md 的"事实 vs 强调判别"。
 
 ## 讨论补充（Human-in-loop）
 
@@ -60,4 +62,6 @@
 
 ## 用户确认后再保存
 
-每版内容经用户明确认可后，再写到 `resume/{姓名}/{求职岗位}/简历.md`。用户没说"可以/就这样"之前，绝不写入。
+每版内容经用户明确认可后，再写到 `identities/{identity-id}/resumes/{app-id}/简历.md`。用户没说"可以/就这样"之前，绝不写入。
+
+保存时同步写 `_meta.json`（见 [snapshot-fork.md](snapshot-fork.md)）：`source_operation` 标 `new_from_emphasis`（已有身份下首份）或 `fork`（基于旧版改）；`facts_version_at_creation` 取当前 `_shared/_meta.facts_version`；`delivered: false`（投出时再翻 true）。

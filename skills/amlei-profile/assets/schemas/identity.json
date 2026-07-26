@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://amlei.dev/skills/amlei-profile/schemas/identity.json",
+  "title": "Identity Facts",
+  "description": "身份事实（1:1 与用户，跨身份完全共享）。name 必填；其余可选。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["_meta", "name"],
+  "properties": {
+    "_meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["facts_version", "schema_version"],
+      "properties": {
+        "facts_version": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 时间戳（秒级精度），每次写入更新"
+        },
+        "schema_version": {
+          "type": "integer",
+          "const": 2
+        },
+        "created": { "type": "string", "format": "date-time" }
+      }
+    },
+    "name": { "type": "string", "minLength": 1 },
+    "gender": { "type": "string" },
+    "contact": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "phone": { "type": "string" },
+        "email": { "type": "string" },
+        "wechat": { "type": "string" }
+      }
+    },
+    "city_base": {
+      "type": "string",
+      "description": "常驻地（事实），与 target.preferences.city（投递目标城市，强调）区分"
+    },
+    "links": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["label", "url"],
+        "properties": {
+          "label": { "type": "string" },
+          "url": { "type": "string", "format": "uri" }
+        }
+      }
+    },
+    "avatar": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ref": { "type": "string", "description": "相对 _shared/files/ 的路径" },
+        "extracted_from": { "type": "string", "description": "提取来源文件名" }
+      }
+    },
+    "education": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["school"],
+        "properties": {
+          "school": { "type": "string" },
+          "degree": { "type": "string" },
+          "major": { "type": "string" },
+          "period": { "type": "string" },
+          "meta": { "type": "string", "description": "GPA / 排名等附加信息" }
+        }
+      }
+    }
+  }
+}
