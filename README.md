@@ -4,14 +4,16 @@
 
 拆自 [`amlei-skills`](https://github.com/amlei/amlei-skills)（后者现只保留可复用 utility skill）。这是一个**独立产品**：三层模型 + Paged.js 装配 + 评估闭环，不是单一 utility。
 
-## 两个 skill
+## 四个 skill（同仓自包含）
 
 | skill | 职责 |
 |-------|------|
 | `amlei-profile` | **事实层**：跨会话的个人能力记忆（身份 / 经历 / 项目 / 能力四类事实），独立于任何求职方向 |
 | `amlei-resume` | **强调层 + 快照层**：消费 profile 的事实，投影成具体方向的简历，装配 HTML → A4 PDF |
+| `amlei-text-polish` | 润色 **subagent**：被 resume 工作流调用，逐行优化简历文字表达 |
+| `amlei-job-market-research` | 就业市场调研 **subagent**：被 resume 调用，联网收集岗位薪资 / 能力 / 技术栈 / 趋势 |
 
-`amlei-resume` 是 `amlei-profile` 的消费者；用 resume 前会先加载 profile。
+`amlei-resume` 消费 `amlei-profile`，并以 subagent 方式调用 `amlei-text-polish` / `amlei-job-market-research`。四个 skill 同仓，自包含、零跨仓依赖。
 
 ## 能力
 
@@ -28,7 +30,7 @@
 claude plugin add amlei/amlei-resume
 ```
 
-> 工作流里的润色（amlei-text-polish）和就业市场调研（amlei-job-market-research）是 **companion utility skill**，装在 [`amlei-skills`](https://github.com/amlei/amlei-skills) 里；要用满全流程，两个 plugin 都装上。
+> 自包含：润色（amlei-text-polish）、就业市场调研（amlei-job-market-research）已内置为 subagent skill，装这一个 plugin 就够全流程。
 
 ## 用法
 

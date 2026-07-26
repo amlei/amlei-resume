@@ -19,7 +19,9 @@
     "skills/amlei-resume/assets/",
     "skills/amlei-resume/references/",
     "skills/amlei-resume/scripts/",
-    "skills/amlei-profile/"
+    "skills/amlei-profile/",
+    "skills/amlei-text-polish/",
+    "skills/amlei-job-market-research/"
   ],
   "author": "amlei",
   "license": "MIT",

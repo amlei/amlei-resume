@@ -11,6 +11,16 @@
       "name": "amlei-resume",
       "file-path": "skills/amlei-resume/SKILL.md",
       "description": "简历全流程：写/改/换岗/迭代 + Boss直聘搜岗 + 装配 HTML 导出 A4 PDF"
+    },
+    {
+      "name": "amlei-text-polish",
+      "file-path": "skills/amlei-text-polish/SKILL.md",
+      "description": "润色文本——逐行分析上下文，根据润色目标选用合适的词语和描述，在不改变原意的前提下让文字更清晰有力。当用户需要润色文章、优化表达、打磨文字、精简语言时使用。"
+    },
+    {
+      "name": "amlei-job-market-research",
+      "file-path": "skills/amlei-job-market-research/SKILL.md",
+      "description": "收集指定岗位和城市的就业市场信息——薪资范围、能力要求、技术栈、软硬技能概览、行业趋势与最新动向。联网搜索客观市场数据，产出市场报告。当用户需要了解某岗位的市场行情、能力要求、薪资水平、最新演进趋势时使用。"
     }
   ]
 }
