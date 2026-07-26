@@ -3,15 +3,20 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>张昀 · 简历 A4 预览</title>
+<title>张昀-计算机科学直博 · 简历 A4 预览</title>
 <!--
   主题无关的预览外壳（chrome）：
-    · 顶部"导出 PDF"工具条（屏幕可见 / 打印隐藏）
-    · A4 舞台（.viewport/.doc-stage/.scaler/.page）+ 自动分页 JS
-    · 打印规则（每页严格 A4、工具条隐藏）
-  主题的视觉（设计令牌 + 组件 class 样式）由 wrap_preview.py 把
-  渲染产物里的 <style> 注入到下方的 <style>
-  :root{
+    · 顶部"导出 PDF / 缩放 / 配色"工具条（屏幕可见 / 打印隐藏）
+    · A4 舞台由 Paged.js 行级分页生成（.pagedjs_page / .pagedjs_sheet），
+      替代了旧版"JS 手动量原子高度装箱"——后者会把整条 bullet 搬页造成 ~10 行留白。
+    · Paged.js 在行级断行：长段落 / bullet 可跨页，每页填到页脚，不再有大留白。
+
+  两段 <style>：
+    A) <style data-pagedjs-ignore> —— 工具条 / 舞台 / 页间距 / 打印开关。
+       Paged.js 处理用户 CSS 时会剥掉所有针对 .pagedjs_* 的规则，所以这些必须绕过
+       polisher，由浏览器直接套（removeStyles 跳过 [data-pagedjs-ignore]）。
+    B) <style>（被 Paged.js collect）—— @page + 分页规则 + 主题样式（由 wrap_preview.py
+       把渲染产物的 <style> 注入到 :root{
     --bg:oklch(94% .003 255);--paper:oklch(99.4% .002 255);--ink:oklch(19% .015 255);--muted:oklch(43% .012 255);
     --faint:oklch(55% .010 255);--border:oklch(87% .008 255);--hair:oklch(90% .006 255);
     --accent:oklch(33% .05 258);--accent-ink:oklch(26% .05 258);
@@ -19,124 +24,211 @@
     --font-mono:'JetBrains Mono','SF Mono',ui-monospace,Menlo,Consolas,monospace;
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  body{background:var(--bg);color:var(--ink);font-family:var(--font-sans);font-size:12.5px;line-height:1.58;-webkit-font-smoothing:antialiased;font-feature-settings:'tnum' on;text-rendering:optimizeLegibility}
+  body{background:var(--bg);color:var(--ink);font-family:var(--font-sans);font-size:14px;line-height:1.58;-webkit-font-smoothing:antialiased;font-feature-settings:'tnum' on;text-rendering:optimizeLegibility}
   .resume-header{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center;padding-bottom:12px;border-bottom:1.5px solid var(--ink)}
   .name-row{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
-  .name-row .name{font-weight:700;font-size:25px;letter-spacing:.04em}
-  .name-row .role{font-size:12px;font-weight:600;color:var(--accent-ink)}
-  .contact{margin-top:8px;font-family:var(--font-mono);font-size:10px;color:var(--muted)}
+  .name-row .name{font-weight:700;font-size:26px;letter-spacing:.04em}
+  .name-row .role{font-size:13px;font-weight:600;color:var(--accent-ink)}
+  .contact{margin-top:8px;font-family:var(--font-mono);font-size:11px;color:var(--muted)}
   .contact .sep{color:var(--accent);margin:0 6px}
   .contact a{color:var(--accent-ink);text-decoration:none}
+  .edu-line{margin-top:5px;font-family:var(--font-sans);font-size:12px;color:var(--accent-ink);font-weight:500}
   .photo{width:26mm;height:36mm;border:1px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:var(--faint);overflow:hidden}
   .photo img{width:100%;height:100%;object-fit:cover;display:block}
   .photo svg{width:26px;height:26px;opacity:.45}
-  .photo span{font-size:9px;letter-spacing:.1em}
+  .photo span{font-size:10px;letter-spacing:.1em}
   .sec-head{display:flex;align-items:center;gap:9px;margin-top:15px;margin-bottom:8px}
   .sec-head .ico{width:15px;height:15px;color:var(--accent);flex-shrink:0}
-  .sec-head h2{font-weight:700;font-size:12.5px;color:var(--ink);letter-spacing:.1em}
-  .sec-head h2 .en{font-weight:400;font-size:10px;color:var(--faint);letter-spacing:.12em;margin-left:6px}
+  .sec-head h2{font-weight:700;font-size:14px;color:var(--ink);letter-spacing:.1em}
+  .sec-head h2 .en{font-weight:400;font-size:11px;color:var(--faint);letter-spacing:.12em;margin-left:6px}
   .sec-head::after{content:"";flex:1;height:1px;background:var(--hair)}
-  .summary p{font-size:11.5px;line-height:1.75;text-align:justify;text-wrap:pretty}
-  .summary p b{color:var(--accent-ink);font-weight:600}
+  .summary p{font-size:13px;line-height:1.75;text-align:justify;text-wrap:pretty}
+  .summary p b,.summary p strong{color:var(--accent-ink);font-weight:600}
   .interests{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
-  .interests .it{font-size:11px;color:var(--accent-ink);background:oklch(95% .01 258);border:1px solid var(--border);padding:2px 8px}
+  .interests .it{font-size:12.5px;color:var(--accent-ink);background:oklch(95% .01 258);border:1px solid var(--border);padding:2px 8px}
   .entry{margin-bottom:8px}
-  .entry-main{display:grid;grid-template-columns:1fr auto;align-items:baseline;gap:14px}
+  .entry-main{display:flex;align-items:baseline;justify-content:space-between;gap:14px;flex-wrap:nowrap}
   .entry-title{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
-  .entry-title .org,.entry-title .proj{font-weight:700;font-size:12.5px}
-  .entry-title .role{font-size:11.5px;color:var(--accent-ink)}
-  .entry-date{font-family:var(--font-mono);font-size:10px;color:var(--faint);white-space:nowrap}
-  .entry-meta{margin-top:2px;font-size:10.5px;color:var(--muted);display:flex;gap:14px;flex-wrap:wrap}
+  .entry-title .org{font-weight:700;font-size:14px}
+  .entry-main .proj{font-weight:700;font-size:14.5px;letter-spacing:.01em}
+  .entry-main .company{font-size:11.5px;color:var(--muted);font-weight:500;letter-spacing:.02em}
+  .entry-title .role{font-size:13px;color:var(--accent-ink)}
+  .entry-date{font-family:var(--font-mono);font-size:11px;color:var(--faint);white-space:nowrap;letter-spacing:.02em}
+  .entry-meta{margin-top:2px;font-size:11.5px;color:var(--muted);display:flex;gap:14px;flex-wrap:wrap}
   .entry-meta b{color:var(--ink);font-weight:600}
   .entry-list{list-style:none;margin-top:4px}
-  .entry-list li{position:relative;padding-left:13px;font-size:11px;line-height:1.62;color:var(--ink);margin-bottom:2px;text-align:justify;text-wrap:pretty}
+  .entry-list li{position:relative;padding-left:13px;font-size:12.5px;line-height:1.62;color:var(--ink);margin-bottom:2px;text-align:justify;text-wrap:pretty}
   .entry-list li::before{content:"•";position:absolute;left:1px;top:5px;color:var(--accent);font-size:10px;line-height:1}
   .entry-list .num{font-family:var(--font-mono);color:var(--accent-ink);font-weight:600}
+  .bullet{position:relative;padding-left:13px;font-size:12.5px;line-height:1.62;color:var(--ink);margin-bottom:3px;text-align:justify;text-wrap:pretty}
+  .bullet::before{content:"•";position:absolute;left:1px;top:5px;color:var(--accent);font-size:10px;line-height:1}
+  .bullet .num{font-family:var(--font-mono);color:var(--accent-ink);font-weight:600}
   .pubs{list-style:none}
-  .pubs li{font-size:11px;line-height:1.6;padding:5px 0 5px 26px;border-bottom:1px dashed var(--hair);position:relative;text-align:justify;text-wrap:pretty}
-  .pubs li .tag{position:absolute;left:0;top:6px;font-family:var(--font-mono);font-size:9.5px;color:var(--accent-ink);font-weight:600}
+  .pubs li{font-size:12.5px;line-height:1.6;padding:5px 0 5px 26px;border-bottom:1px dashed var(--hair);position:relative;text-align:justify;text-wrap:pretty}
+  .pubs li .tag{position:absolute;left:0;top:6px;font-family:var(--font-mono);font-size:10.5px;color:var(--accent-ink);font-weight:600}
   .pubs li .ven{font-style:italic;color:var(--accent-ink)}
   .pubs li .yr{font-family:var(--font-mono);color:var(--faint)}
   .pubs li .me{text-decoration:underline;text-decoration-color:var(--accent);text-underline-offset:2px}
   .awards{display:grid;grid-template-columns:1fr 1fr;gap:2px 22px}
-  .award{display:grid;grid-template-columns:42px 1fr auto;gap:8px;align-items:baseline;font-size:11px;padding:3px 0;border-bottom:1px dashed var(--hair)}
-  .award .yr{font-family:var(--font-mono);font-size:9.5px;color:var(--accent)}
-  .award .lvl{font-size:10px;color:var(--accent-ink);font-weight:600}
+  .award{display:grid;grid-template-columns:42px 1fr auto;gap:8px;align-items:baseline;font-size:12.5px;padding:3px 0;border-bottom:1px dashed var(--hair)}
+  .award .yr{font-family:var(--font-mono);font-size:10.5px;color:var(--accent)}
+  .award .lvl{font-size:11px;color:var(--accent-ink);font-weight:600}
   .skills-row{display:grid;grid-template-columns:84px 1fr;gap:12px;padding:4px 0;border-bottom:1px dashed var(--hair)}
-  .skills-row .cat{font-size:11px;font-weight:600;color:var(--muted)}
-  .skills-row .tags{font-size:11px;color:var(--ink)}
-  .skills-row .tags b{color:var(--accent-ink)}
-</style> 槽位。
-  本文件不持有任何主题色 / 组件样式，换主题无需改这里。
+  .skills-row .cat{font-size:12.5px;font-weight:600;color:var(--muted)}
+  .skills-row .tags{font-size:12.5px;color:var(--ink)}
+  .skills-row .tags b{color:var(--accent-ink)}）。
+
+  三个必须做对的点（踩坑总结，别改坏）：
+    1) paged.preview(content, undefined, renderTo) —— stylesheets 必须 undefined，
+       传 [] 会跳过 removeStyles → 读不到 @page{size:A4} → 退回默认 letter。
+    2) #source 要 src.remove() 后把 detached 节点喂给 Paged.js，否则原 .resume-root
+       留在 body 里 → 页面下方出现第二份未分页副本。
+    3) 渲染完成后追加 <style media="print">@page{margin:0}</style>：屏幕用 @page margin
+       做内容内缩，打印时浏览器别再叠 margin（否则满 A4 的 .pagedjs_page 被切成 2 页）。
 -->
-<style>
-  /* —— 工具条（chrome，用字面色，不依赖主题令牌）—— */
+
+<!-- ============ A) 浏览器直连 chrome（Paged.js 不 collect）============ -->
+<style data-pagedjs-ignore>
   *{box-sizing:border-box;margin:0;padding:0}
   html{-webkit-text-size-adjust:100%}
   body{
     background:#e9ebef;
     font-family:'PingFang SC','HarmonyOS Sans SC','Microsoft YaHei',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
-    color:#1b1f24;
-    -webkit-font-smoothing:antialiased;
+    color:#1b1f24;-webkit-font-smoothing:antialiased;
   }
-  .rv-toolbar{
-    position:sticky;top:0;z-index:99;
-    display:flex;align-items:center;justify-content:space-between;gap:12px;
-    padding:10px 18px;background:#fff;border-bottom:1px solid #d7dbe0;
-    box-shadow:0 1px 10px rgba(20,24,30,.05);
-  }
+  .rv-toolbar{position:sticky;top:0;z-index:99;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 18px;background:#fff;border-bottom:1px solid #d7dbe0;box-shadow:0 1px 10px rgba(20,24,30,.05)}
   .rv-toolbar .rv-hint{font-size:12.5px;color:#5a6470;line-height:1.4}
   .rv-toolbar .rv-hint b{color:#1b1f24}
   .rv-toolbar .rv-actions{display:flex;align-items:center;gap:8px}
-  .rv-btn{
-    border:1px solid #d7dbe0;background:#fff;color:#1b1f24;
-    border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600;
-    font-family:inherit;cursor:pointer;white-space:nowrap;line-height:1;
-    transition:background .15s,border-color .15s,transform .06s;
-  }
+  .rv-btn{border:1px solid #d7dbe0;background:#fff;color:#1b1f24;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;white-space:nowrap;line-height:1;transition:background .15s,border-color .15s,transform .06s}
   .rv-btn:hover{background:#eef1f4;border-color:#aab2bb}
   .rv-btn:active{transform:translateY(1px)}
   .rv-btn--primary{background:#2b5bd6;color:#fff;border-color:#2b5bd6}
   .rv-btn--primary:hover{background:#234cba;border-color:#234cba}
-  .rv-toast{
-    position:fixed;top:60px;left:50%;transform:translateX(-50%);
-    background:#1b1f24;color:#fff;padding:10px 18px;border-radius:9px;
-    font-size:13px;font-weight:600;opacity:0;pointer-events:none;
-    transition:opacity .25s;z-index:100;box-shadow:0 6px 20px rgba(20,24,30,.25);
-    max-width:88vw;text-align:center;
-  }
+  .rv-toast{position:fixed;top:60px;left:50%;transform:translateX(-50%);background:#1b1f24;color:#fff;padding:10px 18px;border-radius:9px;font-size:13px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .25s;z-index:100;box-shadow:0 6px 20px rgba(20,24,30,.25);max-width:88vw;text-align:center}
   .rv-toast.show{opacity:1}
+  .rv-scheme{display:flex;align-items:center;gap:5px;font-size:12px;color:#5a6470;user-select:none}
+  .rv-select{border:1px solid #d7dbe0;background:#fff;color:#1b1f24;border-radius:7px;padding:6px 8px;font-size:12.5px;font-family:inherit;cursor:pointer;line-height:1.4}
+  .rv-select:hover{border-color:#aab2bb}
+  .rv-info{font-size:11px;color:#888;font-family:monospace}
+  #renderRoot{transform:scale(var(--scale,1));transform-origin:top center}
 
-  /* —— A4 舞台结构（所有主题共用）—— */
-  .viewport{width:100%;overflow-x:auto;overflow-y:visible}
-  .doc-stage{position:relative;width:100%;margin:0 auto}
-  .scaler{
-    display:flex;flex-direction:column;align-items:center;gap:26px;
-    padding:30px 0;width:210mm;margin:0 auto;
-    transform:scale(var(--scale,1));transform-origin:top center;
-  }
-  .page{
-    width:210mm;height:297mm;background:#fff;position:relative;
-    overflow:hidden;flex-shrink:0;
-    box-shadow:0 1px 2px rgba(20,24,30,.05),0 18px 44px -22px rgba(20,24,30,.28);
-  }
-  .page-content{position:absolute;inset:0;padding:14mm 16mm 13mm}
-  .page-content>*:first-child{margin-top:0!important}
-  #source{position:absolute;left:-100000px;top:0;width:178mm;opacity:0;pointer-events:none}
+  /* 配色方案切换：覆盖主题点缀色 --accent*（:root[data-scheme] 特异性高于主题 :root）。
+     不选 = 主题原色；选了实时换色，导出 PDF 沿用。 */
+  :root[data-scheme="ink"]{--accent:oklch(40% .14 255);--accent-ink:oklch(34% .12 255);--accent-soft:oklch(96% .022 255);--navy:var(--accent);--navy-deep:var(--accent-ink);--navy-soft:var(--accent-soft)}
+  :root[data-scheme="tech"]{--accent:oklch(46% .17 242);--accent-ink:oklch(38% .15 242);--accent-soft:oklch(95% .03 242);--navy:var(--accent);--navy-deep:var(--accent-ink);--navy-soft:var(--accent-soft)}
+  :root[data-scheme="green"]{--accent:oklch(42% .07 155);--accent-ink:oklch(32% .06 155);--accent-soft:oklch(95% .022 155);--navy:var(--accent);--navy-deep:var(--accent-ink);--navy-soft:var(--accent-soft)}
+  :root[data-scheme="burgundy"]{--accent:oklch(40% .13 25);--accent-ink:oklch(33% .12 25);--accent-soft:oklch(95% .022 25);--navy:var(--accent);--navy-deep:var(--accent-ink);--navy-soft:var(--accent-soft)}
+  :root[data-scheme="navy"]{--accent:oklch(33% .06 258);--accent-ink:oklch(26% .06 258);--accent-soft:oklch(95% .012 258);--navy:var(--accent);--navy-deep:var(--accent-ink);--navy-soft:var(--accent-soft)}
+  :root[data-scheme="purple"]{--accent:oklch(42% .12 295);--accent-ink:oklch(34% .11 295);--accent-soft:oklch(95% .022 295);--navy:var(--accent);--navy-deep:var(--accent-ink);--navy-soft:var(--accent-soft)}
+  :root[data-scheme="amber"]{--accent:oklch(55% .13 60);--accent-ink:oklch(45% .12 60);--accent-soft:oklch(95% .03 60);--navy:var(--accent);--navy-deep:var(--accent-ink);--navy-soft:var(--accent-soft)}
+  :root[data-scheme="graphite"]{--accent:oklch(28% .006 250);--accent-ink:oklch(22% .006 250);--accent-soft:oklch(95% .004 250);--navy:var(--accent);--navy-deep:var(--accent-ink);--navy-soft:var(--accent-soft)}
 
-  /* —— 打印 / 导出 PDF —— */
+  /* 屏幕：A4 页面卡片居中纵向排列，页与页之间留间隔。
+     间隔必须挂在 flex item（.pagedjs_page）上——.pagedjs_sheet 是它内部卡片，挂 margin 不影响页间距。 */
+  @media screen{
+    .pagedjs_pages{display:flex;flex-direction:column;align-items:center;padding:30px 0}
+    .pagedjs_page{margin:0 0 26px 0}
+    .pagedjs_page:last-child{margin-bottom:0}
+    .pagedjs_sheet{box-shadow:0 1px 2px rgba(20,24,30,.05),0 18px 44px -22px rgba(20,24,30,.28);background:#fff}
+  }
+  /* 打印：工具条隐藏、页间距清零（Paged.js 自己也清，这里兜底）、最后一页不产生空白尾页 */
   @media print{
-    @page{size:A4;margin:0}
     html,body{background:#fff!important}
+    *{print-color-adjust:exact;-webkit-print-color-adjust:exact}
     .rv-toolbar,.rv-toast{display:none!important}
-    .viewport{overflow:visible!important}
-    .doc-stage{height:auto!important}
-    .scaler{transform:none!important;gap:0!important;padding:0!important;width:auto!important;display:block!important}
-    .page{width:210mm!important;height:297mm!important;box-shadow:none!important;page-break-after:always;break-after:page}
-    .page:last-child{page-break-after:auto;break-after:auto}
+    #renderRoot{transform:none!important}
+    .pagedjs_pages{padding:0!important}
+    .pagedjs_page{margin:0!important}
+    .pagedjs_sheet{box-shadow:none!important}
+    .pagedjs_page{break-after:page}
+    .pagedjs_page:last-child{break-after:auto}
   }
 </style>
+
+<!-- ============ B) Paged.js 处理的 <style>：@page + 分页规则 + 主题（:root{
+    --bg:oklch(94% .003 255);--paper:oklch(99.4% .002 255);--ink:oklch(19% .015 255);--muted:oklch(43% .012 255);
+    --faint:oklch(55% .010 255);--border:oklch(87% .008 255);--hair:oklch(90% .006 255);
+    --accent:oklch(33% .05 258);--accent-ink:oklch(26% .05 258);
+    --font-sans:'PingFang SC','HarmonyOS Sans SC','Microsoft YaHei','Hiragino Sans GB',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+    --font-mono:'JetBrains Mono','SF Mono',ui-monospace,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--font-sans);font-size:14px;line-height:1.58;-webkit-font-smoothing:antialiased;font-feature-settings:'tnum' on;text-rendering:optimizeLegibility}
+  .resume-header{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center;padding-bottom:12px;border-bottom:1.5px solid var(--ink)}
+  .name-row{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+  .name-row .name{font-weight:700;font-size:26px;letter-spacing:.04em}
+  .name-row .role{font-size:13px;font-weight:600;color:var(--accent-ink)}
+  .contact{margin-top:8px;font-family:var(--font-mono);font-size:11px;color:var(--muted)}
+  .contact .sep{color:var(--accent);margin:0 6px}
+  .contact a{color:var(--accent-ink);text-decoration:none}
+  .edu-line{margin-top:5px;font-family:var(--font-sans);font-size:12px;color:var(--accent-ink);font-weight:500}
+  .photo{width:26mm;height:36mm;border:1px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:var(--faint);overflow:hidden}
+  .photo img{width:100%;height:100%;object-fit:cover;display:block}
+  .photo svg{width:26px;height:26px;opacity:.45}
+  .photo span{font-size:10px;letter-spacing:.1em}
+  .sec-head{display:flex;align-items:center;gap:9px;margin-top:15px;margin-bottom:8px}
+  .sec-head .ico{width:15px;height:15px;color:var(--accent);flex-shrink:0}
+  .sec-head h2{font-weight:700;font-size:14px;color:var(--ink);letter-spacing:.1em}
+  .sec-head h2 .en{font-weight:400;font-size:11px;color:var(--faint);letter-spacing:.12em;margin-left:6px}
+  .sec-head::after{content:"";flex:1;height:1px;background:var(--hair)}
+  .summary p{font-size:13px;line-height:1.75;text-align:justify;text-wrap:pretty}
+  .summary p b,.summary p strong{color:var(--accent-ink);font-weight:600}
+  .interests{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+  .interests .it{font-size:12.5px;color:var(--accent-ink);background:oklch(95% .01 258);border:1px solid var(--border);padding:2px 8px}
+  .entry{margin-bottom:8px}
+  .entry-main{display:flex;align-items:baseline;justify-content:space-between;gap:14px;flex-wrap:nowrap}
+  .entry-title{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
+  .entry-title .org{font-weight:700;font-size:14px}
+  .entry-main .proj{font-weight:700;font-size:14.5px;letter-spacing:.01em}
+  .entry-main .company{font-size:11.5px;color:var(--muted);font-weight:500;letter-spacing:.02em}
+  .entry-title .role{font-size:13px;color:var(--accent-ink)}
+  .entry-date{font-family:var(--font-mono);font-size:11px;color:var(--faint);white-space:nowrap;letter-spacing:.02em}
+  .entry-meta{margin-top:2px;font-size:11.5px;color:var(--muted);display:flex;gap:14px;flex-wrap:wrap}
+  .entry-meta b{color:var(--ink);font-weight:600}
+  .entry-list{list-style:none;margin-top:4px}
+  .entry-list li{position:relative;padding-left:13px;font-size:12.5px;line-height:1.62;color:var(--ink);margin-bottom:2px;text-align:justify;text-wrap:pretty}
+  .entry-list li::before{content:"•";position:absolute;left:1px;top:5px;color:var(--accent);font-size:10px;line-height:1}
+  .entry-list .num{font-family:var(--font-mono);color:var(--accent-ink);font-weight:600}
+  .bullet{position:relative;padding-left:13px;font-size:12.5px;line-height:1.62;color:var(--ink);margin-bottom:3px;text-align:justify;text-wrap:pretty}
+  .bullet::before{content:"•";position:absolute;left:1px;top:5px;color:var(--accent);font-size:10px;line-height:1}
+  .bullet .num{font-family:var(--font-mono);color:var(--accent-ink);font-weight:600}
+  .pubs{list-style:none}
+  .pubs li{font-size:12.5px;line-height:1.6;padding:5px 0 5px 26px;border-bottom:1px dashed var(--hair);position:relative;text-align:justify;text-wrap:pretty}
+  .pubs li .tag{position:absolute;left:0;top:6px;font-family:var(--font-mono);font-size:10.5px;color:var(--accent-ink);font-weight:600}
+  .pubs li .ven{font-style:italic;color:var(--accent-ink)}
+  .pubs li .yr{font-family:var(--font-mono);color:var(--faint)}
+  .pubs li .me{text-decoration:underline;text-decoration-color:var(--accent);text-underline-offset:2px}
+  .awards{display:grid;grid-template-columns:1fr 1fr;gap:2px 22px}
+  .award{display:grid;grid-template-columns:42px 1fr auto;gap:8px;align-items:baseline;font-size:12.5px;padding:3px 0;border-bottom:1px dashed var(--hair)}
+  .award .yr{font-family:var(--font-mono);font-size:10.5px;color:var(--accent)}
+  .award .lvl{font-size:11px;color:var(--accent-ink);font-weight:600}
+  .skills-row{display:grid;grid-template-columns:84px 1fr;gap:12px;padding:4px 0;border-bottom:1px dashed var(--hair)}
+  .skills-row .cat{font-size:12.5px;font-weight:600;color:var(--muted)}
+  .skills-row .tags{font-size:12.5px;color:var(--ink)}
+  .skills-row .tags b{color:var(--accent-ink)}）============ -->
 <style>
+  /* @page margin = 简历四周留白。Paged.js 把它转成每个 .pagedjs_area 的 per-page 内缩。
+     打印时浏览器会再叠一次 margin → 翻倍分页，故渲染后用 JS 追加 @page{margin:0} 覆盖（见脚本）。 */
+  @page{size:A4;margin:14mm 16mm 13mm}
+
+  /* 内容根：覆盖主题 body 的字号到更密的 12.5px（.resume-root 特异性 > body），保证 A4 信息密度 */
+  .resume-root{font-size:12.5px;line-height:1.58}
+  .resume-root>*:first-child{margin-top:0!important}
+
+  /* ===== 关键：CSS 分页规则（替代旧版手动 distribute）=====
+     Paged.js 在行级断行；这些规则只控制"哪些单元不能被拆 / 不能孤立在页底"。
+     不设 break-inside:avoid 的长正文（summary / desc / 长 bullet）可跨页 → 消除大留白。 */
+  .resume-header{break-after:avoid}
+  .sec-head{break-inside:avoid;break-after:avoid}        /* 模块标题不拆、不孤立页底 */
+  .entry{break-inside:avoid;break-after:avoid}           /* entry 头(meta)整体 + 粘住下一条 bullet */
+  .entry-list li,.bullet{break-inside:avoid}             /* 单条 bullet / 列表项不从中间断 */
+  .pubs li{break-inside:avoid}
+  .award{break-inside:avoid}
+  .skills-row,.stack-row{break-inside:avoid}
+  /* .summary p / .desc / .interests / .stack 不设 avoid → 可跨页 */
+
+  /* 主题样式由 wrap_preview.py 注入到下方槽位（渲染产物开头的 <style>，整段） */
   :root{
     --bg:oklch(94% .003 255);--paper:oklch(99.4% .002 255);--ink:oklch(19% .015 255);--muted:oklch(43% .012 255);
     --faint:oklch(55% .010 255);--border:oklch(87% .008 255);--hair:oklch(90% .006 255);
@@ -145,52 +237,58 @@
     --font-mono:'JetBrains Mono','SF Mono',ui-monospace,Menlo,Consolas,monospace;
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  body{background:var(--bg);color:var(--ink);font-family:var(--font-sans);font-size:12.5px;line-height:1.58;-webkit-font-smoothing:antialiased;font-feature-settings:'tnum' on;text-rendering:optimizeLegibility}
+  body{background:var(--bg);color:var(--ink);font-family:var(--font-sans);font-size:14px;line-height:1.58;-webkit-font-smoothing:antialiased;font-feature-settings:'tnum' on;text-rendering:optimizeLegibility}
   .resume-header{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center;padding-bottom:12px;border-bottom:1.5px solid var(--ink)}
   .name-row{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
-  .name-row .name{font-weight:700;font-size:25px;letter-spacing:.04em}
-  .name-row .role{font-size:12px;font-weight:600;color:var(--accent-ink)}
-  .contact{margin-top:8px;font-family:var(--font-mono);font-size:10px;color:var(--muted)}
+  .name-row .name{font-weight:700;font-size:26px;letter-spacing:.04em}
+  .name-row .role{font-size:13px;font-weight:600;color:var(--accent-ink)}
+  .contact{margin-top:8px;font-family:var(--font-mono);font-size:11px;color:var(--muted)}
   .contact .sep{color:var(--accent);margin:0 6px}
   .contact a{color:var(--accent-ink);text-decoration:none}
+  .edu-line{margin-top:5px;font-family:var(--font-sans);font-size:12px;color:var(--accent-ink);font-weight:500}
   .photo{width:26mm;height:36mm;border:1px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:var(--faint);overflow:hidden}
   .photo img{width:100%;height:100%;object-fit:cover;display:block}
   .photo svg{width:26px;height:26px;opacity:.45}
-  .photo span{font-size:9px;letter-spacing:.1em}
+  .photo span{font-size:10px;letter-spacing:.1em}
   .sec-head{display:flex;align-items:center;gap:9px;margin-top:15px;margin-bottom:8px}
   .sec-head .ico{width:15px;height:15px;color:var(--accent);flex-shrink:0}
-  .sec-head h2{font-weight:700;font-size:12.5px;color:var(--ink);letter-spacing:.1em}
-  .sec-head h2 .en{font-weight:400;font-size:10px;color:var(--faint);letter-spacing:.12em;margin-left:6px}
+  .sec-head h2{font-weight:700;font-size:14px;color:var(--ink);letter-spacing:.1em}
+  .sec-head h2 .en{font-weight:400;font-size:11px;color:var(--faint);letter-spacing:.12em;margin-left:6px}
   .sec-head::after{content:"";flex:1;height:1px;background:var(--hair)}
-  .summary p{font-size:11.5px;line-height:1.75;text-align:justify;text-wrap:pretty}
-  .summary p b{color:var(--accent-ink);font-weight:600}
+  .summary p{font-size:13px;line-height:1.75;text-align:justify;text-wrap:pretty}
+  .summary p b,.summary p strong{color:var(--accent-ink);font-weight:600}
   .interests{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
-  .interests .it{font-size:11px;color:var(--accent-ink);background:oklch(95% .01 258);border:1px solid var(--border);padding:2px 8px}
+  .interests .it{font-size:12.5px;color:var(--accent-ink);background:oklch(95% .01 258);border:1px solid var(--border);padding:2px 8px}
   .entry{margin-bottom:8px}
-  .entry-main{display:grid;grid-template-columns:1fr auto;align-items:baseline;gap:14px}
+  .entry-main{display:flex;align-items:baseline;justify-content:space-between;gap:14px;flex-wrap:nowrap}
   .entry-title{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
-  .entry-title .org,.entry-title .proj{font-weight:700;font-size:12.5px}
-  .entry-title .role{font-size:11.5px;color:var(--accent-ink)}
-  .entry-date{font-family:var(--font-mono);font-size:10px;color:var(--faint);white-space:nowrap}
-  .entry-meta{margin-top:2px;font-size:10.5px;color:var(--muted);display:flex;gap:14px;flex-wrap:wrap}
+  .entry-title .org{font-weight:700;font-size:14px}
+  .entry-main .proj{font-weight:700;font-size:14.5px;letter-spacing:.01em}
+  .entry-main .company{font-size:11.5px;color:var(--muted);font-weight:500;letter-spacing:.02em}
+  .entry-title .role{font-size:13px;color:var(--accent-ink)}
+  .entry-date{font-family:var(--font-mono);font-size:11px;color:var(--faint);white-space:nowrap;letter-spacing:.02em}
+  .entry-meta{margin-top:2px;font-size:11.5px;color:var(--muted);display:flex;gap:14px;flex-wrap:wrap}
   .entry-meta b{color:var(--ink);font-weight:600}
   .entry-list{list-style:none;margin-top:4px}
-  .entry-list li{position:relative;padding-left:13px;font-size:11px;line-height:1.62;color:var(--ink);margin-bottom:2px;text-align:justify;text-wrap:pretty}
+  .entry-list li{position:relative;padding-left:13px;font-size:12.5px;line-height:1.62;color:var(--ink);margin-bottom:2px;text-align:justify;text-wrap:pretty}
   .entry-list li::before{content:"•";position:absolute;left:1px;top:5px;color:var(--accent);font-size:10px;line-height:1}
   .entry-list .num{font-family:var(--font-mono);color:var(--accent-ink);font-weight:600}
+  .bullet{position:relative;padding-left:13px;font-size:12.5px;line-height:1.62;color:var(--ink);margin-bottom:3px;text-align:justify;text-wrap:pretty}
+  .bullet::before{content:"•";position:absolute;left:1px;top:5px;color:var(--accent);font-size:10px;line-height:1}
+  .bullet .num{font-family:var(--font-mono);color:var(--accent-ink);font-weight:600}
   .pubs{list-style:none}
-  .pubs li{font-size:11px;line-height:1.6;padding:5px 0 5px 26px;border-bottom:1px dashed var(--hair);position:relative;text-align:justify;text-wrap:pretty}
-  .pubs li .tag{position:absolute;left:0;top:6px;font-family:var(--font-mono);font-size:9.5px;color:var(--accent-ink);font-weight:600}
+  .pubs li{font-size:12.5px;line-height:1.6;padding:5px 0 5px 26px;border-bottom:1px dashed var(--hair);position:relative;text-align:justify;text-wrap:pretty}
+  .pubs li .tag{position:absolute;left:0;top:6px;font-family:var(--font-mono);font-size:10.5px;color:var(--accent-ink);font-weight:600}
   .pubs li .ven{font-style:italic;color:var(--accent-ink)}
   .pubs li .yr{font-family:var(--font-mono);color:var(--faint)}
   .pubs li .me{text-decoration:underline;text-decoration-color:var(--accent);text-underline-offset:2px}
   .awards{display:grid;grid-template-columns:1fr 1fr;gap:2px 22px}
-  .award{display:grid;grid-template-columns:42px 1fr auto;gap:8px;align-items:baseline;font-size:11px;padding:3px 0;border-bottom:1px dashed var(--hair)}
-  .award .yr{font-family:var(--font-mono);font-size:9.5px;color:var(--accent)}
-  .award .lvl{font-size:10px;color:var(--accent-ink);font-weight:600}
+  .award{display:grid;grid-template-columns:42px 1fr auto;gap:8px;align-items:baseline;font-size:12.5px;padding:3px 0;border-bottom:1px dashed var(--hair)}
+  .award .yr{font-family:var(--font-mono);font-size:10.5px;color:var(--accent)}
+  .award .lvl{font-size:11px;color:var(--accent-ink);font-weight:600}
   .skills-row{display:grid;grid-template-columns:84px 1fr;gap:12px;padding:4px 0;border-bottom:1px dashed var(--hair)}
-  .skills-row .cat{font-size:11px;font-weight:600;color:var(--muted)}
-  .skills-row .tags{font-size:11px;color:var(--ink)}
+  .skills-row .cat{font-size:12.5px;font-weight:600;color:var(--muted)}
+  .skills-row .tags{font-size:12.5px;color:var(--ink)}
   .skills-row .tags b{color:var(--accent-ink)}
 </style>
 </head>
@@ -200,162 +298,374 @@
   <div class="rv-toolbar">
     <span class="rv-hint">👇 下方是 A4 简历效果 · 点右侧 <b>导出 PDF</b> 可直接打印或另存为 PDF</span>
     <div class="rv-actions">
+      <label class="rv-scheme">配色
+        <select id="rvScheme" class="rv-select" title="切换简历点缀色（导出 PDF 沿用）">
+          <option value="">主题原色</option>
+          <option value="ink">墨蓝</option>
+          <option value="tech">工程蓝</option>
+          <option value="green">森林绿</option>
+          <option value="burgundy">酒红</option>
+          <option value="navy">藏青</option>
+          <option value="purple">紫</option>
+          <option value="amber">琥珀</option>
+          <option value="graphite">石墨黑</option>
+        </select>
+      </label>
+      <span class="rv-info" id="rvInfo">渲染中…</span>
       <button class="rv-btn" id="rvZoomOut" title="缩小查看">－</button>
       <button class="rv-btn" id="rvZoomIn" title="放大查看">＋</button>
-      <button class="rv-btn rv-btn--primary" id="rvPdfBtn" onclick="rvPrint()">📄 导出 PDF</button>
+      <button class="rv-btn" id="rvEditBtn">✏️ 编辑</button>
+      <button class="rv-btn rv-btn--primary" id="rvPdfBtn">📄 导出 PDF</button>
+      <button class="rv-btn rv-btn--primary" id="rvSaveBtn" style="display:none">📝 导出 Markdown</button>
     </div>
   </div>
   <div class="rv-toast" id="rvToast"></div>
 
-  <!-- A4 舞台：分页 JS 把 #source 里的原子分配到各 .page -->
-  <div class="viewport" id="viewport"><div class="doc-stage" id="docStage"><div class="scaler" id="scaler"></div></div></div>
+  <!-- A4 舞台：Paged.js 把 #source 里的原子分页渲染到此处 -->
+  <div id="renderRoot"></div>
 
-  <!-- 简历正文原子（由 wrap_preview.py 注入；渲染器=LLM 按所选主题的组件库装配） -->
+  <!-- 简历正文原子（由 wrap_preview.py 注入；渲染器=LLM 按所选主题的组件库装配）。
+       外层 .resume-root 由 wrap_preview.py 自动包上；脚本会 detach 它喂给 Paged.js。 -->
   <div id="source">
+<div class="resume-root">
 <header class="resume-header">
   <div class="ident">
     <div class="name-row"><span class="name">张昀</span><span class="role">申请方向 · 计算机科学 直博（PhD）</span></div>
     <div class="contact">男<span class="sep">·</span>北京<span class="sep">·</span>139-0108-2025<span class="sep">·</span>zhangyun@example.com<span class="sep">·</span><a href="https://yunzhang.io">yunzhang.io</a></div>
   </div>
-  <div class="photo" aria-label="证件照占位"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.5" r="3.5"/><path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6"/></svg><span>证件照</span></div>
+  <div class="photo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.5" r="3.5"/><path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6"/></svg><span>证件照</span></div>
 </header>
 
-<div class="sec-head" data-stick="1"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.4"/><path d="M5.5 19.5c0-3.3 2.9-6 6.5-6s6.5 2.7 6.5 6"/></svg><h2>个人简介<span class="en">Profile</span></h2></div>
-<div class="summary"><p>清华大学计算机科学实验班（姚班）本科四年级，连续三年专业第 <b>1</b>。专注<b>大模型对齐与多模态学习</b>方向，以<b>共一 / 一作</b>发表 NeurIPS、CVPR 各一篇；曾在微软亚洲研究院（MSRA）实习，参与 RLHF 算法改进。希望加入顶尖科研团队攻读博士学位，在<b>可信大模型</b>方向做出系统性贡献。</p></div>
+<div class="sec-head"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.4"/><path d="M5.5 19.5c0-3.3 2.9-6 6.5-6s6.5 2.7 6.5 6"/></svg><h2>个人简介<span class="en">Profile</span></h2></div>
+<div class="summary"><p>清华大学计算机科学实验班（姚班）本科四年级，连续三年专业第 <b>1</b>。专注<b>大模型对齐与多模态学习</b>方向，以<b>共一 / 一作</b>在 NeurIPS、ICLR、CVPR 发表论文 <b>4</b> 篇；曾在微软亚洲研究院与 Google DeepMind 实习，主导 RLHF 算法改进与多模态检索框架设计。擅长从理论分析到工程落地的全链路研究，希望加入顶尖科研团队攻读博士学位，在<b>可信大模型</b>方向做出系统性贡献。</p></div>
 
-<div class="sec-head" data-stick="1"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 21h4"/><path d="M12 3a6 6 0 0 0-4 10.5c.8.8 1.3 1.8 1.5 3h5c.2-1.2.7-2.2 1.5-3A6 6 0 0 0 12 3z"/></svg><h2>研究兴趣<span class="en">Research Interests</span></h2></div>
+<div class="sec-head"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 21h4"/><path d="M12 3a6 6 0 0 0-4 10.5c.8.8 1.3 1.8 1.5 3h5c.2-1.2.7-2.2 1.5-3A6 6 0 0 0 12 3z"/></svg><h2>研究兴趣<span class="en">Research Interests</span></h2></div>
 <div class="interests"><span class="it">大模型对齐与 RLHF</span><span class="it">多模态学习</span><span class="it">高效预训练</span><span class="it">检索增强生成</span></div>
 
-<div class="sec-head" data-stick="1"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9.5l10-4 10 4-10 4z"/><path d="M6 11.3v3.7c0 1.6 2.7 3 6 3s6-1.4 6-3v-3.7"/><path d="M22 9.5v4"/></svg><h2>教育背景<span class="en">Education</span></h2></div>
+<div class="sec-head"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9.5l10-4 10 4-10 4z"/><path d="M6 11.3v3.7c0 1.6 2.7 3 6 3s6-1.4 6-3v-3.7"/><path d="M22 9.5v4"/></svg><h2>教育背景<span class="en">Education</span></h2></div>
 <div class="entry">
   <div class="entry-main"><div class="entry-title"><span class="org">清华大学</span><span class="role">计算机科学实验班（姚班）· 本科</span></div><span class="entry-date">2022.09 — 2026.06</span></div>
   <div class="entry-meta"><span>GPA <b>3.97 / 4.0</b></span><span>专业排名 <b>1 / 60</b></span><span>核心课：机器学习（97）· 深度学习（98）· 凸优化（96）</span></div>
 </div>
 
-<div class="sec-head" data-stick="1"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3.5h6"/><path d="M10 3.5v5.5L5.5 17a2 2 0 0 0 1.8 3h9.4a2 2 0 0 0 1.8-3L14 9V3.5"/><path d="M7.8 14h8.4"/></svg><h2>科研经历<span class="en">Research Experience</span></h2></div>
+<div class="sec-head"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3.5h6"/><path d="M10 3.5v5.5L5.5 17a2 2 0 0 0 1.8 3h9.4a2 2 0 0 0 1.8-3L14 9V3.5"/><path d="M7.8 14h8.4"/></svg><h2>科研经历<span class="en">Research Experience</span></h2></div>
 <div class="entry">
   <div class="entry-main"><div class="entry-title"><span class="org">微软亚洲研究院（MSRA）</span><span class="role">自然语言计算组 · 研究实习生</span></div><span class="entry-date">2025.04 — 2025.11</span></div>
-  <ul class="entry-list">
-    <li>提出基于过程奖励的 RLHF 改进算法，在数学推理任务上胜率较基线提升 <span class="num">9.2%</span>，成果投递 NeurIPS 2025。</li>
-    <li>构建 <span class="num">2 万</span>条高质量过程标注数据，开源内部评测基准被组内 <span class="num">3</span> 个项目复用。</li>
-  </ul>
 </div>
+<div class="bullet">提出基于过程奖励的 RLHF 改进算法，将奖励模型分解为"步骤级正确性"信号，在数学推理任务上胜率较基线提升 <span class="num">9.2%</span>，成果投递 NeurIPS 2025。</div>
+<div class="bullet">构建 <span class="num">2 万</span>条高质量过程标注数据，设计半自动标注管线将人工成本降低 <span class="num">60%</span>，开源内部评测基准被组内 <span class="num">3</span> 个项目复用。</div>
+<div class="bullet">与资深研究员合作完成从 idea 到论文的全流程，独立负责实验设计、训练调度（DeepSpeed ZeRO-3）与 ablation 分析。</div>
+
+<div class="entry">
+  <div class="entry-main"><div class="entry-title"><span class="org">Google DeepMind</span><span class="role">Multimodal Perception 组 · 研究实习生</span></div><span class="entry-date">2024.06 — 2024.12</span></div>
+</div>
+<div class="bullet">主导视觉-语言对齐框架设计，提出基于对比-生成混合损失的训练目标，在 VQAv2 与 GQA 上分别超过 SOTA <span class="num">1.4 / 1.1</span> 个点，论文被 ICLR 2025 录用（共一）。</div>
+<div class="bullet">复现并改进 LLaVA 系列基线，定位数据配比与分辨率对下游推理能力的影响，沉淀为组内多模态训练手册。</div>
+<div class="bullet">远程协作完成 <span class="num">3</span> 轮 rebuttal，独立撰写 method 与 appendix 共 <span class="num">4</span> 页。</div>
+
 <div class="entry">
   <div class="entry-main"><div class="entry-title"><span class="org">清华大学交互式人工智能组</span><span class="role">本科科研助理 · 导师：Y 教授</span></div><span class="entry-date">2023.09 — 至今</span></div>
-  <ul class="entry-list">
-    <li>主导多模态检索增强框架设计与实验，论文被 CVPR 2024 Workshop 录用（一作）。</li>
-  </ul>
 </div>
+<div class="bullet">主导多模态检索增强框架设计与实验，提出动态路由的检索头使模型按问题难度自适应调用外部知识，论文被 CVPR 2024 Workshop 录用（一作）。</div>
+<div class="bullet">指导 <span class="num">2</span> 名低年级本科生完成子课题，其中 <span class="num">1</span> 人以二作身份在 ACL Workshop 发表论文。</div>
 
-<div class="sec-head" data-stick="1"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 3.5h7l4 4v13a1 1 0 0 1-1 1H6.5a1 1 0 0 1-1-1V4.5a1 1 0 0 1 1-1z"/><path d="M13 3.5v4h4"/><path d="M8 13h8M8 16.5h5"/></svg><h2>论文发表<span class="en">Publications</span></h2></div>
+<div class="sec-head"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><h2>项目经历<span class="en">Projects</span></h2></div>
+<div class="entry">
+  <div class="entry-main"><span class="proj">开源多模态评测工具包 MM-Eval</span><span class="company">个人项目</span><span class="entry-date">2024.03 — 至今</span></div>
+</div>
+<div class="bullet">从零搭建覆盖 <span class="num">12</span> 个多模态基准的统一评测框架，支持一键复现与分布式评测，GitHub 收获 <span class="num">1.2k</span> stars，被 <span class="num">5</span> 个研究组作为标准评测工具采用。</div>
+<div class="bullet">设计插件化数据集接口，使新增基准的接入成本从 <span class="num">2 天</span>降到 <span class="num">2 小时</span>；编写完整文档与 CI，累计接受外部 PR <span class="num">40+</span>。</div>
+
+<div class="entry">
+  <div class="entry-main"><span class="proj">高效推理内核 lite-attn</span><span class="company">实验室项目</span><span class="entry-date">2024.09 — 2025.02</span></div>
+</div>
+<div class="bullet">实现 FlashAttention-2 的 Triton 移植与 int8 量化变体，在 A100 上对 7B 模型推理吞吐提升 <span class="num">38%</span>，显存占用降低 <span class="num">31%</span>。</div>
+<div class="bullet">通过算子融合与 KV-cache 重排消除 <span class="num">4</span> 个冗余内核，端到端延迟下降 <span class="num">22%</span>。</div>
+
+<div class="sec-head"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 3.5h7l4 4v13a1 1 0 0 1-1 1H6.5a1 1 0 0 1-1-1V4.5a1 1 0 0 1 1-1z"/><path d="M13 3.5v4h4"/><path d="M8 13h8M8 16.5h5"/></svg><h2>论文发表<span class="en">Publications</span></h2></div>
 <ul class="pubs">
   <li><span class="tag">[C]</span> <span class="me">Yun Zhang*</span>, H. Li, X. Wang, et al. <b>Process-Reward RLHF for Faithful Mathematical Reasoning.</b> <span class="ven">Advances in Neural Information Processing Systems (NeurIPS)</span>, <span class="yr">2025.</span> (*共一)</li>
+  <li><span class="tag">[C]</span> <span class="me">Yun Zhang*</span>, M. Chen, et al. <b>Hybrid Contrastive-Generative Alignment for Vision-Language Models.</b> <span class="ven">International Conference on Learning Representations (ICLR)</span>, <span class="yr">2025.</span> (*共一)</li>
   <li><span class="tag">[W]</span> <span class="me">Yun Zhang</span>, X. Wang. <b>Adaptive Multimodal Retrieval for Open-Domain VQA.</b> <span class="ven">CVPR Workshop on Vision-Language Models</span>, <span class="yr">2024.</span> (一作)</li>
+  <li><span class="tag">[W]</span> <span class="me">Yun Zhang</span>, T. Liu. <b>On the Stability of Step-level Reward in RLHF.</b> <span class="ven">NeurIPS Workshop on Alignment</span>, <span class="yr">2024.</span> (一作)</li>
 </ul>
 
-<div class="sec-head" data-stick="1"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="5"/><path d="M9 13.5l-2.2 6.5 5.2-3 5.2 3-2.2-6.5"/></svg><h2>荣誉与奖项<span class="en">Honors</span></h2></div>
+<div class="sec-head"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="5"/><path d="M9 13.5l-2.2 6.5 5.2-3 5.2 3-2.2-6.5"/></svg><h2>荣誉与奖项<span class="en">Honors</span></h2></div>
 <div class="awards">
   <div class="award"><span class="yr">2024</span><span>国家奖学金</span><span class="lvl">国家级</span></div>
   <div class="award"><span class="yr">2024</span><span>清华大学特等奖学金</span><span class="lvl">提名</span></div>
   <div class="award"><span class="yr">2023</span><span>ACM-ICPC 亚洲区域赛</span><span class="lvl">金牌</span></div>
   <div class="award"><span class="yr">2024</span><span>全国大学生数学竞赛</span><span class="lvl">一等奖</span></div>
+  <div class="award"><span class="yr">2024</span><span>NeurIPS Scholar Award</span><span class="lvl">国际</span></div>
   <div class="award"><span class="yr">2023</span><span>清华大学优秀学生</span><span class="lvl">校级</span></div>
+  <div class="award"><span class="yr">2023</span><span>字节跳动奖学金</span><span class="lvl">企业级</span></div>
   <div class="award"><span class="yr">2022</span><span>高考省理科前 10 / 姚班录取</span><span class="lvl">省级</span></div>
 </div>
 
-<div class="sec-head" data-stick="1"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v2.5M12 19v2.5M21.5 12H19M5 12H2.5M18.3 5.7l-1.7 1.7M7.4 16.6l-1.7 1.7M18.3 18.3l-1.7-1.7M7.4 7.4 5.7 5.7"/></svg><h2>技能与英语<span class="en">Skills</span></h2></div>
+<div class="sec-head"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><h2>学术服务<span class="en">Service</span></h2></div>
+<div class="bullet">担任 NeurIPS 2025、ICLR 2025、ACL 2025 审稿人，累计审稿 <span class="num">8</span> 篇。</div>
+<div class="bullet">担任 MM-Eval 开源社区维护者，主持每月线上技术分享 <span class="num">6</span> 期。</div>
+
+<div class="sec-head"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v2.5M12 19v2.5M21.5 12H19M5 12H2.5M18.3 5.7l-1.7 1.7M7.4 16.6l-1.7 1.7M18.3 18.3l-1.7-1.7M7.4 7.4 5.7 5.7"/></svg><h2>技能与英语<span class="en">Skills</span></h2></div>
 <div class="skills">
   <div class="skills-row"><span class="cat">科研工具</span><span class="tags"><b>PyTorch</b> · <b>JAX</b> · HuggingFace · DeepSpeed · CUDA · <b>LaTeX</b> · Linux · Git</span></div>
-  <div class="skills-row"><span class="cat">编程语言</span><span class="tags">Python · C++ · Julia · SQL</span></div>
+  <div class="skills-row"><span class="cat">编程语言</span><span class="tags">Python · C++ · Julia · SQL · Rust</span></div>
   <div class="skills-row"><span class="cat">英语</span><span class="tags">TOEFL <b>112</b>（口语 26）· GRE <b>328</b>（V158 Q170）· 可全英文科研交流</span></div>
+</div>
 </div>
   </div>
 
   <script>
     var rvUserScale=1;
+    var src=document.getElementById('source');
+    var content=src.querySelector('.resume-root')||src;   /* 简历主源（编辑改的就是它，重排重渲染它） */
+    var renderRoot=document.getElementById('renderRoot');
+    /* #source 先离屏放（行内样式可靠，不被 polisher 改写），分页后再 display:none 收起 */
+    src.style.cssText='position:absolute;left:-99999px;top:0;opacity:0;pointer-events:none';
+
     function rvShowToast(msg){
       var t=document.getElementById('rvToast');
       t.textContent=msg;t.classList.add('show');
       clearTimeout(t._timer);t._timer=setTimeout(function(){t.classList.remove('show');},2600);
     }
-    function rvPrint(){
+    function fitScale(){
+      var PX_PER_MM=96/25.4;
+      var vpW=window.innerWidth;
+      var s=Math.min(1, vpW/(210*PX_PER_MM))*rvUserScale;
+      /* 编辑草稿和分页舞台共用 --scale */
+      src.style.setProperty('--scale',s);
+      renderRoot.style.setProperty('--scale',s);
+    }
+    /* 配色方案：记住选择，打印沿用 */
+    (function(){
+      var KEY='resume-color-scheme', html=document.documentElement, sel=document.getElementById('rvScheme');
+      var store={get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},set:function(k,v){try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}}};
+      var saved=store.get(KEY);
+      if(saved){ html.dataset.scheme=saved; if(sel) sel.value=saved; }
+      if(sel) sel.addEventListener('change',function(){
+        var v=sel.value;
+        if(v){ html.dataset.scheme=v; store.set(KEY,v); } else { delete html.dataset.scheme; store.set(KEY,null); }
+      });
+    })();
+    document.getElementById('rvZoomIn').addEventListener('click',function(){rvUserScale=Math.min(2,+(rvUserScale+0.1).toFixed(2));fitScale();});
+    document.getElementById('rvZoomOut').addEventListener('click',function(){rvUserScale=Math.max(0.4,+(rvUserScale-0.1).toFixed(2));fitScale();});
+    document.getElementById('rvPdfBtn').addEventListener('click',function(){
       rvShowToast('在弹出的打印窗口里选"另存为 PDF"即可导出 A4 简历');
       setTimeout(function(){ window.print(); },120);
+    });
+    window.addEventListener('resize',fitScale);
+
+    window.PagedConfig = { auto: false };
+
+    /* ===== 分页（可重复调用：编辑后重排） =====
+       ★关键坑：preview() 内部会 removeStyles() 把文档原始 <style> 移除并重注入；第二次再调
+       preview() 时 removeStyles 已取不到原始样式 → polisher 拿不到 @page{margin} → 边距丢失。
+       解法：启动时把原始 <style> 文本快照一份（originalStyles），每次都用新 Previewer +
+       显式传 originalStyles（removeStyles 被跳过），并先清掉上轮 Paged.js 注入的样式避免累积。 */
+    var originalStyles = (function () {
+      var out = [];
+      document.querySelectorAll("style:not([data-pagedjs-inserted-styles]):not([data-pagedjs-ignore]):not([media~='screen'])")
+        .forEach(function (st) { var o = {}; o[window.location.href] = st.textContent; out.push(o); });
+      return out;
+    })();
+    function injectPrintOverride() {
+      if (document.getElementById('rvPrintOverride')) return;
+      var s = document.createElement('style'); s.id = 'rvPrintOverride'; s.setAttribute('media', 'print');
+      s.textContent = '@page{size:A4;margin:0}';
+      document.head.appendChild(s);
     }
+    function onFlowDone(flow, cb) {
+      document.getElementById('rvInfo').textContent = '共 ' + flow.total + ' 页';
+      injectPrintOverride();
+      fitScale();
+      if (cb) cb();
+    }
+    function paginate(cb) {
+      renderRoot.innerHTML = '';
+      // 清掉上一轮 Paged.js 注入的处理后样式，避免重复累积
+      document.querySelectorAll("style[data-pagedjs-inserted-styles]").forEach(function (s) { s.remove(); });
+      var paged = new Paged.Previewer();
+      // 显式传 originalStyles → 跳过 removeStyles → 每次都能读到 @page{size:A4;margin:...}
+      paged.preview(content, originalStyles, renderRoot)
+        .then(function (flow) { onFlowDone(flow, cb); })
+        .catch(function (err) {
+          document.getElementById('rvInfo').textContent = '渲染失败: ' + (err && err.message || err);
+          console.error(err);
+        });
+    }
+    /* 等 Paged 全局就绪再分页：paged.polyfill 在 body 末尾加载，而本脚本文档靠前；
+       简历只用系统字体时 document.fonts.ready 几乎立即 resolve（微任务），可能在 polyfill
+       执行前就跑到 paginate() → "Paged is not defined" → 分页失败、整页空白（屏幕+打印均空白）。
+       轮询等 window.Paged 出现，彻底消除这个竞态。 */
+    function whenPaged(cb){ if(typeof window.Paged!=='undefined'){cb();}else{setTimeout(function(){whenPaged(cb);},30);} }
+    (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(function () {
+      whenPaged(function(){ paginate(function () { src.style.display = 'none'; }); });
+    });
 
     /* ============================================================
-       A4 自动分页：测量 #source 每个原子高度，按可用内容高分配页。
-       data-stick="1" 的 sec-head 不会和紧随其后的条目被拆到两页。
+       编辑模式（草稿视图）：编辑连续的 .resume-root 主源，完成后再交给 Paged.js 重排。
+       不在 A4 分页 DOM 上直接编辑——Paged.js 会把元素跨页切分（data-split-*），
+       原子映射与光标定位都不可靠；编辑主源最稳。
        ============================================================ */
-    (function(){
-      var PX_PER_MM=96/25.4,PAGE_H_MM=297,PAD_TOP_MM=14,PAD_BOTTOM_MM=13;
-      var CONTENT_H_PX=(PAGE_H_MM-PAD_TOP_MM-PAD_BOTTOM_MM)*PX_PER_MM;
-      var GAP_PX=26,PAD_STAGE_PX=30;
-      var source=document.getElementById('source'),
-          scaler=document.getElementById('scaler'),
-          docStage=document.getElementById('docStage'),
-          viewport=document.getElementById('viewport');
-      function collect(){
-        return Array.prototype.slice.call(source.children).filter(function(el){
-          return el.nodeType===1;
-        });
+    var EDIT_SEL='.name,.role,.edu-line,.contact,.sec-head h2,.summary p,.entry-title .org,.entry-title .proj,.entry-title .company,.entry-title .role,.entry-date,.entry-meta span,.bullet,.pubs li,.pub,.award .lvl,.award span:not(.yr):not(.lvl),.skills-row .cat,.skills-row .tags,.stack-row .cat,.chip,.interests .it,.desc';
+    var editing=false;
+    var editBtn=document.getElementById('rvEditBtn'), saveBtn=document.getElementById('rvSaveBtn'), pdfBtn=document.getElementById('rvPdfBtn');
+
+    function chipDelBtn(target){
+      var del=document.createElement('span');
+      del.className='chip-del';
+      del.textContent='×';
+      del.style.cssText='cursor:pointer;margin-left:4px;font-size:11px;color:var(--accent,#888);line-height:1';
+      del.onclick=function(e){e.stopPropagation();target.remove();};
+      target.appendChild(del);
+    }
+    function chipAddBtn(chips,cls){
+      var add=document.createElement('span');
+      add.className='chip-add';
+      add.textContent='+';
+      add.style.cssText='cursor:pointer;font-family:var(--font-mono,monospace);font-size:14px;color:var(--accent,#888);border:1px dashed var(--accent,#888);padding:1.5px 8px;line-height:1.4';
+      add.onclick=function(){
+        var c=document.createElement(cls==='bullet'?'div':'span');
+        c.className=cls==='bullet'?'bullet':'chip';
+        c.contentEditable=true;
+        c.textContent=cls==='bullet'?'新要点':'新技能';
+        chipDelBtn(c);
+        chips.insertBefore(c,add); c.focus();
+        var r=document.createRange();r.selectNodeContents(c);var s=window.getSelection();s.removeAllRanges();s.addRange(r);
+      };
+      chips.appendChild(add);
+    }
+    function setEditable(on){
+      editing=on; window.__editing=on;
+      src.querySelectorAll(EDIT_SEL).forEach(function(el){
+        el.contentEditable = on ? 'true' : 'inherit';
+        el.style.outline = on ? '1px dashed var(--accent,#888)' : '';
+      });
+      /* chip × / +，以及 bullet 区末尾的 + 要点 */
+      src.querySelectorAll('.chips').forEach(function(chips){
+        chips.querySelectorAll('.chip-del,.chip-add').forEach(function(b){b.remove();});
+        if(on){ chips.querySelectorAll('.chip').forEach(function(c){chipDelBtn(c);}); chipAddBtn(chips,'chip'); }
+      });
+      src.querySelectorAll('.stack,.skills').forEach(function(stack){
+        var exist=stack.querySelector(':scope > .bullet-add-wrap'); if(exist) exist.remove();
+      });
+      /* 在每个 sec-head 后的 bullet 序列末尾加"＋ 要点"（简单做：给 .bullet 容器）——此处略，保留 chip 增删为主 */
+    }
+    function showDraft(){
+      renderRoot.style.display='none';
+      src.style.cssText='position:relative;left:auto;top:auto;opacity:1;pointer-events:auto;display:block;width:210mm;max-width:100%;margin:30px auto;background:#fff;padding:14mm 16mm;box-shadow:0 18px 44px -22px rgba(20,24,30,.28);transform:scale(var(--scale,1));transform-origin:top center;';
+      rvShowToast('草稿视图：直接改文字 / 点 × 删技能 / 点 + 加技能，完成后点"完成编辑"重排');
+    }
+    function hideDraft(){
+      src.style.cssText='display:none';
+      renderRoot.style.display='';
+    }
+    editBtn.addEventListener('click',function(){
+      if(!editing){
+        showDraft(); setEditable(true);
+        editBtn.textContent='完成编辑';
+        pdfBtn.style.display='none'; saveBtn.style.display='';
+      } else {
+        setEditable(false); hideDraft();
+        editBtn.textContent='✏️ 编辑';
+        pdfBtn.style.display=''; saveBtn.style.display='none';
+        paginate();   /* 用编辑后的主源重排分页 */
       }
-      function candidate(){
-        var el=source.querySelector('.name-row .name')||source.querySelector('h1')||source.querySelector('h2');
-        return (el?el.textContent.trim():'简历')+' · 简历';
+    });
+
+    /* 导出 Markdown：遍历 .resume-root 还原成 简历.md */
+    saveBtn.addEventListener('click',function(){
+      var md='';
+      var root=content;
+      /* header */
+      var name=root.querySelector('.name'), role=root.querySelector('.role');
+      if(name||role){
+        md+='# self-intro\n\n';
+        if(name) md+='name: '+name.textContent.trim()+'\n';
+        if(role) md+='role: '+role.textContent.trim()+'\n';
+        var edu=root.querySelector('.edu-line'); if(edu) md+='education: '+edu.textContent.trim()+'\n';
+        var contact=root.querySelector('.contact'); if(contact) md+='contact: '+contact.textContent.trim()+'\n\n';
       }
-      function outerHeight(el){
-        var st=getComputedStyle(el);
-        return el.offsetHeight+parseFloat(st.marginTop||0)+parseFloat(st.marginBottom||0);
+      /* 按文档顺序遍历 sec-head / entry / bullet / summary / pubs / awards / skills / stack */
+      var walk=root.children;
+      var curEntryOpen=false;
+      function allEls(){var out=[];var stk=Array.prototype.slice.call(root.children);
+        /* 只取顶层原子（简历骨架就是平铺的 sec-head/entry/bullet/...） */
+        return stk;
       }
-      function distribute(atoms){
-        var heights=atoms.map(outerHeight),pages=[[]],used=0;
-        for(var i=0;i<atoms.length;i++){
-          var h=heights[i],
-              stick=atoms[i].getAttribute && atoms[i].getAttribute('data-stick')==='1',
-              nextH=(i+1<atoms.length)?heights[i+1]:0,
-              placeOnNew=false;
-          if(used!==0){
-            if(used+h>CONTENT_H_PX) placeOnNew=true;
-            else if(stick && nextH>0 && (used+h+nextH>CONTENT_H_PX)) placeOnNew=true;
-          }
-          if(placeOnNew){pages.push([]);used=0;}
-          pages[pages.length-1].push(i);used+=h;
+      allEls().forEach(function(atom){
+        var cl=atom.classList;
+        if(cl.contains('sec-head')){
+          var h=atom.querySelector('h2'); if(!h) return;
+          var title=h.cloneNode(true); var en=title.querySelector('.en'); if(en) en.remove();
+          md+='\n# '+title.textContent.trim()+'\n';
+          curEntryOpen=false;
+        } else if(cl.contains('summary')){
+          atom.querySelectorAll('p').forEach(function(p){ md+=p.textContent.trim()+'\n'; });
+        } else if(cl.contains('interests')){
+          var tags=Array.prototype.map.call(atom.querySelectorAll('.it'),function(it){return it.textContent.trim();});
+          if(tags.length) md+=tags.join(', ')+'\n';
+        } else if(cl.contains('entry')){
+          md+='\n';
+          var org=atom.querySelector('.org,.proj');
+          var erole=atom.querySelector('.entry-title .role');
+          var company=atom.querySelector('.company');
+          if(org) md+='## '+org.textContent.trim();
+          if(company) md+=' | '+company.textContent.replace(/^@\s*/,'').trim();
+          if(erole) md+=' | '+erole.textContent.trim();
+          md+='\n';
+          var date=atom.querySelector('.entry-date'); if(date) md+='date: '+date.textContent.trim()+'\n';
+          var meta=atom.querySelector('.entry-meta'); if(meta){var ms=meta.textContent.replace(/\s+/g,' ').trim(); if(ms) md+='meta: '+ms+'\n';}
+          curEntryOpen=true;
+        } else if(cl.contains('bullet')){
+          /* 去掉 chip-del 残留 */
+          var b=atom.cloneNode(true); b.querySelectorAll('.chip-del,.chip-add').forEach(function(x){x.remove();});
+          md+='- '+b.textContent.trim()+'\n';
+        } else if(cl.contains('pubs')){
+          atom.querySelectorAll('li').forEach(function(li){
+            var t=li.cloneNode(true); t.querySelectorAll('.chip-del,.chip-add').forEach(function(x){x.remove();});
+            md+='- '+t.textContent.replace(/\s+/g,' ').trim()+'\n';
+          });
+        } else if(cl.contains('awards')){
+          atom.querySelectorAll('.award').forEach(function(a){
+            var yr=a.querySelector('.yr'),nm=a.querySelector('span:not(.yr):not(.lvl)'),lvl=a.querySelector('.lvl');
+            var parts=[]; if(yr) parts.push(yr.textContent.trim());
+            parts.push(nm?nm.textContent.trim():''); if(lvl) parts.push('| '+lvl.textContent.trim());
+            md+='- '+parts.join(' ').replace(/\s+\|/,'|').trim()+'\n';
+          });
+        } else if(cl.contains('skills')||cl.contains('stack')){
+          atom.querySelectorAll('.skills-row,.stack-row').forEach(function(row){
+            var cat=row.querySelector('.cat'); var tagsEl=row.querySelector('.tags,.chips');
+            if(!cat||!tagsEl) return;
+            /* 清掉 + 按钮再取文本 */
+            var tc=tagsEl.cloneNode(true); tc.querySelectorAll('.chip-add').forEach(function(x){x.remove();});
+            var chips=Array.prototype.map.call(tc.querySelectorAll('.chip'),function(c){var cc=c.cloneNode(true);cc.querySelectorAll('.chip-del').forEach(function(x){x.remove();});return cc.textContent.trim();});
+            var val=chips.length?chips.join(' · '):tc.textContent.trim();
+            md+='- '+cat.textContent.trim()+': '+val+'\n';
+          });
         }
-        return pages;
+      });
+      showMdTextarea(md);
+    });
+    function showMdTextarea(md){
+      var ta=document.getElementById('rvMdOutput');
+      if(!ta){
+        ta=document.createElement('textarea');
+        ta.id='rvMdOutput';
+        ta.style.cssText='position:fixed;top:56px;right:12px;width:440px;height:78vh;z-index:100;font-family:monospace;font-size:12px;padding:10px;border:1px solid #d7dbe0;border-radius:8px;background:#fff;box-shadow:0 8px 30px rgba(0,0,0,.12);resize:both;white-space:pre-wrap;line-height:1.5';
+        var close=document.createElement('div');
+        close.textContent='✕';
+        close.style.cssText='position:fixed;top:56px;right:460px;z-index:101;cursor:pointer;font-size:18px;color:#888;padding:4px 8px;background:#fff;border-radius:6px';
+        close.onclick=function(){ta.remove();close.remove();};
+        document.body.appendChild(close); document.body.appendChild(ta);
       }
-      function makePage(){
-        var p=document.createElement('section');p.className='page';
-        p.innerHTML='<div class="page-content"></div>';return p;
-      }
-      function render(){
-        var atoms=collect(); if(!atoms.length){fitScale();return;}
-        var pages=distribute(atoms);
-        scaler.innerHTML='';
-        pages.forEach(function(idxs){
-          var page=makePage(),content=page.querySelector('.page-content');
-          idxs.forEach(function(i){content.appendChild(atoms[i].cloneNode(true));});
-          scaler.appendChild(page);
-        });
-        fitScale();
-      }
-      function fitScale(){
-        var pageWPx=210*PX_PER_MM,s=Math.min(1,viewport.clientWidth/pageWPx)*rvUserScale;
-        scaler.style.setProperty('--scale',s);
-        var n=scaler.querySelectorAll('.page').length,
-            fullH=PAD_STAGE_PX*2+n*(297*PX_PER_MM)+Math.max(0,n-1)*GAP_PX;
-        docStage.style.height=(fullH*s)+'px';
-      }
-      function init(){render();try{document.title=candidate();}catch(e){}}
-      if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
-      if(document.fonts&&document.fonts.ready)document.fonts.ready.then(render);
-      window.addEventListener('load',render);
-      window.addEventListener('resize',fitScale);
-      document.getElementById('rvZoomIn').addEventListener('click',function(){
-        rvUserScale=Math.min(2,+(rvUserScale+0.1).toFixed(2));fitScale();});
-      document.getElementById('rvZoomOut').addEventListener('click',function(){
-        rvUserScale=Math.max(0.5,+(rvUserScale-0.1).toFixed(2));fitScale();});
-    })();
+      ta.value=md; ta.style.display='block'; ta.focus(); ta.select();
+      rvShowToast('已生成 Markdown，可复制回 简历.md');
+    }
   </script>
+
+  <!-- Paged.js polyfill（由 wrap_preview.py 内联成 <script>...</script>，使预览页自包含 / 离线可用） -->
+  <script src="vendor/paged.polyfill.js"></script>
+
 </body>
 </html>

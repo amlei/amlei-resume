@@ -62,12 +62,13 @@
   .interests .it{font-size:12.5px;color:var(--accent-ink);background:oklch(95% .01 258);border:1px solid var(--border);padding:2px 8px}
   /* Entry */
   .entry{margin-bottom:8px}
-  .entry-main{display:grid;grid-template-columns:1fr auto;align-items:baseline;gap:14px}
+  .entry-main{display:flex;align-items:baseline;justify-content:space-between;gap:14px;flex-wrap:nowrap}
   .entry-title{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
-  .entry-title .org,.entry-title .proj{font-weight:700;font-size:14px}
-  .entry-title .company{font-size:12px;color:var(--muted);font-weight:500}
+  .entry-title .org{font-weight:700;font-size:14px}
+  .entry-main .proj{font-weight:700;font-size:14.5px;letter-spacing:.01em}
+  .entry-main .company{font-size:11.5px;color:var(--muted);font-weight:500;letter-spacing:.02em}
   .entry-title .role{font-size:13px;color:var(--accent-ink)}
-  .entry-date{font-family:var(--font-mono);font-size:11px;color:var(--faint);white-space:nowrap}
+  .entry-date{font-family:var(--font-mono);font-size:11px;color:var(--faint);white-space:nowrap;letter-spacing:.02em}
   .entry-meta{margin-top:2px;font-size:11.5px;color:var(--muted);display:flex;gap:14px;flex-wrap:wrap}
   .entry-meta b{color:var(--ink);font-weight:600}
   .entry-list{list-style:none;margin-top:4px}
@@ -78,6 +79,7 @@
   .bullet{position:relative;padding-left:13px;font-size:12.5px;line-height:1.62;color:var(--ink);margin-bottom:2px;text-align:justify;text-wrap:pretty}
   .bullet::before{content:"•";position:absolute;left:1px;top:5px;color:var(--accent);font-size:10px;line-height:1}
   .bullet .num{font-family:var(--font-mono);color:var(--accent-ink);font-weight:600}
+  .bullet strong,.bullet b{color:var(--accent-ink);font-weight:600}
   /* Pubs */
   .pubs{list-style:none}
   .pubs li{font-size:12.5px;line-height:1.6;padding:5px 0 5px 26px;border-bottom:1px dashed var(--hair);position:relative;text-align:justify;text-wrap:pretty}
@@ -159,7 +161,17 @@
 ```
 
 - `{{org}}` = `##` 标题里 `|` 左侧（机构/公司/学校）；`{{role}}` = `|` 右侧（岗位/方向/学位）。`##` 不含 `|` 时 `{{role}}` 连 `<span class="role">` 删除。
-- 项目经历：把 `.org` 换成 `.proj`（项目名），并在 `.proj` 和 `.role` 之间加 `<span class="company">@ {{公司简称}}</span>`（公司非空时；简称取自 emphasis 的 `company_display`，不用 fact 层全称）。
+- 项目经历：`## 项目名 | 公司/项目类型`（无 `|` 时只有项目名）→ 三段式单行：`.proj`（左）· `.company`（居中）· `.entry-date`（右），**无 `@`、无 `.role`**——职责由下方 bullet 体现。公司简称取自 emphasis 的 `company_display`，不用 fact 层全称。`.company` 是 `.entry-main` 的直接子节点（不包在 `.entry-title` 里），靠 flex `space-between` 自动落到中间。示例：
+
+  ```html
+  <div class="entry" data-stick="1">
+    <div class="entry-main">
+      <span class="proj">{{项目名}}</span>
+      <span class="company">{{公司/项目类型}}</span>
+      <span class="entry-date">{{date}}</span>
+    </div>
+  </div>
+  ```
 - `{{date}}` 来自 `##` 下的 `date:` 行；没有则删 `.entry-date`。
 - `.entry-meta`：来自 `meta:` 行或 GPA/排名等；关键数字用 `<b>`，无 meta 整个 div 删。
 - `data-stick="1"` 让 header 和第一条 bullet 同页不分家。
@@ -226,6 +238,7 @@
 | 模块下纯文本段 | Summary（3.） | 关键短语 `<b>` |
 | 模块下"标签, 标签, 标签"单行 | Interests（4.） | 研究兴趣/方向 |
 | `## org \| role` | Entry header（5.）的 org/role | `|` 分割；无 `|` 则只有 org |
+| `## 项目名 \| 公司/项目类型`（项目经历模块下） | Entry header 的 proj/company | **无 `@`、无 `.role`**；见组件 5. 项目示例 |
 | `##` 下 `date: …` | Entry 的 `.entry-date` | |
 | `##` 下 `meta: …` | Entry 的 `.entry-meta` | 关键数字 `<b>` |
 | `##` 下 `- bullet` | 独立 Bullet（6.） | 每条一条；STAR + 量化；数字 `<span class="num">` |

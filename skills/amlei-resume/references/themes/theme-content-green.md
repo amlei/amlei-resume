@@ -48,13 +48,14 @@
   .summary p{font-size:13px;line-height:1.8;text-align:justify;text-wrap:pretty}
   .summary p strong{color:var(--accent-ink);font-weight:600}
   .entry{margin-bottom:11px}
-  .entry-main{display:grid;grid-template-columns:1fr auto;align-items:baseline;gap:14px}
+  .entry-main{display:flex;align-items:baseline;justify-content:space-between;gap:14px;flex-wrap:nowrap}
   .entry-title{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
-  .entry-title .org,.entry-title .proj{font-size:14px;font-weight:700}
-  .entry-title .company{font-size:12px;color:var(--muted);font-weight:500}
+  .entry-title .org{font-size:14px;font-weight:700}
+  .entry-main .proj{font-size:14.5px;font-weight:700;letter-spacing:.01em}
+  .entry-main .company{font-size:11.5px;color:var(--muted);font-weight:500;letter-spacing:.02em}
   .entry-title .role{font-size:13px;font-weight:500;color:var(--accent-ink)}
   .entry-title .badge{font-size:11px;font-weight:600;color:var(--accent-ink);background:var(--accent-soft);padding:2px 7px}
-  .entry-date{font-family:var(--font-mono);font-size:11px;color:var(--faint);white-space:nowrap}
+  .entry-date{font-family:var(--font-mono);font-size:11px;color:var(--faint);white-space:nowrap;letter-spacing:.02em}
   .entry-meta{margin-top:3px;font-size:11.5px;color:var(--muted);display:flex;gap:14px;flex-wrap:wrap}
   .entry-meta b{color:var(--ink);font-weight:600}
   .entry-list{list-style:none;margin-top:5px}
@@ -65,6 +66,7 @@
   .bullet{position:relative;padding-left:13px;font-size:12.5px;line-height:1.58;color:var(--ink);margin-bottom:2px;text-align:justify;text-wrap:pretty}
   .bullet::before{content:"•";position:absolute;left:1px;top:5px;color:var(--accent);font-size:10px;line-height:1}
   .bullet .num{font-family:var(--font-mono);color:var(--accent-ink);font-weight:600}
+  .bullet strong,.bullet b{color:var(--accent-ink);font-weight:600}
   .awards{display:grid;grid-template-columns:1fr 1fr;gap:3px 24px}
   .award{display:grid;grid-template-columns:38px 1fr auto;gap:8px;align-items:baseline;font-size:12.5px;padding:4px 0;border-bottom:1px dashed var(--hair)}
   .award .yr{font-family:var(--font-mono);font-size:10.5px;color:var(--accent)}
@@ -111,7 +113,7 @@
   <div class="entry-meta"><span>{{meta}}</span></div>
 </div>
 ```
-项目用 `<span class="proj">{{项目名}}</span>`；项目可在 `.proj` 和 `.role` 之间加 `<span class="company">@ {{公司简称}}</span>`（公司非空时；简称取自 emphasis 的 `company_display`）。`.badge`（如「辅修 交互设计」「产品负责人」）可加可不加。`data-stick="1"` 让 header 和第一条 bullet 同页。
+项目用三段式单行：`.proj`（左）· `.company`（居中，`.entry-main` 直接子节点，不包在 `.entry-title` 里）· `.entry-date`（右），**无 `@`、无 `.role`**——职责由下方 bullet 体现；公司简称取自 emphasis 的 `company_display`（如「个人项目」「广州蚁群」）。`data-stick="1"` 让 header 和第一条 bullet 同页。
 
 ### 5. Bullet（单条经历要点 — 独立原子，自由换页）
 ```html

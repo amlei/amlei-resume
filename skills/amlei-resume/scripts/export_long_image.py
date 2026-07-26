@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""简历长图导出：把预览 HTML 里每个 A4 页（`.page`）逐页截图后纵向拼成一张长图 PNG。
+"""简历长图导出：把预览 HTML 里每个 A4 页（`.pagedjs_sheet`）逐页截图后纵向拼成一张长图 PNG。
 
 渲染 HTML/CSS 必须经过浏览器引擎，纯 Python 无法实现，故依赖 Playwright。
 
@@ -8,10 +8,10 @@
   playwright install chromium      # 首次需装浏览器
 
 用法：
-  python3 scripts/export_long_image.py <预览.html> [输出.png] [--selector '#scaler .page'] [--scale 2]
+  python3 scripts/export_long_image.py <预览.html> [输出.png] [--selector '.pagedjs_sheet'] [--scale 2]
 
 - 默认输出 `<预览>_长图.png`（与输入同目录）
-- `--selector` 默认 `#scaler .page`（wrap_preview.py 产物的页容器）
+- `--selector` 默认 `.pagedjs_sheet`（Paged.js 分页后每个 A4 页的卡片容器）
 - `--scale` 默认 2（retina；越大越清晰、文件越大）
 
 产物是一张纵向长图：发招聘平台聊天框比 PDF 少一次"点击下载"，HR 可直接滑着看完。
@@ -48,7 +48,7 @@ def main():
     ap = argparse.ArgumentParser(description="把简历预览 HTML 的各 A4 页拼成一张纵向长图 PNG。")
     ap.add_argument("html", help="预览 HTML 路径（wrap_preview.py 的产物）")
     ap.add_argument("output", nargs="?", help="输出 PNG 路径，默认 <html>_长图.png")
-    ap.add_argument("--selector", default="#scaler .page", help="页容器选择器，默认 '#scaler .page'")
+    ap.add_argument("--selector", default=".pagedjs_sheet", help="页容器选择器，默认 '.pagedjs_sheet'（Paged.js 产物）")
     ap.add_argument("--scale", type=int, default=2, help="device scale factor，默认 2（retina）")
     args = ap.parse_args()
 
@@ -71,13 +71,25 @@ def main():
             )
             page = ctx.new_page()
             page.goto(html_path.as_uri())
-            page.wait_for_selector(args.selector, timeout=15000)
-            # 等字体与分页布局稳定
+            page.wait_for_selector(args.selector, timeout=20000)
+            # 等 Paged.js 分页完成（rvInfo 写成"共 N 页"），再给布局留余量稳定
+            try:
+                page.wait_for_function(
+                    "/共 \\d+ 页/.test((document.getElementById('rvInfo')||{}).textContent||'')",
+                    timeout=20000,
+                )
+            except Exception:
+                pass
             try:
                 page.evaluate("document.fonts && document.fonts.ready")
             except Exception:
                 pass
-            page.wait_for_timeout(800)
+            page.wait_for_timeout(600)
+
+            # 截图前藏掉工具条/提示：element.screenshot() 截的是 bbox 区域，会把
+            # position:sticky 的工具栏像素一起截进去（盖在第 1 页顶部）。藏掉只影响截图，不影响页面本身。
+            page.add_style_tag(content=".rv-toolbar,.rv-toast{display:none!important}")
+            page.wait_for_timeout(150)
 
             handles = page.query_selector_all(args.selector)
             if not handles:

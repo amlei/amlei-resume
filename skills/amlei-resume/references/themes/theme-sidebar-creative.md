@@ -61,12 +61,13 @@
   .summary{font-size:13px;line-height:1.8;text-align:justify;text-wrap:pretty}
   .summary b{color:var(--accent-ink)}
   .entry{margin-bottom:13px}
-  .entry-main{display:grid;grid-template-columns:1fr auto;align-items:baseline;gap:10px}
+  .entry-main{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:nowrap}
   .entry-title{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
-  .entry-title .org,.entry-title .proj{font-size:14px;font-weight:700}
-  .entry-title .company{font-size:12px;color:var(--muted);font-weight:500}
+  .entry-title .org{font-size:14px;font-weight:700}
+  .entry-main .proj{font-size:14.5px;font-weight:700;letter-spacing:.01em}
+  .entry-main .company{font-size:11.5px;color:var(--muted);font-weight:500;letter-spacing:.02em}
   .entry-title .role{font-size:13px;color:var(--accent-ink)}
-  .entry-date{font-family:var(--font-mono);font-size:11px;color:var(--faint);white-space:nowrap}
+  .entry-date{font-family:var(--font-mono);font-size:11px;color:var(--faint);white-space:nowrap;letter-spacing:.02em}
   .entry-meta{font-size:12px;color:var(--muted);margin-top:2px}
   .entry-meta b{color:var(--ink)}
   .entry-list{list-style:none;margin-top:4px}
@@ -77,6 +78,7 @@
   .bullet{position:relative;padding-left:13px;font-size:12.5px;line-height:1.7;margin-bottom:2px;text-align:justify;text-wrap:pretty}
   .bullet::before{content:"•";position:absolute;left:1px;top:5px;color:var(--accent);font-size:10px;line-height:1}
   .bullet .num{font-family:var(--font-mono);color:var(--accent-ink);font-weight:600}
+  .bullet strong,.bullet b{color:var(--accent-ink);font-weight:600}
 </style>
 ```
 
@@ -140,9 +142,9 @@
 <div class="summary">{{text，关键短语用 <b>}}</div>
 ```
 
-### 主体 · entry / entry-list（同单栏结构；项目用 `.proj`，可加 `.company`）
+### 主体 · entry / entry-list（同单栏结构；项目用 `.proj` + `.company`）
 
-注：`.company` 用于项目经历显示公司简称（@ 广州蚁群），位于 `.proj` 和 `.role` 之间，简称取自 emphasis 的 `company_display`。
+注：项目经历是三段式单行 `.proj`（左）· `.company`（居中，`.entry-main` 直接子节点）· `.entry-date`（右），**无 `@`、无 `.role`**——职责由 bullet 体现；简称取自 emphasis 的 `company_display`。主体栏窄，`.company` 用 11.5px 次要灰，别喧宾夺主。
 ```html
 <div class="entry">
   <div class="entry-main"><div class="entry-title"><span class="org">{{org}}</span><span class="role">{{role}}</span></div><span class="entry-date">{{date}}</span></div>

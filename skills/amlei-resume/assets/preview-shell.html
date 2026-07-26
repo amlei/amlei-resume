@@ -6,60 +6,55 @@
 <title>{{TITLE}} · 简历 A4 预览</title>
 <!--
   主题无关的预览外壳（chrome）：
-    · 顶部"导出 PDF"工具条（屏幕可见 / 打印隐藏）
-    · A4 舞台（.viewport/.doc-stage/.scaler/.page）+ 自动分页 JS
-    · 打印规则（每页严格 A4、工具条隐藏）
-  主题的视觉（设计令牌 + 组件 class 样式）由 wrap_preview.py 把
-  渲染产物里的 <style> 注入到下方的 <!--RESUME_STYLE--> 槽位。
-  本文件不持有任何主题色 / 组件样式，换主题无需改这里。
+    · 顶部"导出 PDF / 缩放 / 配色"工具条（屏幕可见 / 打印隐藏）
+    · A4 舞台由 Paged.js 行级分页生成（.pagedjs_page / .pagedjs_sheet），
+      替代了旧版"JS 手动量原子高度装箱"——后者会把整条 bullet 搬页造成 ~10 行留白。
+    · Paged.js 在行级断行：长段落 / bullet 可跨页，每页填到页脚，不再有大留白。
+
+  两段 <style>：
+    A) <style data-pagedjs-ignore> —— 工具条 / 舞台 / 页间距 / 打印开关。
+       Paged.js 处理用户 CSS 时会剥掉所有针对 .pagedjs_* 的规则，所以这些必须绕过
+       polisher，由浏览器直接套（removeStyles 跳过 [data-pagedjs-ignore]）。
+    B) <style>（被 Paged.js collect）—— @page + 分页规则 + 主题样式（由 wrap_preview.py
+       把渲染产物的 <style> 注入到 <!--RESUME_STYLE-->）。
+
+  三个必须做对的点（踩坑总结，别改坏）：
+    1) paged.preview(content, undefined, renderTo) —— stylesheets 必须 undefined，
+       传 [] 会跳过 removeStyles → 读不到 @page{size:A4} → 退回默认 letter。
+    2) #source 要 src.remove() 后把 detached 节点喂给 Paged.js，否则原 .resume-root
+       留在 body 里 → 页面下方出现第二份未分页副本。
+    3) 渲染完成后追加 <style media="print">@page{margin:0}</style>：屏幕用 @page margin
+       做内容内缩，打印时浏览器别再叠 margin（否则满 A4 的 .pagedjs_page 被切成 2 页）。
 -->
-<style>
-  /* —— 工具条（chrome，用字面色，不依赖主题令牌）—— */
+
+<!-- ============ A) 浏览器直连 chrome（Paged.js 不 collect）============ -->
+<style data-pagedjs-ignore>
   *{box-sizing:border-box;margin:0;padding:0}
   html{-webkit-text-size-adjust:100%}
   body{
     background:#e9ebef;
     font-family:'PingFang SC','HarmonyOS Sans SC','Microsoft YaHei',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
-    color:#1b1f24;
-    -webkit-font-smoothing:antialiased;
+    color:#1b1f24;-webkit-font-smoothing:antialiased;
   }
-  .rv-toolbar{
-    position:sticky;top:0;z-index:99;
-    display:flex;align-items:center;justify-content:space-between;gap:12px;
-    padding:10px 18px;background:#fff;border-bottom:1px solid #d7dbe0;
-    box-shadow:0 1px 10px rgba(20,24,30,.05);
-  }
+  .rv-toolbar{position:sticky;top:0;z-index:99;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 18px;background:#fff;border-bottom:1px solid #d7dbe0;box-shadow:0 1px 10px rgba(20,24,30,.05)}
   .rv-toolbar .rv-hint{font-size:12.5px;color:#5a6470;line-height:1.4}
   .rv-toolbar .rv-hint b{color:#1b1f24}
   .rv-toolbar .rv-actions{display:flex;align-items:center;gap:8px}
-  .rv-btn{
-    border:1px solid #d7dbe0;background:#fff;color:#1b1f24;
-    border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600;
-    font-family:inherit;cursor:pointer;white-space:nowrap;line-height:1;
-    transition:background .15s,border-color .15s,transform .06s;
-  }
+  .rv-btn{border:1px solid #d7dbe0;background:#fff;color:#1b1f24;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;white-space:nowrap;line-height:1;transition:background .15s,border-color .15s,transform .06s}
   .rv-btn:hover{background:#eef1f4;border-color:#aab2bb}
   .rv-btn:active{transform:translateY(1px)}
   .rv-btn--primary{background:#2b5bd6;color:#fff;border-color:#2b5bd6}
   .rv-btn--primary:hover{background:#234cba;border-color:#234cba}
-  .rv-toast{
-    position:fixed;top:60px;left:50%;transform:translateX(-50%);
-    background:#1b1f24;color:#fff;padding:10px 18px;border-radius:9px;
-    font-size:13px;font-weight:600;opacity:0;pointer-events:none;
-    transition:opacity .25s;z-index:100;box-shadow:0 6px 20px rgba(20,24,30,.25);
-    max-width:88vw;text-align:center;
-  }
+  .rv-toast{position:fixed;top:60px;left:50%;transform:translateX(-50%);background:#1b1f24;color:#fff;padding:10px 18px;border-radius:9px;font-size:13px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .25s;z-index:100;box-shadow:0 6px 20px rgba(20,24,30,.25);max-width:88vw;text-align:center}
   .rv-toast.show{opacity:1}
-
-  /* —— 配色方案切换：覆盖主题点缀色 --accent*（soe 的 --navy* 跟随）——
-     :root[data-scheme] 特异性 (0,2,0) > 主题 :root (0,1,0)，故总能盖过主题原色。
-     不选（默认）= 主题原色。选了就实时换色，打印 / 导出 PDF 沿用当前配色。 */
   .rv-scheme{display:flex;align-items:center;gap:5px;font-size:12px;color:#5a6470;user-select:none}
-  .rv-select{
-    border:1px solid #d7dbe0;background:#fff;color:#1b1f24;border-radius:7px;
-    padding:6px 8px;font-size:12.5px;font-family:inherit;cursor:pointer;line-height:1.4;
-  }
+  .rv-select{border:1px solid #d7dbe0;background:#fff;color:#1b1f24;border-radius:7px;padding:6px 8px;font-size:12.5px;font-family:inherit;cursor:pointer;line-height:1.4}
   .rv-select:hover{border-color:#aab2bb}
+  .rv-info{font-size:11px;color:#888;font-family:monospace}
+  #renderRoot{transform:scale(var(--scale,1));transform-origin:top center}
+
+  /* 配色方案切换：覆盖主题点缀色 --accent*（:root[data-scheme] 特异性高于主题 :root）。
+     不选 = 主题原色；选了实时换色，导出 PDF 沿用。 */
   :root[data-scheme="ink"]{--accent:oklch(40% .14 255);--accent-ink:oklch(34% .12 255);--accent-soft:oklch(96% .022 255);--navy:var(--accent);--navy-deep:var(--accent-ink);--navy-soft:var(--accent-soft)}
   :root[data-scheme="tech"]{--accent:oklch(46% .17 242);--accent-ink:oklch(38% .15 242);--accent-soft:oklch(95% .03 242);--navy:var(--accent);--navy-deep:var(--accent-ink);--navy-soft:var(--accent-soft)}
   :root[data-scheme="green"]{--accent:oklch(42% .07 155);--accent-ink:oklch(32% .06 155);--accent-soft:oklch(95% .022 155);--navy:var(--accent);--navy-deep:var(--accent-ink);--navy-soft:var(--accent-soft)}
@@ -69,38 +64,56 @@
   :root[data-scheme="amber"]{--accent:oklch(55% .13 60);--accent-ink:oklch(45% .12 60);--accent-soft:oklch(95% .03 60);--navy:var(--accent);--navy-deep:var(--accent-ink);--navy-soft:var(--accent-soft)}
   :root[data-scheme="graphite"]{--accent:oklch(28% .006 250);--accent-ink:oklch(22% .006 250);--accent-soft:oklch(95% .004 250);--navy:var(--accent);--navy-deep:var(--accent-ink);--navy-soft:var(--accent-soft)}
 
-  /* —— A4 舞台结构（所有主题共用）—— */
-  .viewport{width:100%;overflow-x:auto;overflow-y:visible}
-  .doc-stage{position:relative;width:100%;margin:0 auto}
-  .scaler{
-    display:flex;flex-direction:column;align-items:center;gap:26px;
-    padding:30px 0;width:210mm;margin:0 auto;
-    transform:scale(var(--scale,1));transform-origin:top center;
+  /* 屏幕：A4 页面卡片居中纵向排列，页与页之间留间隔。
+     间隔必须挂在 flex item（.pagedjs_page）上——.pagedjs_sheet 是它内部卡片，挂 margin 不影响页间距。 */
+  @media screen{
+    .pagedjs_pages{display:flex;flex-direction:column;align-items:center;padding:30px 0}
+    .pagedjs_page{margin:0 0 26px 0}
+    .pagedjs_page:last-child{margin-bottom:0}
+    .pagedjs_sheet{box-shadow:0 1px 2px rgba(20,24,30,.05),0 18px 44px -22px rgba(20,24,30,.28);background:#fff}
   }
-  .page{
-    width:210mm;height:297mm;background:#fff;position:relative;
-    overflow:hidden;flex-shrink:0;
-    box-shadow:0 1px 2px rgba(20,24,30,.05),0 18px 44px -22px rgba(20,24,30,.28);
-  }
-  .page-content{position:absolute;inset:0;padding:14mm 16mm 13mm}
-  .page-content>*:first-child{margin-top:0!important}
-  #source{position:absolute;left:-100000px;top:0;width:178mm;opacity:0;pointer-events:none}
-
-  /* —— 打印 / 导出 PDF —— */
+  /* 打印：直接打印 Paged.js 预览页（.pagedjs_page），每个 1:1 对应一个 PDF 页。
+     关键：@page margin 必须为 0（下方 JS 注入 @page{margin:0} 覆盖），由 Paged.js
+     内部的页边距（.pagedjs_area padding = 14/16/13mm）提供留白——浏览器若再叠 margin 会翻倍分页、内容被裁。
+     用户在打印对话框还要确保：边距=无、背景图形=开（见工具条 toast 提示）。*/
   @media print{
-    @page{size:A4;margin:0}
     html,body{background:#fff!important}
     *{print-color-adjust:exact;-webkit-print-color-adjust:exact}
     .rv-toolbar,.rv-toast{display:none!important}
-    .viewport{overflow:visible!important}
-    .doc-stage{height:auto!important}
-    .scaler{transform:none!important;gap:0!important;padding:0!important;width:auto!important;display:block!important}
-    .page{width:210mm!important;height:297mm!important;box-shadow:none!important;page-break-after:always;break-after:page}
-    .page:last-child{page-break-after:auto;break-after:auto}
-    .page .page-content{background:var(--paper,#fff)!important}
+    #renderRoot{transform:none!important}
+    .pagedjs_pages{padding:0!important}
+    .pagedjs_page{margin:0!important}
+    .pagedjs_sheet{box-shadow:none!important}
+    .pagedjs_page{break-after:page}
+    .pagedjs_page:last-child{break-after:auto}
   }
 </style>
-<!--RESUME_STYLE-->
+
+<!-- ============ B) Paged.js 处理的 <style>：@page + 分页规则 + 主题（<!--RESUME_STYLE-->）============ -->
+<style>
+  /* @page margin = 简历四周留白。Paged.js 把它转成每个 .pagedjs_area 的 per-page 内缩。
+     打印时浏览器会再叠一次 margin → 翻倍分页，故渲染后用 JS 追加 @page{margin:0} 覆盖（见脚本）。 */
+  @page{size:A4;margin:14mm 16mm 13mm}
+
+  /* 内容根：覆盖主题 body 的字号到更密的 12.5px（.resume-root 特异性 > body），保证 A4 信息密度 */
+  .resume-root{font-size:12.5px;line-height:1.58}
+  .resume-root>*:first-child{margin-top:0!important}
+
+  /* ===== 关键：CSS 分页规则（替代旧版手动 distribute）=====
+     Paged.js 在行级断行；这些规则只控制"哪些单元不能被拆 / 不能孤立在页底"。
+     不设 break-inside:avoid 的长正文（summary / desc / 长 bullet）可跨页 → 消除大留白。 */
+  .resume-header{break-after:avoid}
+  .sec-head{break-inside:avoid;break-after:avoid}        /* 模块标题不拆、不孤立页底 */
+  .entry{break-inside:avoid;break-after:avoid}           /* entry 头(meta)整体 + 粘住下一条 bullet */
+  .entry-list li,.bullet{break-inside:avoid}             /* 单条 bullet / 列表项不从中间断 */
+  .pubs li{break-inside:avoid}
+  .award{break-inside:avoid}
+  .skills-row,.stack-row{break-inside:avoid}
+  /* .summary p / .desc / .interests / .stack 不设 avoid → 可跨页 */
+
+  /* 主题样式由 wrap_preview.py 注入到下方槽位（渲染产物开头的 <style>，整段） */
+  <!--RESUME_STYLE-->
+</style>
 </head>
 <body data-od-id="resume-preview">
 
@@ -121,318 +134,289 @@
           <option value="graphite">石墨黑</option>
         </select>
       </label>
+      <span class="rv-info" id="rvInfo">渲染中…</span>
       <button class="rv-btn" id="rvZoomOut" title="缩小查看">－</button>
       <button class="rv-btn" id="rvZoomIn" title="放大查看">＋</button>
       <button class="rv-btn" id="rvEditBtn">✏️ 编辑</button>
-      <button class="rv-btn rv-btn--primary" id="rvPdfBtn" onclick="rvPrint()">📄 导出 PDF</button>
-      <button class="rv-btn rv-btn--primary" id="rvSaveBtn" style="display:none">📝 源码</button>
+      <button class="rv-btn rv-btn--primary" id="rvPdfBtn">📄 导出 PDF</button>
+      <button class="rv-btn rv-btn--primary" id="rvSaveBtn" style="display:none">📝 导出 Markdown</button>
     </div>
   </div>
   <div class="rv-toast" id="rvToast"></div>
 
-  <!-- A4 舞台：分页 JS 把 #source 里的原子分配到各 .page -->
-  <div class="viewport" id="viewport"><div class="doc-stage" id="docStage"><div class="scaler" id="scaler"></div></div></div>
+  <!-- A4 舞台：Paged.js 把 #source 里的原子分页渲染到此处 -->
+  <div id="renderRoot"></div>
 
-  <!-- 简历正文原子（由 wrap_preview.py 注入；渲染器=LLM 按所选主题的组件库装配） -->
+  <!-- 简历正文原子（由 wrap_preview.py 注入；渲染器=LLM 按所选主题的组件库装配）。
+       外层 .resume-root 由 wrap_preview.py 自动包上；脚本会 detach 它喂给 Paged.js。 -->
   <div id="source">
+<div class="resume-root">
 <!--RESUME_BODY-->
+</div>
   </div>
 
   <script>
     var rvUserScale=1;
+    var src=document.getElementById('source');
+    var content=src.querySelector('.resume-root')||src;   /* 简历主源（编辑改的就是它，重排重渲染它） */
+    var renderRoot=document.getElementById('renderRoot');
+    /* #source 先离屏放（行内样式可靠，不被 polisher 改写），分页后再 display:none 收起 */
+    src.style.cssText='position:absolute;left:-99999px;top:0;opacity:0;pointer-events:none';
+
     function rvShowToast(msg){
       var t=document.getElementById('rvToast');
       t.textContent=msg;t.classList.add('show');
       clearTimeout(t._timer);t._timer=setTimeout(function(){t.classList.remove('show');},2600);
     }
-    function rvPrint(){
-      rvShowToast('在弹出的打印窗口里选"另存为 PDF"即可导出 A4 简历');
-      setTimeout(function(){ window.print(); },120);
+    function fitScale(){
+      var PX_PER_MM=96/25.4;
+      var vpW=window.innerWidth;
+      var s=Math.min(1, vpW/(210*PX_PER_MM))*rvUserScale;
+      /* 编辑草稿和分页舞台共用 --scale */
+      src.style.setProperty('--scale',s);
+      renderRoot.style.setProperty('--scale',s);
     }
-
-    /* 配色方案切换：覆盖主题点缀色，记住选择；打印 / 导出 PDF 沿用当前配色 */
+    /* 配色方案：记住选择，打印沿用 */
     (function(){
       var KEY='resume-color-scheme', html=document.documentElement, sel=document.getElementById('rvScheme');
-      var store={
-        get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},
-        set:function(k,v){try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}}
-      };
+      var store={get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},set:function(k,v){try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}}};
       var saved=store.get(KEY);
       if(saved){ html.dataset.scheme=saved; if(sel) sel.value=saved; }
-      if(sel){
-        sel.addEventListener('change',function(){
-          var v=sel.value;
-          if(v){ html.dataset.scheme=v; store.set(KEY,v); }
-          else { delete html.dataset.scheme; store.set(KEY,null); }
-        });
-      }
+      if(sel) sel.addEventListener('change',function(){
+        var v=sel.value;
+        if(v){ html.dataset.scheme=v; store.set(KEY,v); } else { delete html.dataset.scheme; store.set(KEY,null); }
+      });
     })();
+    document.getElementById('rvZoomIn').addEventListener('click',function(){rvUserScale=Math.min(2,+(rvUserScale+0.1).toFixed(2));fitScale();});
+    document.getElementById('rvZoomOut').addEventListener('click',function(){rvUserScale=Math.max(0.4,+(rvUserScale-0.1).toFixed(2));fitScale();});
+    document.getElementById('rvPdfBtn').addEventListener('click',function(){
+      rvShowToast('在弹出的打印窗口里选"另存为 PDF"即可导出 A4 简历');
+      setTimeout(function(){ window.print(); },120);
+    });
+    window.addEventListener('resize',fitScale);
+
+    window.PagedConfig = { auto: false };
+
+    /* ===== 分页（可重复调用：编辑后重排） =====
+       ★关键坑：preview() 内部会 removeStyles() 把文档原始 <style> 移除并重注入；第二次再调
+       preview() 时 removeStyles 已取不到原始样式 → polisher 拿不到 @page{margin} → 边距丢失。
+       解法：启动时把原始 <style> 文本快照一份（originalStyles），每次都用新 Previewer +
+       显式传 originalStyles（removeStyles 被跳过），并先清掉上轮 Paged.js 注入的样式避免累积。 */
+    var originalStyles = (function () {
+      var out = [];
+      document.querySelectorAll("style:not([data-pagedjs-inserted-styles]):not([data-pagedjs-ignore]):not([media~='screen'])")
+        .forEach(function (st) { var o = {}; o[window.location.href] = st.textContent; out.push(o); });
+      return out;
+    })();
+    function injectPrintOverride() {
+      if (document.getElementById('rvPrintOverride')) return;
+      var s = document.createElement('style'); s.id = 'rvPrintOverride'; s.setAttribute('media', 'print');
+      /* @page margin:0：浏览器不加额外 margin，由 Paged.js 内部页边距（.pagedjs_area padding 14/16/13mm）提供留白。
+         height:auto 覆盖 Paged.js 注入的 @media print{...height:100%!important}——那条规则会让 body/.pagedjs_pages/
+         .pagedjs_page 都被钉成"一页高"，打印时内容塌缩、整页空白（只有末页尾部可见）。本块在 onFlowDone
+         （即 Paged.js 之后）注入，靠 !important + 后置源序胜出。每页 .pagedjs_page break-after:page → 1:1 对应 PDF 页。*/
+      s.textContent = '@page{size:A4;margin:0}'
+        + '@media print{'
+        + 'html,body{height:auto!important;max-height:none!important;min-height:0!important;overflow:visible!important}'
+        + '#renderRoot{transform:none!important}'
+        + '.pagedjs_pages{height:auto!important;max-height:none!important;min-height:0!important;overflow:visible!important;transform:none!important}'
+        + '.pagedjs_page{height:auto!important;max-height:none!important;min-height:0!important;page-break-after:always;break-after:page;transform:none!important}'
+        + '.pagedjs_sheet{overflow:visible!important}'
+        + '}';
+      document.head.appendChild(s);
+    }
+    function onFlowDone(flow, cb) {
+      document.getElementById('rvInfo').textContent = '共 ' + flow.total + ' 页';
+      injectPrintOverride();
+      fitScale();
+      if (cb) cb();
+    }
+    function paginate(cb) {
+      renderRoot.innerHTML = '';
+      // 清掉上一轮 Paged.js 注入的处理后样式，避免重复累积
+      document.querySelectorAll("style[data-pagedjs-inserted-styles]").forEach(function (s) { s.remove(); });
+      var paged = new Paged.Previewer();
+      // 显式传 originalStyles → 跳过 removeStyles → 每次都能读到 @page{size:A4;margin:...}
+      paged.preview(content, originalStyles, renderRoot)
+        .then(function (flow) { onFlowDone(flow, cb); })
+        .catch(function (err) {
+          document.getElementById('rvInfo').textContent = '渲染失败: ' + (err && err.message || err);
+          console.error(err);
+        });
+    }
+    /* 等 Paged 全局就绪再分页：paged.polyfill 在 body 末尾加载，而本脚本文档靠前；
+       简历只用系统字体时 document.fonts.ready 几乎立即 resolve（微任务），可能在 polyfill
+       执行前就跑到 paginate() → "Paged is not defined" → 分页失败、整页空白（屏幕+打印均空白）。
+       轮询等 window.Paged 出现，彻底消除这个竞态。 */
+    function whenPaged(cb){ if(typeof window.Paged!=='undefined'){cb();}else{setTimeout(function(){whenPaged(cb);},30);} }
+    (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(function () {
+      whenPaged(function(){ paginate(function () { src.style.display = 'none'; }); });
+    });
 
     /* ============================================================
-       A4 自动分页：测量 #source 每个原子高度，按可用内容高分配页。
-       data-stick="1" 的 sec-head 不会和紧随其后的条目被拆到两页。
+       编辑模式（草稿视图）：编辑连续的 .resume-root 主源，完成后再交给 Paged.js 重排。
+       不在 A4 分页 DOM 上直接编辑——Paged.js 会把元素跨页切分（data-split-*），
+       原子映射与光标定位都不可靠；编辑主源最稳。
        ============================================================ */
-    (function(){
-      var PX_PER_MM=96/25.4,PAGE_H_MM=297,PAGE_W_MM=210;
-      var tmp=document.createElement('div');tmp.className='page-content';tmp.style.position='absolute';tmp.style.left='-9999px';
-      document.body.appendChild(tmp);
-      var cs=getComputedStyle(tmp);
-      var PAD_LEFT_PX=parseFloat(cs.paddingLeft),PAD_RIGHT_PX=parseFloat(cs.paddingRight);
-      var PAD_TOP_PX=parseFloat(cs.paddingTop),PAD_BOTTOM_PX=parseFloat(cs.paddingBottom);
-      tmp.remove();
-      var CONTENT_H_PX=(PAGE_H_MM*PX_PER_MM)-PAD_TOP_PX-PAD_BOTTOM_PX;
-      var GAP_PX=26,PAD_STAGE_PX=30;
-      var source=document.getElementById('source'),
-          scaler=document.getElementById('scaler'),
-          docStage=document.getElementById('docStage'),
-          viewport=document.getElementById('viewport');
-      function collect(){
-        return Array.prototype.slice.call(source.children).filter(function(el){
-          return el.nodeType===1;
-        });
-      }
-      function candidate(){
-        var nameEl=source.querySelector('.name-row .name')||source.querySelector('.head .name')
-          ||source.querySelector('.name-block .cn')||source.querySelector('.name')||source.querySelector('.cn')||source.querySelector('h1');
-        var roleEl=source.querySelector('.name-row .role')||source.querySelector('.head .role')||source.querySelector('.role');
-        var name=nameEl?nameEl.textContent.trim():'简历';
-        var role='';
-        if(roleEl){
-          role=roleEl.textContent.trim()
-            .replace(/^(意向岗位|求职意向|目标岗位|申请方向)\s*[：:·.\-\s]*/,'')
-            .split(/\s*[\/·—,，]\s*/)[0]
-            .replace(/[（(][^）)]*[）)]\s*$/,'')
-            .replace(/\s+/g,'');
-        }
-        return role?(name+'-'+role):(name+' · 简历');
-      }
-      function outerHeight(el){
-        var st=getComputedStyle(el);
-        return el.offsetHeight+parseFloat(st.marginTop||0)+parseFloat(st.marginBottom||0);
-      }
-      function distribute(atoms){
-        var heights=atoms.map(outerHeight),pages=[[]],used=0;
-        for(var i=0;i<atoms.length;i++){
-          var h=heights[i],
-              stick=atoms[i].getAttribute && atoms[i].getAttribute('data-stick')==='1',
-              nextH=(i+1<atoms.length)?heights[i+1]:0,
-              placeOnNew=false;
-          if(used!==0){
-            if(used+h>CONTENT_H_PX) placeOnNew=true;
-            else if(stick && nextH>0 && (used+h+nextH>CONTENT_H_PX)) placeOnNew=true;
-          }
-          if(placeOnNew){pages.push([]);used=0;}
-          pages[pages.length-1].push(i);used+=h;
-        }
-        return pages;
-      }
-      function makePage(){
-        var p=document.createElement('section');p.className='page';
-        p.innerHTML='<div class="page-content"></div>';return p;
-      }
-      function render(){
-        var atoms=collect(); if(!atoms.length){fitScale();return;}
-        var pages=distribute(atoms);
-        scaler.innerHTML='';
-        pages.forEach(function(idxs){
-          var page=makePage(),content=page.querySelector('.page-content');
-          idxs.forEach(function(i){content.appendChild(atoms[i].cloneNode(true));});
-          scaler.appendChild(page);
-        });
-        fitScale();
-      }
-      function fitScale(){
-        var pageWPx=210*PX_PER_MM,s=Math.min(1,viewport.clientWidth/pageWPx)*rvUserScale;
-        scaler.style.setProperty('--scale',s);
-        var n=scaler.querySelectorAll('.page').length,
-            fullH=PAD_STAGE_PX*2+n*(297*PX_PER_MM)+Math.max(0,n-1)*GAP_PX;
-        docStage.style.height=(fullH*s)+'px';
-      }
-      function init(){
-        source.style.width=(PAGE_W_MM*PX_PER_MM-PAD_LEFT_PX-PAD_RIGHT_PX)+'px';
-        render();try{document.title=candidate();}catch(e){}
-        // 初始渲染完成后解除重绘事件（避免编辑模式被覆盖）
-        if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){});
-        window.removeEventListener('load',render);
-      }
-      if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
-      if(document.fonts&&document.fonts.ready)document.fonts.ready.then(render);
-      window.addEventListener('load',render);
-      window.addEventListener('resize',fitScale);
-      document.getElementById('rvZoomIn').addEventListener('click',function(){
-        rvUserScale=Math.min(2,+(rvUserScale+0.1).toFixed(2));fitScale();});
-      document.getElementById('rvZoomOut').addEventListener('click',function(){
-        rvUserScale=Math.min(2,+(rvUserScale+0.1).toFixed(2));fitScale();});
+    var EDIT_SEL='.name,.role,.edu-line,.contact,.sec-head h2,.summary p,.entry-title .org,.entry-title .proj,.entry-title .company,.entry-title .role,.entry-date,.entry-meta span,.bullet,.pubs li,.pub,.award .lvl,.award span:not(.yr):not(.lvl),.skills-row .cat,.skills-row .tags,.stack-row .cat,.chip,.interests .it,.desc';
+    var editing=false;
+    var editBtn=document.getElementById('rvEditBtn'), saveBtn=document.getElementById('rvSaveBtn'), pdfBtn=document.getElementById('rvPdfBtn');
 
-      // 暴露给编辑模式：按当前页面内容重新分页（保留编辑后的 DOM 节点）
-      window.__reflow = function(){
-        var allAtoms=[];
-        document.querySelectorAll('#scaler .page-content').forEach(function(c){
-          Array.from(c.children).forEach(function(el){allAtoms.push(el);});
-        });
-        if(!allAtoms.length) return;
-        var heights=allAtoms.map(outerHeight), pages=distribute(allAtoms);
-        scaler.innerHTML='';
-        pages.forEach(function(idxs){
-          var page=makePage(), content=page.querySelector('.page-content');
-          idxs.forEach(function(i){content.appendChild(allAtoms[i]);});
-          scaler.appendChild(page);
-        });
-        fitScale();
-        // 重新挂 contenteditable
-        var sel='.bullet,.summary p,.desc,.entry-title,.entry-meta span,.name,.role,.edu-line,.contact,.name-block .cn,.name-block .en,.one';
-        document.querySelectorAll('#scaler '+sel).forEach(function(el){
-          if(window.__editing){ el.contentEditable=true; el.style.outline='1px dashed var(--accent, #888)'; }
-        });
+    function chipDelBtn(target){
+      var del=document.createElement('span');
+      del.className='chip-del';
+      del.textContent='×';
+      del.style.cssText='cursor:pointer;margin-left:4px;font-size:11px;color:var(--accent,#888);line-height:1';
+      del.onclick=function(e){e.stopPropagation();target.remove();};
+      target.appendChild(del);
+    }
+    function chipAddBtn(chips,cls){
+      var add=document.createElement('span');
+      add.className='chip-add';
+      add.textContent='+';
+      add.style.cssText='cursor:pointer;font-family:var(--font-mono,monospace);font-size:14px;color:var(--accent,#888);border:1px dashed var(--accent,#888);padding:1.5px 8px;line-height:1.4';
+      add.onclick=function(){
+        var c=document.createElement(cls==='bullet'?'div':'span');
+        c.className=cls==='bullet'?'bullet':'chip';
+        c.contentEditable=true;
+        c.textContent=cls==='bullet'?'新要点':'新技能';
+        chipDelBtn(c);
+        chips.insertBefore(c,add); c.focus();
+        var r=document.createRange();r.selectNodeContents(c);var s=window.getSelection();s.removeAllRanges();s.addRange(r);
       };
-    })();
-
-    /* —— 编辑模式：contenteditable + 自动隐藏空行 + 重排 + 保存 —— */
-    (function(){
-      var editing=false, editBtn=document.getElementById('rvEditBtn'), saveBtn=document.getElementById('rvSaveBtn');
-      var reflowTimer=null;
-
-      function setEditable(on){
-        window.__editing=on;
-        var sel='.bullet,.summary p,.desc,.entry-title,.entry-meta span,.name,.role,.edu-line,.contact,.name-block .cn,.name-block .en,.one';
-        document.querySelectorAll('#scaler '+sel).forEach(function(el){
-          el.contentEditable=on;
-          el.style.outline=on?'1px dashed var(--accent, #888)':'';
-        });
-        // 技能 chip 编辑：删除按钮 + 新增按钮
-        document.querySelectorAll('#scaler .stack').forEach(function(stack){
-          stack.querySelectorAll('.chips').forEach(function(chips){
-            // 清除旧按钮避免重复
-            chips.querySelectorAll('.chip-del,.chip-add').forEach(function(b){b.remove();});
-            if(on){
-              // 每个 chip 右上角删除
-              chips.querySelectorAll('.chip').forEach(function(chip){
-                var del=document.createElement('span');
-                del.className='chip-del';
-                del.textContent='×';
-                del.style.cssText='cursor:pointer;margin-left:4px;font-size:11px;color:var(--accent,#888);line-height:1';
-                del.onclick=function(e){e.stopPropagation();chip.remove();};
-                chip.appendChild(del);
-              });
-              // 末尾新增按钮
-              var add=document.createElement('span');
-              add.className='chip-add';
-              add.textContent='+';
-              add.style.cssText='cursor:pointer;font-family:var(--font-mono,monospace);font-size:14px;color:var(--accent,#888);border:1px dashed var(--accent,#888);padding:1.5px 8px;line-height:1.4';
-              add.onclick=function(){
-                var newChip=document.createElement('span');
-                newChip.className='chip';
-                newChip.contentEditable=true;
-                newChip.textContent='新技能';
-                var del=document.createElement('span');
-                del.className='chip-del';
-                del.textContent='×';
-                del.style.cssText='cursor:pointer;margin-left:4px;font-size:11px;color:var(--accent,#888);line-height:1';
-                del.onclick=function(e){e.stopPropagation();newChip.remove();};
-                newChip.appendChild(del);
-                chips.insertBefore(newChip,add);
-                newChip.focus();
-                // 选中文字方便直接输入
-                var r=document.createRange();r.selectNodeContents(newChip);var s=window.getSelection();s.removeAllRanges();s.addRange(r);
-              };
-              chips.appendChild(add);
-            }
-          });
-        });
+      chips.appendChild(add);
+    }
+    function setEditable(on){
+      editing=on; window.__editing=on;
+      src.querySelectorAll(EDIT_SEL).forEach(function(el){
+        el.contentEditable = on ? 'true' : 'inherit';
+        el.style.outline = on ? '1px dashed var(--accent,#888)' : '';
+      });
+      /* chip × / +，以及 bullet 区末尾的 + 要点 */
+      src.querySelectorAll('.chips').forEach(function(chips){
+        chips.querySelectorAll('.chip-del,.chip-add').forEach(function(b){b.remove();});
+        if(on){ chips.querySelectorAll('.chip').forEach(function(c){chipDelBtn(c);}); chipAddBtn(chips,'chip'); }
+      });
+      src.querySelectorAll('.stack,.skills').forEach(function(stack){
+        var exist=stack.querySelector(':scope > .bullet-add-wrap'); if(exist) exist.remove();
+      });
+      /* 在每个 sec-head 后的 bullet 序列末尾加"＋ 要点"（简单做：给 .bullet 容器）——此处略，保留 chip 增删为主 */
+    }
+    function showDraft(){
+      renderRoot.style.display='none';
+      src.style.cssText='position:relative;left:auto;top:auto;opacity:1;pointer-events:auto;display:block;width:210mm;max-width:100%;margin:30px auto;background:#fff;padding:14mm 16mm;box-shadow:0 18px 44px -22px rgba(20,24,30,.28);transform:scale(var(--scale,1));transform-origin:top center;';
+      rvShowToast('草稿视图：直接改文字 / 点 × 删技能 / 点 + 加技能，完成后点"完成编辑"重排');
+    }
+    function hideDraft(){
+      src.style.cssText='display:none';
+      renderRoot.style.display='';
+    }
+    editBtn.addEventListener('click',function(){
+      if(!editing){
+        showDraft(); setEditable(true);
+        editBtn.textContent='完成编辑';
+        pdfBtn.style.display='none'; saveBtn.style.display='';
+      } else {
+        setEditable(false); hideDraft();
+        editBtn.textContent='✏️ 编辑';
+        pdfBtn.style.display=''; saveBtn.style.display='none';
+        paginate();   /* 用编辑后的主源重排分页 */
       }
+    });
 
-      function afterEdit(){
-        // 隐藏空 bullet
-        document.querySelectorAll('#scaler .bullet').forEach(function(b){
-          b.style.display=b.textContent.trim()?'':'none';
-        });
-        // 防抖重排
-        if(reflowTimer) clearTimeout(reflowTimer);
-        reflowTimer=setTimeout(function(){
-          if(window.__reflow) window.__reflow();
-          // 重排后重新隐藏空 bullet
-          document.querySelectorAll('#scaler .bullet').forEach(function(b){
-            b.style.display=b.textContent.trim()?'':'none';
-          });
-        }, 400);
+    /* 导出 Markdown：遍历 .resume-root 还原成 简历.md */
+    saveBtn.addEventListener('click',function(){
+      var md='';
+      var root=content;
+      /* header */
+      var name=root.querySelector('.name'), role=root.querySelector('.role');
+      if(name||role){
+        md+='# self-intro\n\n';
+        if(name) md+='name: '+name.textContent.trim()+'\n';
+        if(role) md+='role: '+role.textContent.trim()+'\n';
+        var edu=root.querySelector('.edu-line'); if(edu) md+='education: '+edu.textContent.trim()+'\n';
+        var contact=root.querySelector('.contact'); if(contact) md+='contact: '+contact.textContent.trim()+'\n\n';
       }
-
-      var pdfBtn=document.getElementById('rvPdfBtn');
-      editBtn.addEventListener('click',function(){
-        editing=!editing;
-        editBtn.textContent=editing?'查看':'✏️ 编辑';
-        pdfBtn.style.display=editing?'none':'';
-        saveBtn.style.display=editing?'':'none';
-        setEditable(editing);
-        if(editing){
-          document.querySelector('#scaler').addEventListener('input',afterEdit);
-        } else {
-          document.querySelector('#scaler').removeEventListener('input',afterEdit);
+      /* 按文档顺序遍历 sec-head / entry / bullet / summary / pubs / awards / skills / stack */
+      var walk=root.children;
+      var curEntryOpen=false;
+      function allEls(){var out=[];var stk=Array.prototype.slice.call(root.children);
+        /* 只取顶层原子（简历骨架就是平铺的 sec-head/entry/bullet/...） */
+        return stk;
+      }
+      allEls().forEach(function(atom){
+        var cl=atom.classList;
+        if(cl.contains('sec-head')){
+          var h=atom.querySelector('h2'); if(!h) return;
+          var title=h.cloneNode(true); var en=title.querySelector('.en'); if(en) en.remove();
+          md+='\n# '+title.textContent.trim()+'\n';
+          curEntryOpen=false;
+        } else if(cl.contains('summary')){
+          atom.querySelectorAll('p').forEach(function(p){ md+=p.textContent.trim()+'\n'; });
+        } else if(cl.contains('interests')){
+          var tags=Array.prototype.map.call(atom.querySelectorAll('.it'),function(it){return it.textContent.trim();});
+          if(tags.length) md+=tags.join(', ')+'\n';
+        } else if(cl.contains('entry')){
+          md+='\n';
+          var org=atom.querySelector('.org,.proj');
+          var erole=atom.querySelector('.entry-title .role');
+          var company=atom.querySelector('.company');
+          if(org) md+='## '+org.textContent.trim();
+          if(company) md+=' | '+company.textContent.replace(/^@\s*/,'').trim();
+          if(erole) md+=' | '+erole.textContent.trim();
+          md+='\n';
+          var date=atom.querySelector('.entry-date'); if(date) md+='date: '+date.textContent.trim()+'\n';
+          var meta=atom.querySelector('.entry-meta'); if(meta){var ms=meta.textContent.replace(/\s+/g,' ').trim(); if(ms) md+='meta: '+ms+'\n';}
+          curEntryOpen=true;
+        } else if(cl.contains('bullet')){
+          /* 去掉 chip-del 残留 */
+          var b=atom.cloneNode(true); b.querySelectorAll('.chip-del,.chip-add').forEach(function(x){x.remove();});
+          md+='- '+b.textContent.trim()+'\n';
+        } else if(cl.contains('pubs')){
+          atom.querySelectorAll('li').forEach(function(li){
+            var t=li.cloneNode(true); t.querySelectorAll('.chip-del,.chip-add').forEach(function(x){x.remove();});
+            md+='- '+t.textContent.replace(/\s+/g,' ').trim()+'\n';
+          });
+        } else if(cl.contains('awards')){
+          atom.querySelectorAll('.award').forEach(function(a){
+            var yr=a.querySelector('.yr'),nm=a.querySelector('span:not(.yr):not(.lvl)'),lvl=a.querySelector('.lvl');
+            var parts=[]; if(yr) parts.push(yr.textContent.trim());
+            parts.push(nm?nm.textContent.trim():''); if(lvl) parts.push('| '+lvl.textContent.trim());
+            md+='- '+parts.join(' ').replace(/\s+\|/,'|').trim()+'\n';
+          });
+        } else if(cl.contains('skills')||cl.contains('stack')){
+          atom.querySelectorAll('.skills-row,.stack-row').forEach(function(row){
+            var cat=row.querySelector('.cat'); var tagsEl=row.querySelector('.tags,.chips');
+            if(!cat||!tagsEl) return;
+            /* 清掉 + 按钮再取文本 */
+            var tc=tagsEl.cloneNode(true); tc.querySelectorAll('.chip-add').forEach(function(x){x.remove();});
+            var chips=Array.prototype.map.call(tc.querySelectorAll('.chip'),function(c){var cc=c.cloneNode(true);cc.querySelectorAll('.chip-del').forEach(function(x){x.remove();});return cc.textContent.trim();});
+            var val=chips.length?chips.join(' · '):tc.textContent.trim();
+            md+='- '+cat.textContent.trim()+': '+val+'\n';
+          });
         }
       });
-
-      saveBtn.addEventListener('click',function(){
-        var md='';
-        document.querySelectorAll('#scaler .page').forEach(function(page){
-          page.querySelectorAll('.page-content>*').forEach(function(atom){
-            var tag=atom.tagName.toLowerCase();
-            if(atom.classList.contains('resume-header')){
-              md+='# self-intro\n';
-              var name=atom.querySelector('.name'), role=atom.querySelector('.role');
-              if(name) md+='name: '+name.textContent.trim()+'\n';
-              if(role) md+='role: '+role.textContent.trim()+'\n';
-              var edu=atom.querySelector('.edu-line');
-              if(edu) md+='education: '+edu.textContent.trim()+'\n';
-              var contact=atom.querySelector('.contact');
-              if(contact) md+='contact: '+contact.textContent.trim()+'\n\n';
-            } else if(atom.classList.contains('sec-head')){
-              var title=atom.querySelector('h2');
-              if(title) md+='\n# '+title.textContent.trim()+'\n';
-            } else if(atom.classList.contains('bullet')){
-              md+='- '+atom.textContent.trim()+'\n';
-            } else if(atom.classList.contains('entry')){
-              var org=atom.querySelector('.org,.proj'), role=atom.querySelector('.entry-title .role');
-              if(org) md+='\n## '+org.textContent.trim();
-              if(role) md+=' | '+role.textContent.trim();
-              md+='\n';
-              var date=atom.querySelector('.entry-date');
-              if(date) md+='date: '+date.textContent.trim()+'\n';
-              var meta=atom.querySelector('.entry-meta span');
-              if(meta) md+='meta: '+meta.textContent.trim()+'\n';
-            } else if(atom.classList.contains('desc')){
-              md+=atom.textContent.trim()+'\n';
-            } else if(atom.classList.contains('summary')){
-              md+=atom.textContent.trim()+'\n';
-            } else if(atom.classList.contains('stack')){
-              atom.querySelectorAll('.stack-row').forEach(function(row){
-                var cat=row.querySelector('.cat');
-                if(cat) md+='- '+cat.textContent.trim()+': ';
-                var chips=row.querySelectorAll('.chip');
-                md+=Array.from(chips).map(function(c){return c.textContent.trim();}).join(' · ')+'\n';
-              });
-            }
-          });
-        });
-        // show result
-        var ta=document.getElementById('rvMdOutput');
-        if(!ta){
-          ta=document.createElement('textarea');
-          ta.id='rvMdOutput';
-          ta.style.cssText='position:fixed;top:56px;right:12px;width:420px;height:70vh;z-index:100;font-family:monospace;font-size:12px;padding:10px;border:1px solid #d7dbe0;border-radius:8px;background:#fff;box-shadow:0 8px 30px rgba(0,0,0,.12);resize:both;white-space:pre;line-height:1.5';
-          var close=document.createElement('div');
-          close.textContent='✕';
-          close.style.cssText='position:fixed;top:56px;right:440px;z-index:101;cursor:pointer;font-size:18px;color:#888;padding:4px 8px';
-          close.onclick=function(){ta.remove();close.remove();};
-          document.body.appendChild(close);
-          document.body.appendChild(ta);
-        }
-        ta.value=md;
-        ta.style.display='block';
-        ta.focus();
-        ta.select();
-        rvShowToast('已生成 Markdown，可复制');
-      });
-    })();
+      showMdTextarea(md);
+    });
+    function showMdTextarea(md){
+      var ta=document.getElementById('rvMdOutput');
+      if(!ta){
+        ta=document.createElement('textarea');
+        ta.id='rvMdOutput';
+        ta.style.cssText='position:fixed;top:56px;right:12px;width:440px;height:78vh;z-index:100;font-family:monospace;font-size:12px;padding:10px;border:1px solid #d7dbe0;border-radius:8px;background:#fff;box-shadow:0 8px 30px rgba(0,0,0,.12);resize:both;white-space:pre-wrap;line-height:1.5';
+        var close=document.createElement('div');
+        close.textContent='✕';
+        close.style.cssText='position:fixed;top:56px;right:460px;z-index:101;cursor:pointer;font-size:18px;color:#888;padding:4px 8px;background:#fff;border-radius:6px';
+        close.onclick=function(){ta.remove();close.remove();};
+        document.body.appendChild(close); document.body.appendChild(ta);
+      }
+      ta.value=md; ta.style.display='block'; ta.focus(); ta.select();
+      rvShowToast('已生成 Markdown，可复制回 简历.md');
+    }
   </script>
+
+  <!-- Paged.js polyfill（由 wrap_preview.py 内联成 <script>...</script>，使预览页自包含 / 离线可用） -->
+  <!--PAGEDJS-->
+
 </body>
 </html>

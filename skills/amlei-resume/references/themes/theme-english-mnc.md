@@ -50,10 +50,11 @@
   .summary p{font-size:13px;line-height:1.7;text-align:justify;text-wrap:pretty}
   .summary p strong{color:var(--accent-ink);font-weight:600}
   .entry{margin-bottom:11px}
-  .entry-main{display:grid;grid-template-columns:1fr auto;align-items:baseline;gap:14px}
+  .entry-main{display:flex;align-items:baseline;justify-content:space-between;gap:14px;flex-wrap:nowrap}
   .entry-title{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
-  .entry-title .org{font-size:14px;font-weight:700}
-  .entry-title .company{font-size:12px;color:var(--muted);font-weight:500}
+  .entry-title .org{font-size:14.5px;font-weight:700;letter-spacing:.01em}
+  .entry-main .proj{font-size:14.5px;font-weight:700;letter-spacing:.01em}
+  .entry-main .company{font-size:11.5px;color:var(--muted);font-weight:500;letter-spacing:.03em}
   .entry-title .role{font-size:13px;color:var(--accent-ink);font-style:italic}
   .entry-date{font-family:var(--font-mono);font-size:10.5px;color:var(--faint);white-space:nowrap;letter-spacing:.04em}
   .entry-list{list-style:none;margin-top:4px}
@@ -102,10 +103,10 @@
 ### 4. Entry header（Education / Experience / Leadership；role 斜体）
 ```html
 <div class="entry" data-stick="1">
-  <div class="entry-main"><div class="entry-title"><span class="org">{{Org}}</span><span class="company">@ {{Company short}}</span><span class="role">{{Role — detail}}</span></div><span class="entry-date">{{Sep 2024 — Dec 2024}}</span></div>
+  <div class="entry-main"><div class="entry-title"><span class="org">{{Org}}</span><span class="company">{{Company short}}</span><span class="role">{{Role — detail}}</span></div><span class="entry-date">{{Sep 2024 — Dec 2024}}</span></div>
 </div>
 ```
-日期写英文月份（`Sep 2024 — Dec 2024`）。无 `meta` 行组件（本主题把 GPA 等放进首条 bullet，用 `<b>`）。`data-stick="1"` 让 header 和第一条 bullet 同页。
+日期写英文月份（`Sep 2024 — Dec 2024`）。无 `meta` 行组件（本主题把 GPA 等放进首条 bullet，用 `<b>`）。项目经历是三段式单行：`.proj`（左）· `.company`（centered，direct child of `.entry-main`）· `.entry-date`（right），**no `@`, no `.role`** — responsibilities live in bullets; e.g. `MM-Eval` · `Personal project`。`data-stick="1"` 让 header 和第一条 bullet 同页。
 
 ### 5. Bullet（single achievement — independent atom）
 ```html

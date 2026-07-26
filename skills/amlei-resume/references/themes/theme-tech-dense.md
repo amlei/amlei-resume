@@ -62,13 +62,14 @@
   .chip.strong{color:var(--accent-ink);background:var(--accent-soft);border-color:oklch(80% .04 242);font-weight:600}
   /* Entry */
   .entry{margin-bottom:10px}
-  .entry-main{display:grid;grid-template-columns:1fr auto;align-items:baseline;gap:14px}
+  .entry-main{display:flex;align-items:baseline;justify-content:space-between;gap:14px;flex-wrap:nowrap}
   .entry-title{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
-  .entry-title .org,.entry-title .proj{font-size:14px;font-weight:700}
-  .entry-title .company{font-size:12px;color:var(--muted);font-weight:500}
+  .entry-title .org{font-size:14px;font-weight:700}
+  .entry-main .proj{font-size:14.5px;font-weight:700;letter-spacing:.01em}
+  .entry-main .company{font-family:var(--font-mono);font-size:11.5px;color:var(--muted);font-weight:500;letter-spacing:.02em}
   .entry-title .role{font-size:13px;color:var(--accent-ink);font-weight:500}
   .entry-title .badge{font-family:var(--font-mono);font-size:10.5px;color:var(--accent-ink);border:1px solid var(--accent);padding:1px 6px}
-  .entry-date{font-family:var(--font-mono);font-size:11px;color:var(--faint);white-space:nowrap}
+  .entry-date{font-family:var(--font-mono);font-size:11px;color:var(--faint);white-space:nowrap;letter-spacing:.02em}
   .entry-meta{margin-top:2px;font-size:11.5px;color:var(--muted);display:flex;gap:12px;flex-wrap:wrap}
   .entry-meta b{color:var(--ink);font-weight:600}
   .entry-list{list-style:none;margin-top:4px}
@@ -79,6 +80,7 @@
   .bullet{position:relative;padding-left:13px;font-size:12.5px;line-height:1.68;color:var(--ink);margin-bottom:2px;text-align:justify;text-wrap:pretty}
   .bullet::before{content:"•";position:absolute;left:1px;top:5px;color:var(--accent);font-size:10px;line-height:1}
   .bullet .num,.bullet .kw{font-family:var(--font-mono);color:var(--accent-ink);font-weight:600}
+  .bullet strong,.bullet b{color:var(--accent-ink);font-weight:600}
   /* 论文 / 竞赛 */
   .pub{font-size:12.5px;line-height:1.55;padding:4px 0;border-bottom:1px dashed var(--hair)}
   .pub .ven{font-style:italic;color:var(--accent-ink)}
@@ -133,7 +135,7 @@
   <div class="entry-meta"><span>{{meta}}</span></div>
 </div>
 ```
-项目经历把 `<span class="org">` 换成 `<span class="proj">{{项目名}}</span>`，并在 `.proj` 和 `.role` 之间加 `<span class="company">@ {{公司简称}}</span>`（公司非空时；个人项目无公司则删 `.company`）。公司简称一律来自 emphasis 的 `company_display`（如「广州蚁群」），不用 fact 层全称。可再加 `<span class="badge">{{开源 · 1.2k★}}</span>`（无可删）。`data-stick="1"` 让 header 和第一条 bullet 同页不分家。
+项目经历是三段式单行：`.proj`（左）· `.company`（居中）· `.entry-date`（右），**无 `@`、无 `.role`**——职责由下方 bullet 体现，避免与实习/工作段重复。`.company` 是 `.entry-main` 的直接子节点（不包在 `.entry-title` 里），靠 flex `space-between` 落到中间；在本主题用 mono（工程感，与技术栈 chips 同语汇）。公司简称来自 emphasis 的 `company_display`（如「广州蚁群」「个人项目」），不用 fact 层全称；个人项目可写「个人项目」或留空删 `.company`。`data-stick="1"` 让 header 和第一条 bullet 同页不分家。
 
 ### 6. Bullet（单条经历要点 — 独立原子，自由换页）
 ```html
