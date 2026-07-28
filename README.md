@@ -4,6 +4,39 @@
 
 遵循 [agentskills.io](https://agentskills.io) 开放规范，任何兼容的 agent 工具都能用：Claude Code、Cursor、Codex、Gemini CLI、OpenCode、Copilot……换工具不丢积累。
 
+## 效果预览
+
+写一份普通 Markdown，直接渲染成矢量 A4 简历——所见即所得。下面是一份样例（[完整源文件 `sample-resume.md`](skills/amlei-resume/assets/sample-resume.md)）导出后的效果：
+
+<p align="center">
+  <img src="assets/resume-preview.png" alt="简历导出预览" width="720">
+</p>
+
+> 也想看 PDF 版？打开 [A4 预览 PDF](assets/张昀-计算机科学直博%20·%20简历%20A4%20预览.pdf)（GitHub 内置阅读器直接查看）。
+
+源文件就是这样的 Markdown：
+
+```md
+# self-intro
+
+name: 张昀
+role: 申请方向 · 计算机科学 直博（PhD）
+avatar:
+
+# 个人简介
+
+清华大学计算机科学实验班（姚班）本科四年级……
+
+# 科研经历
+
+## 微软亚洲研究院（MSRA） | 自然语言计算组 · 研究实习生
+date: 2025.04 — 2025.11
+
+- 提出基于过程奖励的 RLHF 改进算法，将奖励模型分解为"步骤级正确性"信号……
+```
+
+模块顺序即简历顺序，写完选主题、一键导出 PDF。
+
 ## 它解决什么问题
 
 写简历的痛苦通常是三件：
