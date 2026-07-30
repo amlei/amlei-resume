@@ -1,0 +1,111 @@
+<style>
+  :root{
+    --bg:oklch(93% .004 40);--paper:oklch(99.5% .002 60);--sidebar:oklch(96.5% .012 40);
+    --ink:oklch(22% .012 40);--muted:oklch(45% .012 40);--faint:oklch(55% .010 40);--border:oklch(88% .010 40);--hair:oklch(90% .008 40);
+    --accent:oklch(56% .15 38);--accent-ink:oklch(44% .14 38);--accent-soft:oklch(94% .03 40);
+    --font-sans:'PingFang SC','HarmonyOS Sans SC','Microsoft YaHei','Hiragino Sans GB',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+    --font-mono:'JetBrains Mono','SF Mono',ui-monospace,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--font-sans);font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  .page{background:var(--paper)}
+  .page-content{padding:0 !important}
+  .two-col{position:absolute;inset:0;display:grid;grid-template-columns:64mm 1fr}
+  .sidebar{background:var(--sidebar);padding:15mm 9mm 15mm;border-right:1px solid var(--border);display:flex;flex-direction:column;gap:16px}
+  .photo{width:100%;aspect-ratio:3/4;border:1px solid var(--border);background:var(--paper);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--faint);overflow:hidden}
+  .photo img{width:100%;height:100%;object-fit:cover;display:block}
+  .photo svg{width:34px;height:34px;opacity:.4}
+  .photo span{font-size:10px;letter-spacing:.1em}
+  .side-block h3{font-size:12px;font-weight:700;letter-spacing:.2em;color:var(--accent-ink);margin-bottom:9px}
+  .side-block .row{font-size:13px;color:var(--ink);line-height:1.8}
+  .side-block .row .k{color:var(--faint);font-size:12px;margin-right:5px}
+  .side-block .row a{color:var(--accent-ink);text-decoration:none}
+  .tools{display:flex;flex-wrap:wrap;gap:5px}
+  .tools .t{font-size:12.5px;color:var(--ink);background:var(--paper);border:1px solid var(--border);padding:3px 8px}
+  .main{padding:15mm 14mm 15mm}
+  .head{padding-bottom:13px;border-bottom:2px solid var(--ink);margin-bottom:14px}
+  .head .name{font-size:29px;font-weight:700;letter-spacing:.04em}
+  .head .role{font-size:14px;font-weight:600;color:var(--accent-ink);margin-top:4px}
+  .head .one{font-size:13px;color:var(--muted);margin-top:6px}
+  .head .edu-line{font-size:13px;color:var(--accent-ink);font-weight:500;margin-top:4px}
+  .sec-h{display:flex;align-items:center;gap:9px;margin-top:17px;margin-bottom:9px}
+  .sec-h .ico{width:15px;height:15px;color:var(--accent);flex-shrink:0}
+  .sec-h h2{font-size:14px;font-weight:700;letter-spacing:.14em;color:var(--ink)}
+  .sec-h::after{content:"";flex:1;height:1px;background:var(--hair)}
+  .summary{font-size:13px;line-height:1.8;text-align:justify;text-wrap:pretty}
+  .summary b{color:var(--accent-ink)}
+  .entry{margin-bottom:13px}
+  .entry-main{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:nowrap}
+  .entry-title{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+  .entry-title .org{font-size:14px;font-weight:700}
+  .entry-main .proj{font-size:14.5px;font-weight:700;letter-spacing:.01em}
+  .entry-main .company{font-size:11.5px;color:var(--muted);font-weight:500;letter-spacing:.02em}
+  .entry-title .role{font-size:13px;color:var(--accent-ink)}
+  .entry-date{font-family:var(--font-mono);font-size:11px;color:var(--faint);white-space:nowrap;letter-spacing:.02em}
+  .entry-meta{font-size:12px;color:var(--muted);margin-top:2px}
+  .entry-meta b{color:var(--ink)}
+  .entry-list{list-style:none;margin-top:4px}
+  .entry-list li{position:relative;padding-left:13px;font-size:12.5px;line-height:1.7;margin-bottom:2px;text-align:justify;text-wrap:pretty}
+  .entry-list li::before{content:"•";position:absolute;left:1px;top:5px;color:var(--accent);font-size:10px;line-height:1}
+  .entry-list .num{font-family:var(--font-mono);color:var(--accent-ink);font-weight:600}
+  .bullet{position:relative;padding-left:13px;font-size:12.5px;line-height:1.7;margin-bottom:2px;text-align:justify;text-wrap:pretty}
+  .bullet::before{content:"•";position:absolute;left:1px;top:5px;color:var(--accent);font-size:10px;line-height:1}
+  .bullet .num{font-family:var(--font-mono);color:var(--accent-ink);font-weight:600}
+  .bullet strong,.bullet b{color:var(--accent-ink);font-weight:600}
+</style>
+
+<div class="two-col">
+  <aside class="sidebar">
+    <div class="photo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.5" r="3.5"/><path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6"/></svg><span>证件照</span></div>
+    <div class="side-block">
+      <h3>联系方式</h3>
+      <div class="row"><span class="k">城市</span>北京</div>
+      <div class="row"><span class="k">电话</span>139-0108-2025</div>
+      <div class="row"><span class="k">邮箱</span>zhangyun@example.com</div>
+      <div class="row"><a href="https://yunzhang.io">yunzhang.io</a></div>
+    </div>
+    <div class="side-block">
+      <h3>研究工具</h3>
+      <div class="tools"><span class="t">PyTorch</span><span class="t">JAX</span><span class="t">HuggingFace</span><span class="t">DeepSpeed</span><span class="t">CUDA</span><span class="t">LaTeX</span><span class="t">Git</span></div>
+    </div>
+    <div class="side-block">
+      <h3>语言</h3>
+      <div class="row">Python · C++ · Julia</div>
+      <div class="row">SQL · Rust</div>
+      <div class="row"><span class="k">英语</span>TOEFL 112 · GRE 328</div>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="head">
+      <div class="name">张昀</div>
+      <div class="role">申请方向 · 计算机科学 直博（PhD）</div>
+      <div class="one">清华大学 · 计算机科学实验班（姚班）· 本科四年级 · 专业排名 1/60</div>
+    </div>
+
+    <div class="sec-h"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.4"/><path d="M5.5 19.5c0-3.3 2.9-6 6.5-6s6.5 2.7 6.5 6"/></svg><h2>个人简介</h2></div>
+    <div class="summary">清华姚班本科四年级，连续<b>三年专业第 1</b>。专注<b>大模型对齐与多模态学习</b>，以共一 / 一作在 NeurIPS、ICLR、CVPR 发表论文 <b>4</b> 篇；曾实习于微软亚洲研究院与 Google DeepMind，主导 RLHF 算法改进与多模态检索框架设计。</div>
+
+    <div class="sec-h"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3.5h6"/><path d="M10 3.5v5.5L5.5 17a2 2 0 0 0 1.8 3h9.4a2 2 0 0 0 1.8-3L14 9V3.5"/><path d="M7.8 14h8.4"/></svg><h2>科研经历</h2></div>
+    <div class="entry">
+      <div class="entry-main"><div class="entry-title"><span class="org">微软亚洲研究院（MSRA）</span><span class="role">研究实习生</span></div><span class="entry-date">2025.04 — 2025.11</span></div>
+      <ul class="entry-list"><li>提出过程奖励 RLHF 改进算法，数学推理胜率较基线提升 <span class="num">9.2%</span>，成果投递 NeurIPS 2025。</li></ul>
+    </div>
+    <div class="entry">
+      <div class="entry-main"><div class="entry-title"><span class="org">Google DeepMind</span><span class="role">研究实习生</span></div><span class="entry-date">2024.06 — 2024.12</span></div>
+      <ul class="entry-list"><li>主导视觉-语言对齐框架，VQAv2 / GQA 超过 SOTA <span class="num">1.4 / 1.1</span> 个点，论文被 ICLR 2025 录用（共一）。</li></ul>
+    </div>
+
+    <div class="sec-h"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 7.5l-4.5 4.5 4.5 4.5"/><path d="M15.5 7.5l4.5 4.5-4.5 4.5"/></svg><h2>项目作品</h2></div>
+    <div class="entry">
+      <div class="entry-main"><span class="proj">MM-Eval 多模态评测工具包</span><span class="company">个人项目</span><span class="entry-date">2024.03 — 至今</span></div>
+      <ul class="entry-list"><li>覆盖 <span class="num">12</span> 个多模态基准的统一评测框架，GitHub <span class="num">1.2k</span> stars，被 <span class="num">5</span> 个研究组采用。</li></ul>
+    </div>
+
+    <div class="sec-h"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="5"/><path d="M9 13.5l-2.2 6.5 5.2-3 5.2 3-2.2-6.5"/></svg><h2>荣誉与奖项</h2></div>
+    <ul class="entry-list" style="margin-top:2px">
+      <li>国家奖学金 · <span class="num">2024</span>（国家级）</li>
+      <li>ACM-ICPC 亚洲区域赛 金牌 · <span class="num">2023</span></li>
+      <li>NeurIPS Scholar Award · <span class="num">2024</span>（国际）</li>
+    </ul>
+  </main>
+</div>

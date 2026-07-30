@@ -1,0 +1,154 @@
+<style>
+  :root{
+    --bg:oklch(93% .003 250);--paper:oklch(100% 0 0);--ink:oklch(20% .018 255);--muted:oklch(45% .018 255);
+    --faint:oklch(55% .014 255);--rule:oklch(84% .012 255);--hair:oklch(90% .008 255);--border:oklch(88% .01 255);
+    --navy:oklch(31% .058 258);--navy-deep:oklch(24% .06 258);--navy-soft:oklch(95% .012 258);
+    --font-sans:'PingFang SC','HarmonyOS Sans SC','Microsoft YaHei','Hiragino Sans GB',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+    --font-mono:'JetBrains Mono','SF Mono',ui-monospace,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--font-sans);font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased;font-feature-settings:'tnum' on;text-rendering:optimizeLegibility}
+  .page{background:var(--paper)}
+  .resume-header{display:grid;grid-template-columns:1fr auto;gap:22px;align-items:start;padding-bottom:12px;border-bottom:2.5px solid var(--navy)}
+  .name-block .cn{font-weight:900;font-size:32px;color:var(--navy-deep);letter-spacing:.14em;line-height:1}
+  .name-block .en{font-weight:500;font-size:11px;color:var(--faint);letter-spacing:.32em;margin-top:6px}
+  .name-block .intent{margin-top:11px;font-size:13px;color:var(--ink)}
+  .name-block .edu-line{margin-top:6px;font-family:var(--font-sans);font-size:12px;color:var(--navy-deep);font-weight:500}
+  .name-block .intent b{color:var(--navy-deep);font-weight:700}
+  .name-block .intent .sep{color:var(--faint);margin:0 8px}
+  .photo{width:27mm;height:38mm;border:1px solid var(--rule);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:var(--faint);overflow:hidden}
+  .photo img{width:100%;height:100%;object-fit:cover;display:block}
+  .photo svg{width:26px;height:26px;opacity:.5}
+  .photo span{font-size:10px;letter-spacing:.1em}
+  .bio-form{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--rule);border-right:0;border-bottom:0;margin-top:12px}
+  .bio-form>div{display:flex;gap:6px;padding:6px 11px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);font-size:12.5px;align-items:baseline}
+  .bio-form .k{color:var(--faint);font-size:11px;flex-shrink:0;letter-spacing:.04em}
+  .bio-form .v{color:var(--ink);font-weight:500}
+  .sec-head{display:flex;align-items:center;gap:9px;margin-top:18px;margin-bottom:10px}
+  .sec-head .ico{width:15px;height:15px;color:var(--navy);flex-shrink:0}
+  .sec-head h2{font-weight:700;font-size:15px;color:var(--navy-deep);letter-spacing:.1em}
+  .sec-head h2 .en{font-weight:400;font-size:10px;color:var(--faint);letter-spacing:.22em;text-transform:uppercase;margin-left:7px}
+  .sec-head::after{content:"";flex:1;height:1px;background:var(--hair)}
+  .entry{margin-bottom:11px}
+  .entry-main{display:flex;align-items:baseline;justify-content:space-between;gap:14px;flex-wrap:nowrap}
+  .entry-title{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
+  .entry-title .org{font-weight:700;font-size:14px}
+  .entry-main .proj{font-weight:700;font-size:14.5px;letter-spacing:.01em}
+  .entry-main .company{font-size:11.5px;color:var(--muted);font-weight:500;letter-spacing:.02em}
+  .entry-title .role{font-size:13px;color:var(--navy-deep)}
+  .entry-title .badge{font-size:10.5px;color:var(--navy-deep);background:var(--navy-soft);padding:1.5px 7px;letter-spacing:.04em}
+  .entry-date{font-family:var(--font-mono);font-size:11px;color:var(--faint);white-space:nowrap;letter-spacing:.02em}
+  .entry-meta{margin-top:2px;font-size:11.5px;color:var(--muted);display:flex;gap:14px;flex-wrap:wrap}
+  .entry-meta b{color:var(--ink);font-weight:600}
+  .entry-list{list-style:none;margin-top:5px}
+  .entry-list li{position:relative;padding-left:13px;font-size:12.5px;line-height:1.72;color:var(--ink);margin-bottom:2px;text-align:justify;text-wrap:pretty}
+  .entry-list li::before{content:"•";position:absolute;left:1px;top:6px;color:var(--navy);font-size:10px;line-height:1}
+  .entry-list .num{font-family:var(--font-mono);color:var(--navy-deep);font-weight:600}
+  .bullet{position:relative;padding-left:13px;font-size:12.5px;line-height:1.72;color:var(--ink);margin-bottom:2px;text-align:justify;text-wrap:pretty}
+  .bullet::before{content:"•";position:absolute;left:1px;top:6px;color:var(--navy);font-size:10px;line-height:1}
+  .bullet .num{font-family:var(--font-mono);color:var(--navy-deep);font-weight:600}
+  .bullet strong,.bullet b{color:var(--navy-deep);font-weight:600}
+  .awards{display:grid;grid-template-columns:1fr 1fr;gap:3px 24px}
+  .award{display:grid;grid-template-columns:40px 1fr auto;gap:8px;align-items:baseline;font-size:12.5px;padding:4px 0;border-bottom:1px dashed var(--hair)}
+  .award .yr{font-family:var(--font-mono);font-size:11px;color:var(--navy)}
+  .award .lvl{font-size:11px;color:var(--navy-deep);font-weight:600}
+  .skills{display:flex;flex-direction:column}
+  .skills .row{display:grid;grid-template-columns:78px 1fr;gap:12px;padding:5px 0;border-bottom:1px dashed var(--hair)}
+  .skills .cat{font-weight:700;font-size:12.5px;color:var(--navy-deep);letter-spacing:.04em}
+  .skills .tags{font-size:12.5px;color:var(--ink)}
+  .skills .tags b{color:var(--navy-deep);font-weight:600}
+  .summary p{font-size:13px;line-height:1.82;color:var(--ink);text-align:justify;text-wrap:pretty;border-left:3px solid var(--navy-soft);padding-left:11px}
+  .summary p b{color:var(--navy-deep)}
+</style>
+
+<header class="resume-header">
+  <div class="name-block">
+    <div class="cn">张昀</div>
+    <div class="en">YUN ZHANG · 本科</div>
+    <div class="edu-line">清华大学 · 计算机科学实验班（姚班）</div>
+    <div class="intent">求职意向：<b>计算机科学 直博（PhD）</b><span class="sep">·</span>期望地 北京</div>
+  </div>
+  <div class="photo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.5" r="3.5"/><path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6"/></svg><span>证件照</span></div>
+  <div class="bio-form" style="grid-column:1 / -1">
+    <div><span class="k">性别</span><span class="v">男</span></div>
+    <div><span class="k">出生年月</span><span class="v">2004.05</span></div>
+    <div><span class="k">政治面貌</span><span class="v">共青团员</span></div>
+    <div><span class="k">籍贯</span><span class="v">浙江</span></div>
+    <div><span class="k">民族</span><span class="v">汉族</span></div>
+    <div><span class="k">学历</span><span class="v">本科</span></div>
+    <div><span class="k">电话</span><span class="v">139-0108-2025</span></div>
+    <div><span class="k">邮箱</span><span class="v">zhangyun@example.com</span></div>
+  </div>
+</header>
+
+<div class="sec-head" data-stick="1"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9.5l10-4 10 4-10 4z"/><path d="M6 11.3v3.7c0 1.6 2.7 3 6 3s6-1.4 6-3v-3.7"/><path d="M22 9.5v4"/></svg><h2>教育背景<span class="en">Education</span></h2></div>
+<div class="entry" data-stick="1">
+  <div class="entry-main"><div class="entry-title"><span class="org">清华大学</span><span class="role">计算机科学实验班（姚班）· 本科</span></div><span class="entry-date">2022.09 — 2026.06</span></div>
+  <div class="entry-meta"><span>GPA <b>3.97 / 4.0</b></span><span>专业排名 <b>1 / 60</b></span><span>核心课：机器学习（97）· 深度学习（98）· 凸优化（96）</span></div>
+</div>
+
+<div class="sec-head" data-stick="1"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7.5" width="18" height="12.5" rx="1.6"/><path d="M9 7.5V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1.5"/><path d="M3 12.5h18"/></svg><h2>科研经历<span class="en">Experience</span></h2></div>
+<div class="entry" data-stick="1">
+  <div class="entry-main"><div class="entry-title"><span class="org">微软亚洲研究院（MSRA）</span><span class="role">自然语言计算组 · 研究实习生</span></div><span class="entry-date">2025.04 — 2025.11</span></div>
+</div>
+<div class="bullet">提出基于过程奖励的 RLHF 改进算法，将奖励模型分解为"步骤级正确性"信号，在数学推理任务上胜率较基线提升 <span class="num">9.2%</span>，成果投递 NeurIPS 2025。</div>
+<div class="bullet">构建 <span class="num">2 万</span>条高质量过程标注数据，设计半自动标注管线将人工成本降低 <span class="num">60%</span>，开源内部评测基准被组内 <span class="num">3</span> 个项目复用。</div>
+<div class="bullet">与资深研究员合作完成从 idea 到论文的全流程，独立负责实验设计、训练调度（DeepSpeed ZeRO-3）与 ablation 分析。</div>
+
+<div class="entry" data-stick="1">
+  <div class="entry-main"><div class="entry-title"><span class="org">Google DeepMind</span><span class="role">Multimodal Perception 组 · 研究实习生</span></div><span class="entry-date">2024.06 — 2024.12</span></div>
+</div>
+<div class="bullet">主导视觉-语言对齐框架设计，提出基于对比-生成混合损失的训练目标，在 VQAv2 与 GQA 上分别超过 SOTA <span class="num">1.4 / 1.1</span> 个点，论文被 ICLR 2025 录用（共一）。</div>
+<div class="bullet">复现并改进 LLaVA 系列基线，定位数据配比与分辨率对下游推理能力的影响，沉淀为组内多模态训练手册。</div>
+<div class="bullet">远程协作完成 <span class="num">3</span> 轮 rebuttal，独立撰写 method 与 appendix 共 <span class="num">4</span> 页。</div>
+
+<div class="entry" data-stick="1">
+  <div class="entry-main"><div class="entry-title"><span class="org">清华大学交互式人工智能组</span><span class="role">本科科研助理 · 导师：Y 教授</span></div><span class="entry-date">2023.09 — 至今</span></div>
+</div>
+<div class="bullet">主导多模态检索增强框架设计与实验，提出动态路由的检索头使模型按问题难度自适应调用外部知识，论文被 CVPR 2024 Workshop 录用（一作）。</div>
+<div class="bullet">指导 <span class="num">2</span> 名低年级本科生完成子课题，其中 <span class="num">1</span> 人以二作身份在 ACL Workshop 发表论文。</div>
+
+<div class="sec-head" data-stick="1"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 7.5l-4.5 4.5 4.5 4.5"/><path d="M15.5 7.5l4.5 4.5-4.5 4.5"/></svg><h2>项目经历<span class="en">Projects</span></h2></div>
+<div class="entry" data-stick="1">
+  <div class="entry-main"><span class="proj">开源多模态评测工具包 MM-Eval</span><span class="company">个人项目</span><span class="entry-date">2024.03 — 至今</span></div>
+</div>
+<div class="bullet">从零搭建覆盖 <span class="num">12</span> 个多模态基准的统一评测框架，支持一键复现与分布式评测，GitHub 收获 <span class="num">1.2k</span> stars，被 <span class="num">5</span> 个研究组作为标准评测工具采用。</div>
+<div class="bullet">设计插件化数据集接口，使新增基准的接入成本从 <span class="num">2 天</span>降到 <span class="num">2 小时</span>；编写完整文档与 CI，累计接受外部 PR <span class="num">40+</span>。</div>
+
+<div class="entry" data-stick="1">
+  <div class="entry-main"><span class="proj">高效推理内核 lite-attn</span><span class="company">实验室项目</span><span class="entry-date">2024.09 — 2025.02</span></div>
+</div>
+<div class="bullet">实现 FlashAttention-2 的 Triton 移植与 int8 量化变体，在 A100 上对 7B 模型推理吞吐提升 <span class="num">38%</span>，显存占用降低 <span class="num">31%</span>。</div>
+<div class="bullet">通过算子融合与 KV-cache 重排消除 <span class="num">4</span> 个冗余内核，端到端延迟下降 <span class="num">22%</span>。</div>
+
+<div class="sec-head" data-stick="1"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 3.5h7l4 4v13a1 1 0 0 1-1 1H6.5a1 1 0 0 1-1-1V4.5a1 1 0 0 1 1-1z"/><path d="M13 3.5v4h4"/><path d="M8 13h8M8 16.5h5"/></svg><h2>论文发表<span class="en">Publications</span></h2></div>
+<div class="bullet">[C] <b>Yun Zhang*</b>, H. Li, X. Wang, et al. Process-Reward RLHF for Faithful Mathematical Reasoning. NeurIPS, 2025.（*共一）</div>
+<div class="bullet">[C] <b>Yun Zhang*</b>, M. Chen, et al. Hybrid Contrastive-Generative Alignment for Vision-Language Models. ICLR, 2025.（*共一）</div>
+<div class="bullet">[W] <b>Yun Zhang</b>, X. Wang. Adaptive Multimodal Retrieval for Open-Domain VQA. CVPR Workshop, 2024.（一作）</div>
+<div class="bullet">[W] <b>Yun Zhang</b>, T. Liu. On the Stability of Step-level Reward in RLHF. NeurIPS Workshop, 2024.（一作）</div>
+
+<div class="sec-head" data-stick="1"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="5"/><path d="M9 13.5l-2.2 6.5 5.2-3 5.2 3-2.2-6.5"/></svg><h2>荣誉与奖项<span class="en">Honors</span></h2></div>
+<div class="awards">
+  <div class="award"><span class="yr">2024</span><span>国家奖学金</span><span class="lvl">国家级</span></div>
+  <div class="award"><span class="yr">2024</span><span>清华大学特等奖学金</span><span class="lvl">提名</span></div>
+  <div class="award"><span class="yr">2023</span><span>ACM-ICPC 亚洲区域赛</span><span class="lvl">金牌</span></div>
+  <div class="award"><span class="yr">2024</span><span>全国大学生数学竞赛</span><span class="lvl">一等奖</span></div>
+  <div class="award"><span class="yr">2024</span><span>NeurIPS Scholar Award</span><span class="lvl">国际</span></div>
+  <div class="award"><span class="yr">2023</span><span>清华大学优秀学生</span><span class="lvl">校级</span></div>
+  <div class="award"><span class="yr">2023</span><span>字节跳动奖学金</span><span class="lvl">企业级</span></div>
+  <div class="award"><span class="yr">2022</span><span>高考省理科前 10 / 姚班录取</span><span class="lvl">省级</span></div>
+</div>
+
+<div class="sec-head" data-stick="1"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><h2>学术服务<span class="en">Service</span></h2></div>
+<div class="bullet">担任 NeurIPS 2025、ICLR 2025、ACL 2025 审稿人，累计审稿 <span class="num">8</span> 篇。</div>
+<div class="bullet">担任 MM-Eval 开源社区维护者，主持每月线上技术分享 <span class="num">6</span> 期。</div>
+
+<div class="sec-head" data-stick="1"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v2.5M12 19v2.5M21.5 12H19M5 12H2.5M18.3 5.7l-1.7 1.7M7.4 16.6l-1.7 1.7M18.3 18.3l-1.7-1.7M7.4 7.4 5.7 5.7"/></svg><h2>技能与英语<span class="en">Skills</span></h2></div>
+<div class="skills">
+  <div class="row"><span class="cat">科研工具</span><span class="tags"><b>PyTorch</b> · <b>JAX</b> · HuggingFace · DeepSpeed · CUDA · <b>LaTeX</b> · Linux · Git</span></div>
+  <div class="row"><span class="cat">编程语言</span><span class="tags">Python · C++ · Julia · SQL · Rust</span></div>
+  <div class="row"><span class="cat">英语</span><span class="tags">TOEFL <b>112</b>（口语 26）· GRE <b>328</b>（V158 Q170）· 可全英文科研交流</span></div>
+</div>
+
+<div class="sec-head" data-stick="1"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.4"/><path d="M5.5 19.5c0-3.3 2.9-6 6.5-6s6.5 2.7 6.5 6"/></svg><h2>自我评价<span class="en">Profile</span></h2></div>
+<div class="summary"><p>清华大学计算机科学实验班（姚班）本科四年级，连续三年专业第 <b>1</b>。专注<b>大模型对齐与多模态学习</b>方向，以<b>共一 / 一作</b>在 NeurIPS、ICLR、CVPR 发表论文 <b>4</b> 篇；曾在微软亚洲研究院与 Google DeepMind 实习，主导 RLHF 算法改进与多模态检索框架设计。擅长从理论分析到工程落地的全链路研究，希望加入顶尖科研团队攻读博士学位，在<b>可信大模型</b>方向做出系统性贡献。</p></div>

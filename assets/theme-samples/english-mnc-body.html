@@ -1,0 +1,123 @@
+<style>
+  :root{
+    --bg:oklch(93% .004 30);--paper:oklch(99.5% .002 40);--ink:oklch(20% .014 30);--muted:oklch(44% .012 30);
+    --faint:oklch(55% .010 30);--border:oklch(88% .010 30);--hair:oklch(91% .008 30);
+    --accent:oklch(40% .13 25);--accent-ink:oklch(33% .12 25);--accent-soft:oklch(95% .022 25);
+    --font-sans:'PingFang SC','HarmonyOS Sans SC',-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue','Roboto',system-ui,sans-serif;
+    --font-mono:'JetBrains Mono','SF Mono',ui-monospace,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--font-sans);font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased;font-feature-settings:'tnum' on;text-rendering:optimizeLegibility}
+  .page{background:var(--paper)}
+  .resume-header{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center;padding-bottom:13px;border-bottom:2px solid var(--ink)}
+  .name-row{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+  .name-row .name{font-weight:700;font-size:28px;letter-spacing:.01em}
+  .name-row .role{font-size:13px;font-weight:600;color:var(--accent-ink)}
+  .contact{margin-top:8px;font-family:var(--font-mono);font-size:11px;color:var(--muted)}
+  .contact .sep{color:var(--accent);margin:0 6px}
+  .edu-line{margin-top:5px;font-family:var(--font-sans);font-size:12px;color:var(--accent-ink);font-weight:500}
+  .photo{width:26mm;height:36mm;border:1px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:var(--faint);overflow:hidden}
+  .photo img{width:100%;height:100%;object-fit:cover;display:block}
+  .photo svg{width:26px;height:26px;opacity:.45}
+  .photo span{font-size:10px;letter-spacing:.1em}
+  .sec-head{display:flex;align-items:center;gap:9px;margin-top:16px;margin-bottom:8px}
+  .sec-head .ico{width:15px;height:15px;color:var(--accent);flex-shrink:0}
+  .sec-head h2{font-size:13px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--ink)}
+  .sec-head::after{content:"";flex:1;height:1px;background:var(--hair)}
+  .summary p{font-size:13px;line-height:1.7;text-align:justify;text-wrap:pretty}
+  .summary p strong{color:var(--accent-ink);font-weight:600}
+  .entry{margin-bottom:11px}
+  .entry-main{display:flex;align-items:baseline;justify-content:space-between;gap:14px;flex-wrap:nowrap}
+  .entry-title{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+  .entry-title .org{font-size:14.5px;font-weight:700;letter-spacing:.01em}
+  .entry-main .proj{font-size:14.5px;font-weight:700;letter-spacing:.01em}
+  .entry-main .company{font-size:11.5px;color:var(--muted);font-weight:500;letter-spacing:.03em}
+  .entry-title .role{font-size:13px;color:var(--accent-ink);font-style:italic}
+  .entry-date{font-family:var(--font-mono);font-size:10.5px;color:var(--faint);white-space:nowrap;letter-spacing:.04em}
+  .entry-list{list-style:none;margin-top:4px}
+  .entry-list li{position:relative;padding-left:13px;font-size:12.5px;line-height:1.48;color:var(--ink);margin-bottom:2px;text-align:justify;text-wrap:pretty}
+  .entry-list li::before{content:"•";position:absolute;left:1px;top:4px;color:var(--accent);font-size:10px;line-height:1}
+  .entry-list .num{font-family:var(--font-mono);color:var(--accent-ink);font-weight:600}
+  .entry-list b{color:var(--ink);font-weight:600}
+  .bullet{position:relative;padding-left:13px;font-size:12.5px;line-height:1.48;color:var(--ink);margin-bottom:2px;text-align:justify;text-wrap:pretty}
+  .bullet::before{content:"•";position:absolute;left:1px;top:4px;color:var(--accent);font-size:10px;line-height:1}
+  .bullet .num{font-family:var(--font-mono);color:var(--accent-ink);font-weight:600}
+  .bullet b{color:var(--ink);font-weight:600}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:3px 22px}
+  .skill-line{display:grid;grid-template-columns:96px 1fr;gap:10px;padding:3px 0;border-bottom:1px dashed var(--hair);font-size:12.5px}
+  .skill-line .k{font-weight:600;color:var(--accent-ink)}
+</style>
+
+<header class="resume-header">
+  <div class="ident">
+    <div class="name-row"><span class="name">Yun Zhang · 张昀</span><span class="role">PhD Applicant · Computer Science</span></div>
+    <div class="contact">Beijing<span class="sep">·</span>+86 139-0108-2025<span class="sep">·</span>zhangyun@example.com<span class="sep">·</span><a href="https://yunzhang.io">yunzhang.io</a></div>
+  </div>
+  <div class="photo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.5" r="3.5"/><path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6"/></svg><span>PHOTO</span></div>
+</header>
+
+<div class="sec-head" data-stick="1"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.4"/><path d="M5.5 19.5c0-3.3 2.9-6 6.5-6s6.5 2.7 6.5 6"/></svg><h2>Profile</h2></div>
+<div class="summary"><p>Senior undergraduate in Tsinghua University's <strong>Yao Class</strong> (Computer Science Experimental Class), ranked <strong>1st</strong> in the major for three consecutive years. Focused on <strong>large-model alignment and multimodal learning</strong>, with <strong>4 papers</strong> at NeurIPS, ICLR and CVPR as co-first / first author. Interned at Microsoft Research Asia and Google DeepMind, leading RLHF algorithm improvements and multimodal retrieval framework design. Seeking to join a top research group for a PhD and make systematic contributions toward <strong>trustworthy large models</strong>.</p></div>
+
+<div class="sec-head" data-stick="1"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9.5l10-4 10 4-10 4z"/><path d="M6 11.3v3.7c0 1.6 2.7 3 6 3s6-1.4 6-3v-3.7"/><path d="M22 9.5v4"/></svg><h2>Education</h2></div>
+<div class="entry" data-stick="1">
+  <div class="entry-main"><div class="entry-title"><span class="org">Tsinghua University</span><span class="role">Yao Class · B.Eng. in Computer Science</span></div><span class="entry-date">Sep 2022 — Jun 2026</span></div>
+  <div class="bullet" style="padding-left:0">GPA <span class="num">3.97 / 4.0</span> · Rank <span class="num">1 / 60</span> · Core courses: Machine Learning (97), Deep Learning (98), Convex Optimization (96)</div>
+</div>
+
+<div class="sec-head" data-stick="1"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3.5h6"/><path d="M10 3.5v5.5L5.5 17a2 2 0 0 0 1.8 3h9.4a2 2 0 0 0 1.8-3L14 9V3.5"/><path d="M7.8 14h8.4"/></svg><h2>Research Experience</h2></div>
+<div class="entry" data-stick="1">
+  <div class="entry-main"><div class="entry-title"><span class="org">Microsoft Research Asia (MSRA)</span><span class="role">Natural Language Computing · Research Intern</span></div><span class="entry-date">Apr 2025 — Nov 2025</span></div>
+</div>
+<div class="bullet">Proposed a process-reward RLHF improvement that decomposes the reward model into "step-level correctness" signals, lifting win rate over baseline by <span class="num">9.2%</span> on math reasoning; submitted to NeurIPS 2025.</div>
+<div class="bullet">Built <span class="num">20K</span> high-quality process-annotation samples and a semi-automatic labeling pipeline that cut manual cost by <span class="num">60%</span>; open-sourced an internal eval benchmark reused by <span class="num">3</span> group projects.</div>
+<div class="bullet">Collaborated with senior researchers through the full idea-to-paper cycle, owning experiment design, training orchestration (DeepSpeed ZeRO-3) and ablation analysis.</div>
+
+<div class="entry" data-stick="1">
+  <div class="entry-main"><div class="entry-title"><span class="org">Google DeepMind</span><span class="role">Multimodal Perception · Research Intern</span></div><span class="entry-date">Jun 2024 — Dec 2024</span></div>
+</div>
+<div class="bullet">Led the vision-language alignment framework and a hybrid contrastive-generative objective, surpassing SOTA by <span class="num">1.4 / 1.1</span> points on VQAv2 / GQA; paper accepted to ICLR 2025 (co-first).</div>
+<div class="bullet">Reproduced and improved LLaVA-series baselines, identifying how data mixing and resolution affect downstream reasoning; distilled into the group's multimodal training handbook.</div>
+<div class="bullet">Drove <span class="num">3</span> rounds of rebuttal remotely, independently writing the method and appendix (<span class="num">4</span> pages).</div>
+
+<div class="entry" data-stick="1">
+  <div class="entry-main"><div class="entry-title"><span class="org">Tsinghua Interactive AI Group</span><span class="role">Undergraduate Research Assistant · Advisor: Prof. Y</span></div><span class="entry-date">Sep 2023 — Present</span></div>
+</div>
+<div class="bullet">Led a multimodal retrieval-augmentation framework with a dynamically routed retrieval head that adapts external-knowledge use to question difficulty; paper accepted to CVPR 2024 Workshop (first author).</div>
+<div class="bullet">Mentored <span class="num">2</span> junior undergraduates on sub-projects; one published at ACL Workshop as second author.</div>
+
+<div class="sec-head" data-stick="1"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 7.5l-4.5 4.5 4.5 4.5"/><path d="M15.5 7.5l4.5 4.5-4.5 4.5"/></svg><h2>Projects</h2></div>
+<div class="entry" data-stick="1">
+  <div class="entry-main"><span class="proj">MM-Eval · Multimodal Eval Toolkit</span><span class="company">Personal Project</span><span class="entry-date">Mar 2024 — Present</span></div>
+</div>
+<div class="bullet">Built a unified eval framework covering <span class="num">12</span> multimodal benchmarks with one-click reproducibility and distributed evaluation; <span class="num">1.2k</span> GitHub stars, adopted as standard by <span class="num">5</span> research groups.</div>
+<div class="bullet">Designed a plugin-based dataset interface, cutting benchmark onboarding from <span class="num">2 days</span> to <span class="num">2 hours</span>; wrote full docs and CI, merging <span class="num">40+</span> external PRs.</div>
+
+<div class="entry" data-stick="1">
+  <div class="entry-main"><span class="proj">lite-attn · Efficient Inference Kernel</span><span class="company">Lab Project</span><span class="entry-date">Sep 2024 — Feb 2025</span></div>
+</div>
+<div class="bullet">Ported FlashAttention-2 to Triton with an int8 quantized variant, lifting 7B-model inference throughput on A100 by <span class="num">38%</span> and cutting memory by <span class="num">31%</span>.</div>
+<div class="bullet">Fused operators and reordered the KV-cache to eliminate <span class="num">4</span> redundant kernels, reducing end-to-end latency by <span class="num">22%</span>.</div>
+
+<div class="sec-head" data-stick="1"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 3.5h7l4 4v13a1 1 0 0 1-1 1H6.5a1 1 0 0 1-1-1V4.5a1 1 0 0 1 1-1z"/><path d="M13 3.5v4h4"/><path d="M8 13h8M8 16.5h5"/></svg><h2>Publications</h2></div>
+<div class="bullet">[C] <b>Yun Zhang*</b>, H. Li, X. Wang, et al. Process-Reward RLHF for Faithful Mathematical Reasoning. <i>NeurIPS</i>, 2025. (*co-first)</div>
+<div class="bullet">[C] <b>Yun Zhang*</b>, M. Chen, et al. Hybrid Contrastive-Generative Alignment for Vision-Language Models. <i>ICLR</i>, 2025. (*co-first)</div>
+<div class="bullet">[W] <b>Yun Zhang</b>, X. Wang. Adaptive Multimodal Retrieval for Open-Domain VQA. <i>CVPR Workshop</i>, 2024. (first author)</div>
+<div class="bullet">[W] <b>Yun Zhang</b>, T. Liu. On the Stability of Step-level Reward in RLHF. <i>NeurIPS Workshop</i>, 2024. (first author)</div>
+
+<div class="sec-head" data-stick="1"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="5"/><path d="M9 13.5l-2.2 6.5 5.2-3 5.2 3-2.2-6.5"/></svg><h2>Selected Honors</h2></div>
+<div class="bullet"><span class="num">2024</span> National Scholarship (National) · Tsinghua Special Scholarship (Nominee) · NeurIPS Scholar Award (International)</div>
+<div class="bullet"><span class="num">2023</span> ACM-ICPC Asia Regional (Gold) · Tsinghua Outstanding Student · ByteDance Scholarship</div>
+<div class="bullet"><span class="num">2024</span> National Undergraduate Math Competition (First Prize) · <span class="num">2022</span> Provincial Top-10 Gaokao / Yao Class</div>
+
+<div class="sec-head" data-stick="1"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><h2>Service</h2></div>
+<div class="bullet">Reviewer for NeurIPS 2025, ICLR 2025 and ACL 2025; reviewed <span class="num">8</span> papers.</div>
+<div class="bullet">Maintainer of the MM-Eval open-source community; hosted <span class="num">6</span> monthly online tech talks.</div>
+
+<div class="sec-head" data-stick="1"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v2.5M12 19v2.5M21.5 12H19M5 12H2.5M18.3 5.7l-1.7 1.7M7.4 16.6l-1.7 1.7M18.3 18.3l-1.7-1.7M7.4 7.4 5.7 5.7"/></svg><h2>Skills & Languages</h2></div>
+<div class="grid2">
+  <div class="skill-line"><span class="k">Research</span><span>PyTorch · JAX · HuggingFace · DeepSpeed · CUDA</span></div>
+  <div class="skill-line"><span class="k">Languages</span><span>Python · C++ · Julia · SQL · Rust</span></div>
+  <div class="skill-line"><span class="k">Interests</span><span>LLM Alignment & RLHF · Multimodal · Efficient Pretraining · RAG</span></div>
+  <div class="skill-line"><span class="k">English</span><span>TOEFL <b>112</b> (Speaking 26) · GRE <b>328</b> · Fluent in research</span></div>
+</div>

@@ -2,15 +2,15 @@
 
 一个陪你把简历从头做到底的 [Agent Skill](https://agentskills.io)——从挖素材、写改简历，到导出 A4 PDF、生成招聘平台招呼语，全程像在跟一个懂行的朋友聊天。
 
-遵循 [agentskills.io](https://agentskills.io) 开放规范，任何兼容的 agent 工具都能用：Claude Code、Cursor、Codex、Gemini CLI、OpenCode、Copilot……换工具不丢积累。
+可在 Claude Code、Cursor、Codex、Gemini CLI、OpenCode、Copilot 等工具里使用。
 
 ## 效果预览
 
 写一份普通 Markdown，直接渲染成矢量 A4 简历——所见即所得。下面是一份样例（[完整源文件 `sample-resume.md`](skills/amlei-resume/assets/sample-resume.md)）导出后的效果：
 
-<p align="center">
-  <img src="assets/resume-preview.png" alt="简历导出预览" width="720">
-</p>
+![简历导出预览](assets/resume-preview.png)
+
+![预览页可就地编辑：工具栏 + 正在改的文字](assets/edit-preview.png)
 
 > 也想看 PDF 版？打开 [A4 预览 PDF](assets/张昀-计算机科学直博%20·%20简历%20A4%20预览.pdf)（GitHub 内置阅读器直接查看）。
 
@@ -37,6 +37,21 @@ date: 2025.04 — 2025.11
 
 模块顺序即简历顺序，写完选主题、一键导出 PDF。
 
+<!-- 6 套主题一览：同一份 sample-resume 换皮（每主题第 1 页） -->
+| 学术 / 科研 | 技术密排 | 内容运营 |
+|:--:|:--:|:--:|
+| ![学术 / 科研](assets/theme-samples/academic.png) | ![技术密排](assets/theme-samples/tech-dense.png) | ![内容运营](assets/theme-samples/content-green.png) |
+
+| 外企 / 英文 | 侧栏创意 | 国企 / 正式 |
+|:--:|:--:|:--:|
+| ![外企 / 英文](assets/theme-samples/english-mnc.png) | ![侧栏创意](assets/theme-samples/sidebar-creative.png) | ![国企 / 正式](assets/theme-samples/soe-formal.png) |
+
+> 想看整页？逐个打开各主题的完整预览：[学术 / 科研](assets/theme-samples/academic.html) · [技术密排](assets/theme-samples/tech-dense.html) · [内容运营](assets/theme-samples/content-green.html) · [外企 / 英文](assets/theme-samples/english-mnc.html) · [侧栏创意](assets/theme-samples/sidebar-creative.html) · [国企 / 正式](assets/theme-samples/soe-formal.html)
+
+同一份简历还能一键切换 **8 套点缀配色**——预览页「配色」下拉选好，导出 PDF 沿用：
+
+![8 套点缀配色（墨蓝 / 工程蓝 / 森林绿 / 酒红 / 藏青 / 紫 / 琥珀 / 石墨黑）](assets/color-schemes.png)
+
 ## 它解决什么问题
 
 写简历的痛苦通常是三件：
@@ -61,6 +76,7 @@ amlei-resume 的思路是：**你只管聊你做过什么，剩下的交给它�
 | 改现有简历 | 把现版丢进来，告诉它哪儿不满意，逐节迭代 |
 | 换岗位方向 | 基于已有经历重新选材，投影出一份新方向的简历 |
 | 导出 A4 PDF | 选主题，装配 HTML，浏览器「导出 PDF」即得矢量成片 |
+| 改渲染好的简历 | 装配出的 HTML 可在浏览器就地编辑：改字、点 × / + 删加技能条，完成自动重排分页，还能一键导回 Markdown |
 | 了解岗位行情 | 给岗位 + 城市，拉一份市场报告（薪资 / 能力要求 / 技术栈） |
 | 写招聘平台招呼语 | 简历定稿后自动产出 3–5 条不同方向的开场白 |
 | 让它记住你 | 聊到的经历 / 项目 / 能力会沉淀成你的长期档案 |
