@@ -20,7 +20,7 @@ amlei-resume 是**消费者**。一个用户可有多个职业身份（后端 / 
 3. **目标公司 / JD**：本次投递的具体目标（→ 该身份的 `target_companies[]` / 本次 resume 的 `jd.md`），用作投影打分和评估的镜子。
 4. **事实素材（按需索取，不空等）**：聊到项目时主动要材料——
    - 项目资料文件（.docx / .pdf / .pptx / README / 设计稿等）
-   - 项目地址（GitHub / 博客 / 飞书文档 / 作品集链接）
+   - 项目 / 作品的线上展示地址（作品集、案例库、在线文档、博客）
    - 工作经历的补充口述（公司 / 岗位 / 时间段 / 量化结果）
 
    **这些不是直接喂给简历的输入**，而是 amlei-profile 提取事实的原料：用户给 → 走 ingestion → 评估 agent + 用户确认 → 写入 `_shared/experiences.json` → 本 skill 再投影到 emphasis。流程见 amlei-profile 的 [references/ingestion.md](../../amlei-profile/references/ingestion.md) 与 [references/facts.md](../../amlei-profile/references/facts.md)。
@@ -113,7 +113,7 @@ amlei-resume 是**消费者**。一个用户可有多个职业身份（后端 / 
 
 | 元素 | 写法 |
 |------|------|
-| 首模块 | `# self-intro`（必须是第一个 `#`），下用 `key: value` 放 name / role / gender / location / phone / email / avatar / links 等。多值字段（links、education）用缩进子项：<br>`links:`<br>`- GitHub: url`<br>`education:`<br>`- 学校: xxx`<br>`- 专业: xxx` |
+| 首模块 | `# self-intro`（必须是第一个 `#`），下用 `key: value` 放 name / role / gender / location / phone / email / avatar / links 等。多值字段（links、education）用缩进子项：<br>`links:`<br>`- 作品集: url`<br>`education:`<br>`- 学校: xxx`<br>`- 专业: xxx` |
 | 模块 | `# 模块名`（出现顺序 = 简历模块顺序） |
 | 简介 | 模块下纯文本段 |
 | 标签 | 模块下「标签, 标签」单行（研究兴趣 / 方向） |
@@ -150,6 +150,7 @@ amlei-resume 是**消费者**。一个用户可有多个职业身份（后端 / 
 - **公司项目别全塞进实习 bullet**：公司项目要有独立的 `# 项目经历` 条目（公司项目在前、个人项目在后）；实习经历只放基本盘（总体职责 + 协调 / 运维）+ 1-2 高光，核心技术攻坚（带量化与闭环）抽成公司项目单独立项，避免内容重复又无重点。
 - **导入旧简历别漏证件照**：用 `extract_avatar.py` 抽出 `avatar.png` 放进简历目录，并在 self-intro 写 `avatar: avatar.png`；漏了简历就没头像。
 - **技能区写"能力"不写"工具"**：技能点列的是可迁移的能力/范式（Agent Loop/ReAct、推理服务部署、OCR 选型与调度、全栈落地…），不是工具名（LangChain、Docker、Playwright、Redis、Shadcn UI…）。工具是"用过"不是"会"——照文档就能跑起来的东西当技能点，既是评估环节的"背单词"反模式，也容易被面试官一句"这个具体怎么用"问翻。工具名作为**证据**下沉到项目 bullet 里（在真实业务语境中比堆 chip 更有说服力，ATS 关键词照样能命中）。判断标准：写每条技能前先问"这是能力还是工具名？"——是工具就移到项目里，技能区只留能力。语言（Go/Python…）可作技能维度，但框架/中间体/CLI（FastAPI、ent、K3s、Playwright…）一律不算技能。
+- **写「做到什么」不写「怎么做到的」**：bullet 落在交付的能力 / 结果，不落到具体的做法 / 手段。以计算机编程领域为例：写「多租户隔离」「多渠道接入」，不写「org_id 数据隔离」「用了某 SDK」——其它领域同理，"怎么做的"对领域面试官是常识、是噪音，写出来既稀释重点又像凑字。判断标准：每条 bullet 先问"这是结果，还是做法细节？"——是后者就删掉，或只在能强化量化 / 体现深度时作为证据点一下，不作为 bullet 主体。
 
 ## 预览与导出
 
