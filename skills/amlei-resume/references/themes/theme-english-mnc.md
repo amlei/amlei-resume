@@ -106,7 +106,7 @@
   <div class="entry-main"><div class="entry-title"><span class="org">{{Org}}</span><span class="company">{{Company short}}</span><span class="role">{{Role — detail}}</span></div><span class="entry-date">{{Sep 2024 — Dec 2024}}</span></div>
 </div>
 ```
-日期写英文月份（`Sep 2024 — Dec 2024`）。无 `meta` 行组件（本主题把 GPA 等放进首条 bullet，用 `<b>`）。项目经历是三段式单行：`.proj`（左）· `.company`（centered，direct child of `.entry-main`）· `.entry-date`（right），**no `@`, no `.role`** — responsibilities live in bullets; e.g. `MM-Eval` · `Personal project`。`data-stick="1"` 让 header 和第一条 bullet 同页。
+日期写英文月份（`Sep 2024 — Dec 2024`）。无 `meta` 行组件（本主题把 GPA 等放进首条 bullet，用 `<b>`）。项目经历是三段式单行：`.proj`（左）· `.company`（centered，direct child of `.entry-main`）· `.entry-date`（right），**no symbol prefix, no `.role`** — responsibilities live in bullets; e.g. `MM-Eval` · `Personal project`。`data-stick="1"` 让 header 和第一条 bullet 同页。
 
 ### 5. Bullet（single achievement — independent atom）
 ```html

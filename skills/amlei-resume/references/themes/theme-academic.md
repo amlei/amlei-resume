@@ -161,7 +161,7 @@
 ```
 
 - `{{org}}` = `##` 标题里 `|` 左侧（机构/公司/学校）；`{{role}}` = `|` 右侧（岗位/方向/学位）。`##` 不含 `|` 时 `{{role}}` 连 `<span class="role">` 删除。
-- 项目经历：`## 项目名 | 公司/项目类型`（无 `|` 时只有项目名）→ 三段式单行：`.proj`（左）· `.company`（居中）· `.entry-date`（右），**无 `@`、无 `.role`**——职责由下方 bullet 体现。公司简称取自 emphasis 的 `company_display`，不用 fact 层全称。`.company` 是 `.entry-main` 的直接子节点（不包在 `.entry-title` 里），靠 flex `space-between` 自动落到中间。示例：
+- 项目经历：`## 项目名 | 公司/项目类型`（无 `|` 时只有项目名）→ 三段式单行：`.proj`（左）· `.company`（居中）· `.entry-date`（右），**无任何符号、无 `.role`**——职责由下方 bullet 体现。`.company` 是 `.entry-main` 的直接子节点（不包在 `.entry-title` 里），靠 flex `space-between` 自动落到中间。示例：
 
   ```html
   <div class="entry" data-stick="1">
@@ -238,7 +238,7 @@
 | 模块下纯文本段 | Summary（3.） | 关键短语 `<b>` |
 | 模块下"标签, 标签, 标签"单行 | Interests（4.） | 研究兴趣/方向 |
 | `## org \| role` | Entry header（5.）的 org/role | `|` 分割；无 `|` 则只有 org |
-| `## 项目名 \| 公司/项目类型`（项目经历模块下） | Entry header 的 proj/company | **无 `@`、无 `.role`**；见组件 5. 项目示例 |
+| `## 项目名 \| 公司/项目类型`（项目经历模块下） | Entry header 的 proj/company | **无任何符号、无 `.role`**；见组件 5. 项目示例 |
 | `##` 下 `date: …` | Entry 的 `.entry-date` | |
 | `##` 下 `meta: …` | Entry 的 `.entry-meta` | 关键数字 `<b>` |
 | `##` 下 `- bullet` | 独立 Bullet（6.） | 每条一条；STAR + 量化；数字 `<span class="num">` |

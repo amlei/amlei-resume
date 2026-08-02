@@ -122,7 +122,7 @@
   <div class="entry-meta"><span>{{meta，关键 <b>}}</span></div>
 </div>
 ```
-课题/学生工作用 `<span class="proj">{{项目/组织}}</span>` + 可选 `<span class="badge">{{课题主笔 / 党支部书记}}</span>`。项目经历是三段式单行 `.proj`（左）· `.company`（居中，`.entry-main` 直接子节点）· `.entry-date`（右），**无 `@`、无 `.role`**——职责由下方 bullet 体现；简称取自 emphasis 的 `company_display`。`data-stick="1"` 让 header 和第一条 bullet 同页。
+课题/学生工作用 `<span class="proj">{{项目/组织}}</span>` + 可选 `<span class="badge">{{课题主笔 / 党支部书记}}</span>`。项目经历是三段式单行 `.proj`（左）· `.company`（居中，`.entry-main` 直接子节点）· `.entry-date`（右），**无任何符号、无 `.role`**——职责由下方 bullet 体现。`data-stick="1"` 让 header 和第一条 bullet 同页。
 
 ### 4. Bullet（单条经历要点 — 独立原子，自由换页）
 ```html

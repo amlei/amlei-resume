@@ -144,7 +144,7 @@
 
 ### 主体 · entry / entry-list（同单栏结构；项目用 `.proj` + `.company`）
 
-注：项目经历是三段式单行 `.proj`（左）· `.company`（居中，`.entry-main` 直接子节点）· `.entry-date`（右），**无 `@`、无 `.role`**——职责由 bullet 体现；简称取自 emphasis 的 `company_display`。主体栏窄，`.company` 用 11.5px 次要灰，别喧宾夺主。
+注：项目经历是三段式单行 `.proj`（左）· `.company`（居中，`.entry-main` 直接子节点）· `.entry-date`（右），**无任何符号、无 `.role`**——职责由 bullet 体现。主体栏窄，`.company` 用 11.5px 次要灰，别喧宾夺主。
 ```html
 <div class="entry">
   <div class="entry-main"><div class="entry-title"><span class="org">{{org}}</span><span class="role">{{role}}</span></div><span class="entry-date">{{date}}</span></div>

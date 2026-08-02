@@ -135,7 +135,7 @@
   <div class="entry-meta"><span>{{meta}}</span></div>
 </div>
 ```
-项目经历是三段式单行：`.proj`（左）· `.company`（居中）· `.entry-date`（右），**无 `@`、无 `.role`**——职责由下方 bullet 体现，避免与实习/工作段重复。`.company` 是 `.entry-main` 的直接子节点（不包在 `.entry-title` 里），靠 flex `space-between` 落到中间；在本主题用 mono（工程感，与技术栈 chips 同语汇）。公司简称来自 emphasis 的 `company_display`（如「广州蚁群」「个人项目」），不用 fact 层全称；个人项目可写「个人项目」或留空删 `.company`。`data-stick="1"` 让 header 和第一条 bullet 同页不分家。
+项目经历是三段式单行：`.proj`（左）· `.company`（居中）· `.entry-date`（右），**无任何符号、无 `.role`**——职责由下方 bullet 体现，避免与实习/工作段重复。`.company` 是 `.entry-main` 的直接子节点（不包在 `.entry-title` 里）；在本主题用 mono（工程感，与技术栈 chips 同语汇）。个人项目可写「个人项目」或留空删 `.company`。`data-stick="1"` 让 header 和第一条 bullet 同页不分家。
 
 ### 6. Bullet（单条经历要点 — 独立原子，自由换页）
 ```html

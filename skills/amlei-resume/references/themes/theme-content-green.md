@@ -113,7 +113,7 @@
   <div class="entry-meta"><span>{{meta}}</span></div>
 </div>
 ```
-项目用三段式单行：`.proj`（左）· `.company`（居中，`.entry-main` 直接子节点，不包在 `.entry-title` 里）· `.entry-date`（右），**无 `@`、无 `.role`**——职责由下方 bullet 体现；公司简称取自 emphasis 的 `company_display`（如「个人项目」「广州蚁群」）。`data-stick="1"` 让 header 和第一条 bullet 同页。
+项目用三段式单行：`.proj`（左）· `.company`（居中，`.entry-main` 直接子节点，不包在 `.entry-title` 里）· `.entry-date`（右），**无任何符号、无 `.role`**——职责由下方 bullet 体现。`data-stick="1"` 让 header 和第一条 bullet 同页。
 
 ### 5. Bullet（单条经历要点 — 独立原子，自由换页）
 ```html
