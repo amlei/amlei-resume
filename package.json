@@ -2,7 +2,6 @@
   "name": "amlei-resume",
   "version": "0.1.0",
   "description": "简历全流程 skill — 事实层 + 强调层 + 快照层，装配 HTML 导出 A4 PDF",
-  "main": "index.js",
   "scripts": {},
   "keywords": [
     "claude-code",
