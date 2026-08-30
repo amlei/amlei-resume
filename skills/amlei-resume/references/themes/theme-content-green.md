@@ -3,7 +3,7 @@
 > 单栏 · 深森林绿单点缀色 · 证件照 · 描边 SVG 图标 · `•` 列表符 · 技能为「等级词 + 技能名（方向）」文本行。
 > 适用于内容 / 运营 / 增长 / 新媒体 / 产品（内容向）。
 >
-> **用法**：渲染时把"完整 `<style>`"整段作为产物开头，再按骨架用组件装配。HTML 一律从本文件取。
+> **用法**：基准组件（Header/SectionHead/Summary/Entry/Bullet 等）读 [component-library.md](component-library.md)，本文只含本主题的设计令牌、`<style>` 与差异。渲染时把"完整 `<style>`"整段作为产物开头，再按共享库骨架用基准组件 + 本文差异装配。HTML 一律从文件取，不要凭记忆手写。
 
 ## 设计变量速查表
 
@@ -46,7 +46,7 @@
   .sec-head h2{font-size:14px;font-weight:700;letter-spacing:.12em;color:var(--ink)}
   .sec-head::after{content:"";flex:1;height:1px;background:var(--hair)}
   .summary p{font-size:13px;line-height:1.8;text-align:justify;text-wrap:pretty}
-  .summary p strong{color:var(--accent-ink);font-weight:600}
+  .summary p b{color:var(--accent-ink);font-weight:600}
   .entry{margin-bottom:11px}
   .entry-main{display:flex;align-items:baseline;justify-content:space-between;gap:14px;flex-wrap:nowrap}
   .entry-title{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
@@ -72,69 +72,17 @@
   .award .yr{font-family:var(--font-mono);font-size:10.5px;color:var(--accent)}
   .award .lvl{font-size:11px;color:var(--accent-ink);font-weight:600}
   .skills{display:flex;flex-direction:column;gap:6px}
-  .skill-row{display:grid;grid-template-columns:78px 1fr;gap:12px;align-items:start}
-  .skill-row .cat{font-size:12.5px;font-weight:600;color:var(--muted);padding-top:2px}
-  .skill-row .val{font-size:12.5px;color:var(--ink);line-height:1.7}
-  .skill-row .val b{color:var(--accent-ink);font-weight:600}
+  .skills-row{display:grid;grid-template-columns:78px 1fr;gap:12px;align-items:start}
+  .skills-row .cat{font-size:12.5px;font-weight:600;color:var(--muted);padding-top:2px}
+  .skills-row .tags{font-size:12.5px;color:var(--ink);line-height:1.7}
+  .skills-row .tags b{color:var(--accent-ink);font-weight:600}
 </style>
 ```
 
-## 组件库（带 `{{占位符}}`）
+## 主题差异（相对共享组件库）
 
-### 1. Header
-```html
-<header class="resume-header">
-  <div class="ident">
-    <div class="name-row"><span class="name">{{name}}</span><span class="role">{{role}}</span></div>
-    <div class="edu-line">{{education}}</div>
-    <div class="contact">{{location}}<span class="sep">·</span>{{phone}}<span class="sep">·</span>{{email}}<span class="sep">·</span>{{platform}}<span class="sep">·</span>{{age}} 岁<span class="sep">·</span>{{political}}</div>
-  </div>
-  {{photo}}
-</header>
-```
-`{{education}}` 单独一行（来自 `education:` 字段），无则删整行。按实际字段拼；`{{platform}}` 可放小红书/公众号等，`{{political}}` 政治面貌（中共党员等，没有就删）。
-
-### 2. SectionHead（无英文标签）
-```html
-<div class="sec-head" data-stick="1">{{icon}}<h2>{{title}}</h2></div>
-```
-
-### 3. Summary
-```html
-<div class="summary"><p>{{text}}</p></div>
-```
-关键短语用 `<strong>`。
-
-### 4. Entry header（教育 / 实习 / 项目头；项目用 `.proj`，可加 `.badge`）
-```html
-<div class="entry" data-stick="1">
-  <div class="entry-main"><div class="entry-title"><span class="org">{{org}}</span><span class="role">{{role}}</span><span class="badge">{{badge}}</span></div><span class="entry-date">{{date}}</span></div>
-  <div class="entry-meta"><span>{{meta}}</span></div>
-</div>
-```
-项目用三段式单行：`.proj`（左）· `.company`（居中，`.entry-main` 直接子节点，不包在 `.entry-title` 里）· `.entry-date`（右），**无任何符号、无 `.role`**——职责由下方 bullet 体现。`data-stick="1"` 让 header 和第一条 bullet 同页。
-
-### 5. Bullet（单条经历要点 — 独立原子，自由换页）
-```html
-<div class="bullet">{{text}}</div>
-```
-每条 `- bullet` 拆一个独立原子。数字用 `<span class="num">`。
-
-### 6. Awards（获奖与证书，按年份）
-```html
-<div class="awards"><div class="award"><span class="yr">{{year}}</span><span>{{name}}</span><span class="lvl">{{level}}</span></div></div>
-```
-
-### 7. Skills（相关技能，等级词文本行）
-```html
-<div class="skills">
-  <div class="skill-row"><span class="cat">{{category}}</span><span class="val"><b>精通 {{skill}}</b>（{{方向/细分}}）· <b>熟悉 {{skill}}</b> · 了解 {{skill}}</span></div>
-</div>
-```
-技能描述 = 等级词 + 技能名（括号补具体方向/细分），按等级从高到低排列；`<b>` 加粗「等级词 + 技能名」，括号内方向用常规字重。不使用标签/chip/进度条等图形化形式。
-
-## 简历骨架
-Header → 个人简介 → 教育背景 → 实习经历 → 项目经历 → 获奖与证书 → 相关技能（按 MD 模块顺序）。
-
-## MD → 组件映射
-`# self-intro`→Header；`# 个人简介`→Summary；`## org|role`→Entry header（`data-stick="1"`，项目用 proj+badge）；`- bullet`→每条独立 `.bullet`；`年份 | name | level`→`.award`；`类别: 精通 A（…）· 熟悉 B`→`.skill-row`（等级词+技能名 `<b>` 加粗）。
+- **启用组件**：Header / SectionHead / Summary / Entry / Bullet / Awards / Skills；**不用** Interests、Pubs。
+- **Header 默认字段集**：`{{location}}` · `{{phone}}` · `{{email}}` · `{{platform}}`（小红书/公众号等）· `{{age}} 岁` · `{{political}}`（政治面貌）。
+- **SectionHead**：无英文标签。
+- **Entry**：可加 `.badge`（如「划水怪播客主理」类身份徽标）。
+- **骨架**：Header → 个人简介 → 教育背景 → 实习经历 → 项目经历 → 获奖与证书 → 相关技能（按 MD 模块顺序）。

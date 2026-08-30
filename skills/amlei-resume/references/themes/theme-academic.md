@@ -3,7 +3,7 @@
 > 单栏 · 墨蓝单点缀色 · 证件照 · 描边 SVG 图标 · `•` 列表符 · 论文列表 · 奖项网格。
 > 适用于升学 / PhD 申请 / 科研岗。
 >
-> **用法**：渲染时把下面"完整 `<style>`"整段作为产物开头，再按"简历骨架"用各组件（带 `{{占位符}}`）装配正文原子。HTML 一律从本文件取，不要凭记忆手写。
+> **用法**：基准组件（Header/SectionHead/Summary/Entry/Bullet 等）读 [component-library.md](component-library.md)，本文只含本主题的设计令牌、`<style>` 与差异。渲染时把"完整 `<style>`"整段作为产物开头，再按共享库骨架用基准组件 + 本文差异装配。HTML 一律从文件取，不要凭记忆手写。
 
 ## 设计变量速查表
 
@@ -57,7 +57,7 @@
   .sec-head::after{content:"";flex:1;height:1px;background:var(--hair)}
   /* Summary / Interests */
   .summary p{font-size:13px;line-height:1.75;text-align:justify;text-wrap:pretty}
-  .summary p b,.summary p strong{color:var(--accent-ink);font-weight:600}
+  .summary p b{color:var(--accent-ink);font-weight:600}
   .interests{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
   .interests .it{font-size:12.5px;color:var(--accent-ink);background:oklch(95% .01 258);border:1px solid var(--border);padding:2px 8px}
   /* Entry */
@@ -102,152 +102,15 @@
 
 > 上面**不含** `.viewport / .page / #source / @media print`——那些归预览外壳 `assets/preview-shell.html`，`wrap_preview.py` 会把本 `<style>` 注入到 `<head>`。
 
-## 组件库（带 `{{占位符}}`，class 与上面 `<style>` 对应）
+## 主题差异（相对共享组件库）
 
-### 1. Header（姓名 / 方向 / 教育 / 联系方式 / 证件照）—— `self-intro` 模块用它
+本主题的 class 命名即共享库的 canonical 命名，`<style>` 无需映射。
 
-```html
-<header class="resume-header">
-  <div class="ident">
-    <div class="name-row"><span class="name">{{name}}</span><span class="role">{{role}}</span></div>
-    <div class="edu-line">{{education}}</div>
-    <div class="contact">{{gender}}<span class="sep">·</span>{{location}}<span class="sep">·</span>{{phone}}<span class="sep">·</span>{{email}}<span class="sep">·</span><a href="{{site-url}}">{{site}}</a></div>
-  </div>
-  {{photo}}
-</header>
-```
-
-- `{{role}}` = 求职/申请方向（如"申请方向 · 计算机科学 直博"），无则连同 `<span class="role">` 一起删。
-- `{{education}}` 单独一行（如"学校 · 专业 · 学历 · 届"），来自 `education:` 字段，无则删整行。
-- `{{photo}}`：有真实头像用 `<div class="photo"><img src="{{avatar}}" alt="证件照"></div>`；没有用 [icons.md](icons.md) 里的证件照占位。
-- 联系方式字段**按 `self-intro` 里实际有的拼**，字段之间用 `<span class="sep">·</span>` 分隔；没有的字段（如无 site）连同它的 `sep` 一起删，不要留空段。
-
-### 2. SectionHead（模块标题：图标 + 中文 + 可选英文 + 发丝线）
-
-```html
-<div class="sec-head" data-stick="1">{{icon}}<h2>{{title}}<span class="en">{{en}}</span></h2></div>
-```
-
-- `data-stick="1"` **必带**——让分页 JS 不把标题和它下一条目拆到两页。
-- `{{icon}}`：按模块语义从 [icons.md](icons.md) 选一个 `<svg class="ico" …>…</svg>`。
-- `{{en}}`：英文小标签（可选），无则连 `<span class="en">` 一起删。
-
-### 3. Summary（个人简介段落）
-
-```html
-<div class="summary"><p>{{text}}</p></div>
-```
-
-段落里 1–3 个最关键短语用 `<b>…</b>` 加重（转成强调字色）；`{{text}}` 是 `self-intro` 之后的"个人简介"模块正文。
-
-### 4. Interests（研究兴趣 / 方向标签，可选）
-
-```html
-<div class="interests"><span class="it">{{tag1}}</span><span class="it">{{tag2}}</span><span class="it">{{tag3}}</span></div>
-```
-
-（每个标签一个 `<span class="it">`，按 MD 里给的标签数量增减。）
-
-### 5. Entry header（教育 / 科研 / 实习 / 工作头）—— `##` 子标题用它
-
-```html
-<div class="entry" data-stick="1">
-  <div class="entry-main">
-    <div class="entry-title"><span class="org">{{org}}</span><span class="role">{{role}}</span></div>
-    <span class="entry-date">{{date}}</span>
-  </div>
-  <div class="entry-meta"><span>{{meta-item-1}}</span><span>{{meta-item-2}}</span></div>
-</div>
-```
-
-- `{{org}}` = `##` 标题里 `|` 左侧（机构/公司/学校）；`{{role}}` = `|` 右侧（岗位/方向/学位）。`##` 不含 `|` 时 `{{role}}` 连 `<span class="role">` 删除。
-- 项目经历：`## 项目名 | 公司/项目类型`（无 `|` 时只有项目名）→ 三段式单行：`.proj`（左）· `.company`（居中）· `.entry-date`（右），**无任何符号、无 `.role`**——职责由下方 bullet 体现。`.company` 是 `.entry-main` 的直接子节点（不包在 `.entry-title` 里），靠 flex `space-between` 自动落到中间。示例：
-
-  ```html
-  <div class="entry" data-stick="1">
-    <div class="entry-main">
-      <span class="proj">{{项目名}}</span>
-      <span class="company">{{公司/项目类型}}</span>
-      <span class="entry-date">{{date}}</span>
-    </div>
-  </div>
-  ```
-- `{{date}}` 来自 `##` 下的 `date:` 行；没有则删 `.entry-date`。
-- `.entry-meta`：来自 `meta:` 行或 GPA/排名等；关键数字用 `<b>`，无 meta 整个 div 删。
-- `data-stick="1"` 让 header 和第一条 bullet 同页不分家。
-
-### 6. Bullet（单条经历要点 — 独立原子，自由换页）
-
-```html
-<div class="bullet">{{text}}</div>
-```
-
-每条 `- bullet` 拆一个独立原子。STAR 法则、量化结果，关键数字/术语用 `<span class="num">…</span>` 加重（等宽 + 强调色）。
-
-### 7. Pubs（论文发表，可选）—— 论文模块用
-
-```html
-<ul class="pubs">
-  <li><span class="tag">[C]</span> {{authors}} <b>{{title}}</b> <span class="ven">{{venue}}</span>, <span class="yr">{{year}}.</span></li>
-</ul>
-```
-
-- `{{tag}}` 类型标：`[C]` 会议 / `[J]` 期刊 / `[W]` Workshop / `[P]` 专利。
-- 本人名字用 `<span class="me">…</span>` 加下划线；共一/一作用括注。
-- 每篇一个 `<li>`。
-
-### 8. Awards（荣誉奖项网格，可选）—— 获奖模块用
-
-```html
-<div class="awards">
-  <div class="award"><span class="yr">{{year}}</span><span>{{name}}</span><span class="lvl">{{level}}</span></div>
-</div>
-```
-
-每项一个 `.award`；`{{level}}` = 国家级/省级/校级/金牌 等，无则删 `.lvl`。
-
-### 9. Skills（技能 / 英语，类别 + 等级词文本）
-
-```html
-<div class="skills">
-  <div class="skills-row"><span class="cat">{{category}}</span><span class="tags">{{items}}</span></div>
-</div>
-```
-
-每类一个 `.skills-row`；`{{items}}` = 等级词 + 技能名（括号补具体方向/细分），按等级从高到低排列，「等级词 + 技能名」用 `<b>` 加重（如 `<b>精通 PyTorch</b>（分布式训练）· 熟悉 JAX · …`）。
-
-## 简历骨架（装配顺序）
-
-```
-<header class="resume-header"> … </header>          ← 由 self-intro 装配（姓名/方向/联系方式/证件照）
-（按简历 MD 里 # 模块的顺序，每个模块依次：）
-  <div class="sec-head" data-stick="1"> … </div>     ← SectionHead（icon 按模块语义选）
-  <该模块的正文组件>                                  ← Summary / Interests / Entry×N / Bullet×N / Pubs / Awards / Skills
-```
-
-- **模块顺序 = MD 里 `#` 出现的顺序**（self-intro 永远第一，且不渲染成 SectionHead，而是渲染成 Header）。
-- 每个 `# 模块` 都先出 SectionHead，再出该模块的正文组件。
-- `## 子标题`：header（`.entry`）一条，`- bullet` 每条独立 `.bullet` 原子。
-
-## Markdown → 组件映射规则表
-
-| 简历 MD 元素 | 组件 | 备注 |
-|------|------|------|
-| `# self-intro`（首个，key:value） | Header（1.） | `name/role/gender/location/phone/email/site/avatar` → Header 各槽位；不渲染 SectionHead |
-| `# 其它模块标题` | SectionHead（2.） | icon 按模块语义从 icons.md 选；英文标签可选 |
-| 模块下纯文本段 | Summary（3.） | 关键短语 `<b>` |
-| 模块下"标签, 标签, 标签"单行 | Interests（4.） | 研究兴趣/方向 |
-| `## org \| role` | Entry header（5.）的 org/role | `|` 分割；无 `|` 则只有 org |
-| `## 项目名 \| 公司/项目类型`（项目经历模块下） | Entry header 的 proj/company | **无任何符号、无 `.role`**；见组件 5. 项目示例 |
-| `##` 下 `date: …` | Entry 的 `.entry-date` | |
-| `##` 下 `meta: …` | Entry 的 `.entry-meta` | 关键数字 `<b>` |
-| `##` 下 `- bullet` | 独立 Bullet（6.） | 每条一条；STAR + 量化；数字 `<span class="num">` |
-| 论文模块条目 | Pubs（7.） | 类型标/venue/年份/本人下划线 |
-| 获奖模块条目 | Awards（8.） | 年/名/级别 |
-| `- 类别: 值`（技能） | Skills（9.）的 `.skills-row` | cat + items（等级词文本） |
-
-## 配色约束（本主题已遵守，换色时保持）
-
-- **唯一点缀色** `--accent` 墨蓝；强调字 `--accent-ink` 同色系更深。**不引第二个彩色**。
-- 姓名 25px（正常简历字号，**不是报头巨标题**）；无首字下沉、无杂志编号、无 masthead。
-- 单栏；分割线只用 1px 发丝 / 虚线，不堆色块。
+- **启用组件**：全部基准组件，含可选 **Interests**（研究兴趣/方向标签）与 **Pubs**（论文列表）。
+- **Header 默认字段集**：`{{gender}}` · `{{location}}` · `{{phone}}` · `{{email}}` · `<a href="{{site-url}}">{{site}}</a>`（个人主页/Google Scholar）。
+- **`{{role}}`** = 求职/申请方向（如「申请方向 · 计算机科学 直博」）。
+- **SectionHead**：可带 `.en` 英文小标签（如 EDUCATION），无则删。
+- **Pubs**：用全量形态——类型标 `[C]`/`[J]`/`[W]`/`[P]` + `.me` 本人下划线（共一/一作括注）。
+- **Entry**：meta 常放 GPA/排名，关键数字 `<b>`。
+- **骨架**：共享库标准顺序。
+- **配色约束**（换色时保持）：唯一点缀色 `--accent` 墨蓝，强调字 `--accent-ink` 同色系更深，**不引第二个彩色**；姓名 26px（正常简历字号，非报头巨标题），无首字下沉、无杂志编号、无 masthead；单栏；分割线只用 1px 发丝 / 虚线，不堆色块。

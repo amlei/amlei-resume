@@ -35,6 +35,7 @@
   }
   body{background:var(--bg);color:var(--ink);font-family:var(--font-sans);font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
   .page{background:var(--paper)}
+  @page{size:A4;margin:0}                             /* 覆写外壳 @page 内缩：双栏满铺整页，留白只由本主题自身内边距提供 */
   .page-content{padding:0 !important}                 /* 覆写外壳内边距，让 two-col 满铺整页 */
   .two-col{position:absolute;inset:0;display:grid;grid-template-columns:64mm 1fr}
   .sidebar{background:var(--sidebar);padding:15mm 9mm 15mm;border-right:1px solid var(--border);display:flex;flex-direction:column;gap:16px}

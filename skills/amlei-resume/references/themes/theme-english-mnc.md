@@ -5,7 +5,7 @@
 >
 > **语言**：本主题正文用**英文**。`.sec-head h2` 自动 `text-transform:uppercase`——直接写正常大小写（如 `Education`）即可，不要自己全大写。
 >
-> **用法**：渲染时把"完整 `<style>`"整段作为产物开头，再按骨架用组件装配。HTML 一律从本文件取。
+> **用法**：基准组件（Header/SectionHead/Summary/Entry/Bullet 等）读 [component-library.md](component-library.md)，本文只含本主题的设计令牌、`<style>` 与差异。渲染时把"完整 `<style>`"整段作为产物开头，再按共享库骨架用基准组件 + 本文差异装配。HTML 一律从文件取，不要凭记忆手写。
 
 ## 设计变量速查表
 
@@ -48,7 +48,7 @@
   .sec-head h2{font-size:13px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--ink)}
   .sec-head::after{content:"";flex:1;height:1px;background:var(--hair)}
   .summary p{font-size:13px;line-height:1.7;text-align:justify;text-wrap:pretty}
-  .summary p strong{color:var(--accent-ink);font-weight:600}
+  .summary p b{color:var(--accent-ink);font-weight:600}
   .entry{margin-bottom:11px}
   .entry-main{display:flex;align-items:baseline;justify-content:space-between;gap:14px;flex-wrap:nowrap}
   .entry-title{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
@@ -67,63 +67,27 @@
   .bullet::before{content:"•";position:absolute;left:1px;top:4px;color:var(--accent);font-size:10px;line-height:1}
   .bullet .num{font-family:var(--font-mono);color:var(--accent-ink);font-weight:600}
   .bullet b{color:var(--ink);font-weight:600}
-  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:3px 22px}
-  .skill-line{display:grid;grid-template-columns:96px 1fr;gap:10px;padding:3px 0;border-bottom:1px dashed var(--hair);font-size:12.5px}
-  .skill-line .k{font-weight:600;color:var(--accent-ink)}
+  /* Skills（双列 key:value 行） */
+  .skills{display:grid;grid-template-columns:1fr 1fr;gap:3px 22px}
+  .skills-row{display:grid;grid-template-columns:96px 1fr;gap:10px;padding:3px 0;border-bottom:1px dashed var(--hair);font-size:12.5px}
+  .skills-row .cat{font-weight:600;color:var(--accent-ink)}
 </style>
 ```
 
-## 组件库（带 `{{占位符}}`，内容写英文）
+## 主题差异（相对共享组件库）
 
-### 1. Header
-```html
-<header class="resume-header">
-  <div class="ident">
-    <div class="name-row"><span class="name">{{Name}} · {{中文名}}</span><span class="role">{{Target Role}}</span></div>
-    <div class="edu-line">{{education}}</div>
-    <div class="contact">{{City}}<span class="sep">·</span>{{Phone}}<span class="sep">·</span>{{email}}<span class="sep">·</span><a href="{{linkedin-url}}">{{linkedin}}</a><span class="sep">·</span>{{Open to relocation}}</div>
+- **内容全部写英文**（self-intro 中文内容译成英文）；SectionHead 写正常大小写，CSS 自动全大写。
+- **启用组件**：Header / SectionHead / Summary / Entry / Bullet / Skills（双列）；**不用** Interests、Pubs、Awards（奖项内容并入 Experience/Skills）。
+- **Header 默认字段集**：`{{location}}` · `{{phone}}` · `{{email}}` · `<a href="{{linkedin-url}}">{{linkedin}}</a>` · `{{relocation}}`（值如 "Open to relocation"）；name 行 = `{{name}}`（英文姓名）· `{{中文名}}`；`{{photo}}` 占位 span 写 `PHOTO`（大写）。
+- **Entry**：role 斜体（style 已实现）；entry-title 内三段 `<span class="org">{{Org}}</span><span class="company">{{Company short}}</span><span class="role">{{Role — detail}}</span>`；**无 meta 行**——GPA 等放进首条 bullet 用 `<b>`；日期写英文月份（`Sep 2024 — Dec 2024`）。项目经历仍走共享库三段式（`.proj`/`.company`/`.entry-date`）。
+- **Bullet**：数字 → `<span class="num">`，关键术语 → `<b>`。
+- **Skills**：容器 `.skills` 两列 grid（style 已实现），行结构同共享库 `.skills-row`（cat + tags）：
+
+  ```html
+  <div class="skills">
+    <div class="skills-row"><span class="cat">{{Analytics}}</span><span class="tags"><b>Proficient in {{SQL}}</b> ({{complex queries, reporting}}) · familiar with {{Tableau}}</span></div>
   </div>
-  {{photo}}
-</header>
-```
-`{{education}}` on its own line (school · degree · class year from `education:` field), remove the whole line if absent.
-`{{photo}}` 占位 span 写 `PHOTO`（大写）。
+  ```
 
-### 2. SectionHead（写正常大小写，CSS 自动全大写）
-```html
-<div class="sec-head" data-stick="1">{{icon}}<h2>{{Education}}</h2></div>
-```
-
-### 3. Summary
-```html
-<div class="summary"><p>{{text}}</p></div>
-```
-关键短语用 `<strong>`。
-
-### 4. Entry header（Education / Experience / Leadership；role 斜体）
-```html
-<div class="entry" data-stick="1">
-  <div class="entry-main"><div class="entry-title"><span class="org">{{Org}}</span><span class="company">{{Company short}}</span><span class="role">{{Role — detail}}</span></div><span class="entry-date">{{Sep 2024 — Dec 2024}}</span></div>
-</div>
-```
-日期写英文月份（`Sep 2024 — Dec 2024`）。无 `meta` 行组件（本主题把 GPA 等放进首条 bullet，用 `<b>`）。项目经历是三段式单行：`.proj`（左）· `.company`（centered，direct child of `.entry-main`）· `.entry-date`（right），**no symbol prefix, no `.role`** — responsibilities live in bullets; e.g. `MM-Eval` · `Personal project`。`data-stick="1"` 让 header 和第一条 bullet 同页。
-
-### 5. Bullet（single achievement — independent atom）
-```html
-<div class="bullet">{{bullet with <span class="num">metrics</span> and <b>key terms</b>}}</div>
-```
-Each `- bullet` becomes one `.bullet` atom. Numbers → `<span class="num">`, key terms → `<b>`.
-
-### 6. Skills（双列 key:value 行，英文等级词文本）
-```html
-<div class="grid2">
-  <div class="skill-line"><span class="k">{{Analytics}}</span><span><b>Proficient in {{SQL}}</b> ({{complex queries, reporting}}) · familiar with {{Tableau}}</span></div>
-</div>
-```
-每行一个 `.skill-line`，`.grid2` 自动两列排布。值 = 英文等级词（Proficient in / Skilled in / Familiar with / Working knowledge of，按程度从高到低）+ 技能名（括号补具体方向）；「等级词 + 技能名」用 `<b>` 加重。不使用标签/chip。
-
-## 简历骨架
-Header → Profile → Education → Experience → Leadership & Projects → Skills & Languages（按 MD 模块顺序；无单独 Awards 模块时并入 Experience/Skills）。
-
-## MD → 组件映射
-`# self-intro`→Header（内容译成英文）；`# Profile/个人简介`→Summary；`## Org | Role`→Entry header（`data-stick="1"`，role 斜体）；`- bullet`→每条独立 `.bullet`（数字 `<span class="num">`，关键术语 `<b>`）；`# Skills`下`Key: value`→`.skill-line`（放 `.grid2` 内）。
+  值 = 英文等级词（Proficient in / Skilled in / Familiar with / Working knowledge of，按程度从高到低）+ 技能名（括号补方向）；「等级词 + 技能名」用 `<b>` 加重。不用 chip。
+- **骨架**：Header → Profile → Education → Experience → Leadership & Projects → Skills & Languages（按 MD 模块顺序）。

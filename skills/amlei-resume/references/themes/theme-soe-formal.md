@@ -3,7 +3,7 @@
 > 单栏 · 藏青（navy）单色 · 证件照 · **基本信息表（含政治面貌 / 籍贯 / 民族 / 出生年月）** · 描边 SVG 图标 · `•` 列表符 · 简介带左竖条。
 > 适用于国企 / 银行 / 央企 / 公职 / 体制内。
 >
-> **用法**：渲染时把"完整 `<style>`"整段作为产物开头，再按骨架用组件装配。HTML 一律从本文件取。
+> **用法**：基准组件（SectionHead/Entry/Bullet/Awards/Skills 等）读 [component-library.md](component-library.md)，本文只含本主题的设计令牌、`<style>` 与差异（Header 是本主题独有变体，全文在差异节）。渲染时把"完整 `<style>`"整段作为产物开头，再按共享库骨架用基准组件 + 本文差异装配。HTML 一律从文件取，不要凭记忆手写。
 
 ## 设计变量速查表
 
@@ -75,7 +75,7 @@
   .award .yr{font-family:var(--font-mono);font-size:11px;color:var(--navy)}
   .award .lvl{font-size:11px;color:var(--navy-deep);font-weight:600}
   .skills{display:flex;flex-direction:column}
-  .skills .row{display:grid;grid-template-columns:78px 1fr;gap:12px;padding:5px 0;border-bottom:1px dashed var(--hair)}
+  .skills .skills-row{display:grid;grid-template-columns:78px 1fr;gap:12px;padding:5px 0;border-bottom:1px dashed var(--hair)}
   .skills .cat{font-weight:700;font-size:12.5px;color:var(--navy-deep);letter-spacing:.04em}
   .skills .tags{font-size:12.5px;color:var(--ink)}
   .skills .tags b{color:var(--navy-deep);font-weight:600}
@@ -84,9 +84,12 @@
 </style>
 ```
 
-## 组件库（带 `{{占位符}}`）
+## 主题差异（相对共享组件库）
 
-### 1. Header（姓名块 + 证件照 + 基本信息表，**含政治面貌/籍贯**）
+> 本主题点缀色变量为 `--navy` / `--navy-deep` / `--navy-soft`（非 `--accent` 系），style 内已自洽，无需映射。
+
+### Header 是本主题独有变体（替代共享库基准 Header）
+
 ```html
 <header class="resume-header">
   <div class="name-block">
@@ -108,50 +111,16 @@
   </div>
 </header>
 ```
-`bio-form` **8 格两行**（`grid-column:1 / -1` 满宽）。self-intro 里给政治面貌/籍贯/民族/出生年月就填，没给就留占位提示用户补——**国企风这些字段通常必备**。
 
-### 2. SectionHead（中文 + 可选英文小标签）
-```html
-<div class="sec-head" data-stick="1">{{icon}}<h2>{{title}}<span class="en">{{EDUCATION}}</span></h2></div>
-```
+- **Header 默认字段集**：本主题**无 contact 行**——联系方式与基本信息进 `bio-form`（共享库硬约束的例外，见上方 Header 变体）。
 
-### 3. Entry header（教育 / 实习 / 课题 / 校园头；项目/课题用 `.proj` + `.badge`）
-```html
-<div class="entry" data-stick="1">
-  <div class="entry-main"><div class="entry-title"><span class="org">{{org}}</span><span class="role">{{role}}</span></div><span class="entry-date">{{date}}</span></div>
-  <div class="entry-meta"><span>{{meta，关键 <b>}}</span></div>
-</div>
-```
-课题/学生工作用 `<span class="proj">{{项目/组织}}</span>` + 可选 `<span class="badge">{{课题主笔 / 党支部书记}}</span>`。项目经历是三段式单行 `.proj`（左）· `.company`（居中，`.entry-main` 直接子节点）· `.entry-date`（右），**无任何符号、无 `.role`**——职责由下方 bullet 体现。`data-stick="1"` 让 header 和第一条 bullet 同页。
+### 其余差异
 
-### 4. Bullet（单条经历要点 — 独立原子，自由换页）
-```html
-<div class="bullet">{{text，数字 <span class="num">}}</div>
-```
-每条 `- bullet` 拆一个独立原子。
-
-### 5. Awards（荣誉奖项，按年份；含「优秀共产党员」等）
-```html
-<div class="awards"><div class="award"><span class="yr">{{year}}</span><span>{{name}}</span><span class="lvl">{{level}}</span></div></div>
-```
-
-### 6. Skills（技能与证书，类别 + 等级词文本）
-```html
-<div class="skills">
-  <div class="row"><span class="cat">{{专业技能}}</span><span class="tags"><b>精通 {{技能}}</b>（{{方向/细分}}）· <b>熟练 {{技能}}</b> · 熟悉 {{技能}} · …</span></div>
-  <div class="row"><span class="cat">{{资格证书}}</span><span class="tags"><b>{{证券从业}}</b> · <b>{{基金从业}}</b> · …</span></div>
-</div>
-```
-技能行 = 等级词 + 技能名（括号补具体方向/细分），按等级从高到低排列，「等级词 + 技能名」用 `<b>` 加重。
-资格证书单独一行（证书无等级词），已取得的用 `<b>`。
-
-### 7. Summary（自我评价，左竖条引用块，**放末尾**）
-```html
-<div class="summary"><p>{{自我评价，关键 <b>}}</p></div>
-```
-
-## 简历骨架
-Header（含基本信息表）→ 教育背景 → 实习经历 → 课题与研究项目 → 校园经历与学生工作 → 荣誉奖项 → 技能与证书 → 自我评价（末尾）。
-
-## MD → 组件映射
-`# self-intro`→Header（`political/birth/hometown/ethnicity` 等填进 `bio-form`）；`# 教育背景`等→SectionHead；`## org|role`→Entry header（`data-stick="1"`）；`date:/meta:`→Entry 内；`- bullet`→每条独立 `.bullet`；`年份|name|level`→`.award`；`类别: 值`→`.skills .row`；`# 自我评价`→末尾 Summary 引用块。
+- **启用组件**：SectionHead / Entry / Bullet / Awards / Skills / Summary；**不用** Interests、Pubs。
+- **SectionHead**：可带 `.en` 英文小标签（style 自动大写）。
+- **Entry**：课题/学生工作用 `<span class="proj">{{项目/组织}}</span>` + 可选 `<span class="badge">{{课题主笔 / 党支部书记}}</span>`。
+- **Awards**：含「优秀共产党员」等荣誉。
+- **Skills**：技能行同共享库（等级词文本）；**资格证书单独一行**（证书无等级词），已取得的用 `<b>`。
+- **Summary**：自我评价（左竖条引用块，style 已实现），**骨架放末尾**。
+- **骨架**：Header（含基本信息表）→ 教育背景 → 实习经历 → 课题与研究项目 → 校园经历与学生工作 → 荣誉奖项 → 技能与证书 → 自我评价（末尾）。
+- **映射补充**：`# self-intro` 的 `political/birth/hometown/ethnicity` 等填进 `bio-form`；`# 自我评价` → 末尾 Summary 引用块。

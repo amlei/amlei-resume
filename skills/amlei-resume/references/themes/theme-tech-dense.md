@@ -3,7 +3,7 @@
 > 单栏 · 高密度 · 工程蓝单点缀色 · 技术栈前置（mono 等级词文本行）· 描边 SVG 图标 · `•` 列表符。
 > 适用于互联网技术 / 算法 / 后端 / 基础架构 / AI 工程校招。
 >
-> **用法**：渲染时把"完整 `<style>`"整段作为产物开头，再按"简历骨架"用各组件（带 `{{占位符}}`）装配正文原子。HTML 一律从本文件取。
+> **用法**：基准组件（Header/SectionHead/Summary/Entry/Bullet 等）读 [component-library.md](component-library.md)，本文只含本主题的设计令牌、`<style>` 与差异。渲染时把"完整 `<style>`"整段作为产物开头，再按共享库骨架用基准组件 + 本文差异装配。HTML 一律从文件取，不要凭记忆手写。
 
 ## 设计变量速查表
 
@@ -52,13 +52,13 @@
   .sec-head h2{font-size:14px;font-weight:700;letter-spacing:.16em;color:var(--ink)}
   .sec-head::after{content:"";flex:1;height:1px;background:var(--hair)}
   .summary p{font-size:13px;line-height:1.7;text-align:justify;text-wrap:pretty}
-  .summary p strong{color:var(--accent-ink);font-weight:600}
-  /* 技术栈文本行（mono） */
-  .stack{display:flex;flex-direction:column;gap:6px}
-  .stack-row{display:grid;grid-template-columns:64px 1fr;gap:10px;align-items:start}
-  .stack-row .cat{font-family:var(--font-mono);font-size:11px;color:var(--accent);padding-top:3px;letter-spacing:.04em}
-  .stack-row .val{font-family:var(--font-mono);font-size:11.5px;color:var(--ink);line-height:1.7}
-  .stack-row .val b{color:var(--accent-ink);font-weight:600}
+  .summary p b{color:var(--accent-ink);font-weight:600}
+  /* Skills（技术栈 mono 文本行） */
+  .skills{display:flex;flex-direction:column;gap:6px}
+  .skills-row{display:grid;grid-template-columns:64px 1fr;gap:10px;align-items:start}
+  .skills-row .cat{font-family:var(--font-mono);font-size:11px;color:var(--accent);padding-top:3px;letter-spacing:.04em}
+  .skills-row .tags{font-family:var(--font-mono);font-size:11.5px;color:var(--ink);line-height:1.7}
+  .skills-row .tags b{color:var(--accent-ink);font-weight:600}
   /* Entry */
   .entry{margin-bottom:10px}
   .entry-main{display:flex;align-items:baseline;justify-content:space-between;gap:14px;flex-wrap:nowrap}
@@ -74,86 +74,34 @@
   .entry-list{list-style:none;margin-top:4px}
   .entry-list li{position:relative;padding-left:13px;font-size:12.5px;line-height:1.68;color:var(--ink);margin-bottom:2px;text-align:justify;text-wrap:pretty}
   .entry-list li::before{content:"•";position:absolute;left:1px;top:5px;color:var(--accent);font-size:10px;line-height:1}
-  .entry-list .num,.entry-list .kw{font-family:var(--font-mono);color:var(--accent-ink);font-weight:600}
+  .entry-list .num{font-family:var(--font-mono);color:var(--accent-ink);font-weight:600}
   /* Bullet（独立原子，自由换页） */
   .bullet{position:relative;padding-left:13px;font-size:12.5px;line-height:1.68;color:var(--ink);margin-bottom:2px;text-align:justify;text-wrap:pretty}
   .bullet::before{content:"•";position:absolute;left:1px;top:5px;color:var(--accent);font-size:10px;line-height:1}
-  .bullet .num,.bullet .kw{font-family:var(--font-mono);color:var(--accent-ink);font-weight:600}
+  .bullet .num{font-family:var(--font-mono);color:var(--accent-ink);font-weight:600}
   .bullet strong,.bullet b{color:var(--accent-ink);font-weight:600}
   /* 论文 / 竞赛 */
-  .pub{font-size:12.5px;line-height:1.55;padding:4px 0;border-bottom:1px dashed var(--hair)}
-  .pub .ven{font-style:italic;color:var(--accent-ink)}
-  .pub .yr{font-family:var(--font-mono);color:var(--faint);font-size:11px;margin-left:6px}
+  .pubs{list-style:none}
+  .pubs li{font-size:12.5px;line-height:1.55;padding:4px 0;border-bottom:1px dashed var(--hair)}
+  .pubs li .ven{font-style:italic;color:var(--accent-ink)}
+  .pubs li .yr{font-family:var(--font-mono);color:var(--faint);font-size:11px;margin-left:6px}
   .awards{display:grid;grid-template-columns:1fr 1fr;gap:2px 22px;margin-top:4px}
   .award{display:grid;grid-template-columns:54px 1fr auto;gap:7px;align-items:baseline;font-size:12.5px;padding:3px 0;border-bottom:1px dashed var(--hair)}
-  .award .tag{font-family:var(--font-mono);font-size:10.5px;color:var(--accent)}
+  .award .yr{font-family:var(--font-mono);font-size:10.5px;color:var(--accent)}
   .award .lvl{font-size:11px;color:var(--accent-ink);font-weight:600}
 </style>
 ```
 
 > 不含 `.viewport/.page 尺寸/#source/@media print`（归预览外壳）。`.page-content` 在此覆写为 `13mm 15mm`（技术岗更密）。
 
-## 组件库（带 `{{占位符}}`）
+## 主题差异（相对共享组件库）
 
-### 1. Header
-```html
-<header class="resume-header">
-  <div class="ident">
-    <div class="name-row"><span class="name">{{name}}</span><span class="role">{{role}}</span></div>
-    <div class="edu-line">{{education}}</div>
-    <div class="contact">{{gender}}<span class="sep">·</span>{{location}}<span class="sep">·</span>{{phone}}<span class="sep">·</span>{{email}}<span class="sep">·</span><a href="{{github-url}}">{{github}}</a></div>
-  </div>
-  {{photo}}
-</header>
-```
-`{{role}}` = 求职意向（带浅底胶囊）。`{{education}}` 单独一行，来自 `education:` 字段（如学校 · 专业 · 学历 · 届）。联系方式按 self-intro 实际字段拼，字段间用 `<span class="sep">·</span>`，缺的字段连同 sep 删。
-
-### 2. SectionHead（无英文标签）
-```html
-<div class="sec-head" data-stick="1">{{icon}}<h2>{{title}}</h2></div>
-```
-
-### 3. Summary
-```html
-<div class="summary"><p>{{text}}</p></div>
-```
-关键短语用 `<strong>`（转强调字色）。
-
-### 4. 技术栈 Stack（mono 等级词文本行，技术栈模块用它，**前置**）
-```html
-<div class="stack">
-  <div class="stack-row"><span class="cat">{{category}}</span><span class="val"><b>精通 {{skill}}</b>（{{方向/细分}}）· <b>熟练 {{skill}}</b> · 熟悉 {{skill}}</span></div>
-</div>
-```
-技能描述 = 等级词 + 技能名（括号补具体方向/细分），按等级从高到低排列；`<b>` 加粗「等级词 + 技能名」。保持 mono 字体（工程感）但为纯文本行，不使用 chip/标签。每类一个 `.stack-row`。
-
-### 5. Entry header（教育 / 实习 / 工作头；项目用 `.proj` + `.company` + `.badge`）
-```html
-<div class="entry" data-stick="1">
-  <div class="entry-main"><div class="entry-title"><span class="org">{{org}}</span><span class="role">{{role}}</span></div><span class="entry-date">{{date}}</span></div>
-  <div class="entry-meta"><span>{{meta}}</span></div>
-</div>
-```
-项目经历是三段式单行：`.proj`（左）· `.company`（居中）· `.entry-date`（右），**无任何符号、无 `.role`**——职责由下方 bullet 体现，避免与实习/工作段重复。`.company` 是 `.entry-main` 的直接子节点（不包在 `.entry-title` 里）；在本主题用 mono（工程感，与技术栈 mono 文本同语汇）。个人项目可写「个人项目」或留空删 `.company`。`data-stick="1"` 让 header 和第一条 bullet 同页不分家。
-
-### 6. Bullet（单条经历要点 — 独立原子，自由换页）
-```html
-<div class="bullet">{{text}}</div>
-```
-数字/术语用 `<span class="num">` 或 `<span class="kw">`。每条 `- bullet` 拆一个独立原子。
-
-### 7. Pub（论文，单行 div）
-```html
-<div class="pub">{{authors}} <span class="ven">{{venue}}</span> {{note}}<span class="yr">{{year}}</span></div>
-```
-
-### 8. Awards（竞赛 / 证书，按 tag 分组）
-```html
-<div class="awards"><div class="award"><span class="tag">{{ACM-ICPC}}</span><span>{{name}}</span><span class="lvl">{{level}}</span></div></div>
-```
-
-## 简历骨架
-Header → 技术栈（**建议前置**）→ 个人简介 → 教育/实习/项目（按 MD 模块顺序）→ 论文与竞赛。每模块先 SectionHead 再正文组件。
-
-## MD → 组件映射
-`# self-intro`→Header；`# 技术栈`下`类别: 精通 A（…）· 熟悉 B`→`.stack-row`（等级词+技能名 `<b>` 加粗）；`# 个人简介`→Summary；`## org|role`→Entry header（`data-stick="1"`）；`date:/meta:`→Entry 内；`- bullet`→每条独立 `.bullet`；论文行→`.pub`；`tag | name | level`→`.award`。
+- **启用组件**：Header / SectionHead / Summary / Entry / Bullet / Pubs / Awards / Skills；**不用** Interests。
+- **Header 默认字段集**：`{{gender}}` · `{{location}}` · `{{phone}}` · `{{email}}` · `<a href="{{github-url}}">{{github}}</a>`；`{{role}}` = 求职意向（本主题带浅底胶囊，style 已实现）。
+- **Skills = 技术栈**（技术栈模块用，**骨架前置**）：HTML 与共享库完全一致（`.skills-row`，cat + tags）；mono 字体纯文本行由本主题 style 实现，等级词规则同共享库。不使用 chip/标签。
+- **SectionHead**：无英文标签。
+- **Entry**：项目 `.company` 用 mono（工程感）；个人项目可写「个人项目」或留空删 `.company`。
+- **Bullet**：数字 `<span class="num">`（mono 由 style 实现），术语 `<b>`。
+- **Pubs**：简化形态——无类型标、无 `.me`：`<li>{{authors}} <span class="ven">{{venue}}</span> {{note}}<span class="yr">{{year}}</span></li>`。
+- **Awards**：首格 `.yr` 放竞赛/类别名（分组用法，mono 蓝色由 style 实现）。
+- **骨架**：Header → 技术栈（Skills，**前置**）→ 个人简介 → 教育/实习/项目（按 MD 模块顺序）→ 论文与竞赛。每模块先 SectionHead 再正文组件。

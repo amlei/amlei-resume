@@ -16,7 +16,7 @@
 
 ## 读组件库
 
-读所选主题的 `references/theme-{标识}.md` + 共用的 [icons.md](icons.md)（按模块语义选 SVG 图标）。**装配 HTML 一律从所选主题的组件库取，不凭记忆手写。**
+读 [themes/component-library.md](themes/component-library.md)（单栏主题共用的基准组件库：组件 HTML + 骨架 + 映射）+ 所选主题的 `references/theme-{标识}.md`（设计令牌 + `<style>` + 主题差异）+ 共用的 [icons.md](icons.md)（按模块语义选 SVG 图标）。**装配 HTML 一律从共享库基准组件取、按主题差异节覆盖，不凭记忆手写。**（`sidebar-creative` 自包含，只读其主题文件。）
 
 ## 装配 HTML
 
@@ -26,7 +26,7 @@
 2. 每个 `# 模块` → **SectionHead**（icon 按 icons.md 选）+ 模块正文组件。
 3. `## 机构 | 角色` → **Entry**（只含 header：org/proj/company/role/date/meta）；
    `- bullet` → 每条拆成独立 **Bullet** 原子（兄弟节点，不再包在 Entry 内）。
-   `##` 下的描述段（项目说明）→ 渲染成主题的描述段落组件（academic 用 `.summary`，部分主题有 `.desc`），**作为独立原子放在 Entry 之后**，不塞进 Entry。
+   `##` 下的描述段（项目说明）→ 渲染成描述段组件（用主题差异节指定的形态，如 `.summary`），**作为独立原子放在 Entry 之后**，不塞进 Entry。
 4. 行内强调：`**词**` → 强调字色；关键数字 → 等宽强调（如 `<span class="num">`）。
 
 > **不要再加 `data-stick="1"`**——旧版手动分页用它防"标题孤立页底"，新版由预览壳的 CSS `break-*` 规则按 class（`.sec-head`/`.entry`）自动处理，加了也是 no-op。主题模板里若仍带着，照抄无害、不强制。
@@ -47,6 +47,14 @@
 - chrome（工具条 / 舞台 / 页间距 / 打印开关）放 `<style data-pagedjs-ignore>` 绕过 polisher，由浏览器直套——Paged.js 会剥掉针对 `.pagedjs_*` 的用户规则，故页间距等必须放这段。
 
 > **核心：分页交给 Paged.js，不要手动量高度装箱。** Paged.js 在行级断行——长段落 / bullet 可跨页，每页填到页脚，不再有"整条 bullet 被搬页留 10 行白"的旧问题。`.sec-head`/`.entry`/`.bullet` 等小单元由外壳的 `break-inside:avoid` 保持不拆，`.summary` 等长文不设 avoid 以便跨页。
+
+**外壳维护注记（改壳前必读的三条踩坑）：**
+
+1. `paged.preview(content, undefined, renderTo)` —— stylesheets 参数必须 `undefined`；传 `[]` 会跳过 removeStyles → 读不到 `@page{size:A4}` → 退回默认 letter。
+2. `#source` 要 `src.remove()` 后把 detached 节点喂给 Paged.js，否则原 `.resume-root` 留在 body 里 → 页面下方出现第二份未分页副本。
+3. 渲染完成后追加 `<style media="print">@page{margin:0}</style>`：屏幕用 @page margin 做内容内缩，打印时浏览器别再叠 margin（否则满 A4 的 `.pagedjs_page` 被切成 2 页）。
+
+> 主题要满铺整页（如 `sidebar-creative` 双栏）时，在**主题 `<style>`** 里声明 `@page{margin:0}` 覆盖外壳默认页边距——主题样式注入在外壳规则之后，级联可覆盖；否则 @page 内缩 + 主题内边距会叠成两层边距。
 
 **预览后检查**（可用 Playwright 自动化）：
 
