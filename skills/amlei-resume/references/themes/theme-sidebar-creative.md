@@ -46,8 +46,9 @@
   .side-block .row{font-size:13px;color:var(--ink);line-height:1.8}
   .side-block .row .k{color:var(--faint);font-size:12px;margin-right:5px}
   .side-block .row a{color:var(--accent-ink);text-decoration:none}
-  .tools{display:flex;flex-wrap:wrap;gap:5px}
-  .tools .t{font-size:12.5px;color:var(--ink);background:var(--paper);border:1px solid var(--border);padding:3px 8px}
+  .tools{display:flex;flex-direction:column;gap:4px}
+  .tools .t{font-size:12.5px;color:var(--ink);line-height:1.7}
+  .tools .t b{color:var(--accent-ink);font-weight:600}
   .main{padding:15mm 14mm 15mm}
   .head{padding-bottom:13px;border-bottom:2px solid var(--ink);margin-bottom:14px}
   .head .name{font-size:29px;font-weight:700;letter-spacing:.04em}
@@ -116,10 +117,11 @@
 </div>
 ```
 
-### 侧栏 · tools（工具标签）
+### 侧栏 · tools（工具 / 技能，等级词文本行）
 ```html
-<div class="side-block"><h3>{{设计工具}}</h3><div class="tools"><span class="t">{{Figma}}</span><span class="t">{{Sketch}}</span></div></div>
+<div class="side-block"><h3>{{设计工具}}</h3><div class="tools"><span class="t"><b>精通 {{工具}}</b>（{{方向/细分}}）</span><span class="t"><b>熟悉 {{工具}}</b></span></div></div>
 ```
+技能描述 = 等级词 + 名称（括号补具体方向/细分），按等级从高到低；`<b>` 加粗「等级词 + 名称」。每项一行纯文本，不使用标签/边框 pill。
 
 ### 主体 · head（姓名 / 方向 / 教育 / 一句话）
 ```html
@@ -165,4 +167,4 @@
 **控制总量在一页 A4 内**；放不下就删次要模块或精简 bullet。
 
 ## MD → 组件映射
-`# self-intro`→侧栏 photo + 联系方式 side-block + 基本信息 side-block；`name/role`→主体 `.head`；`# 模块`→主体 `.sec-h` + 内容；`## org|role`→`.entry`；`- bullet`→`.entry-list li`；设计工具/技能→侧栏 `.tools`；获奖→主体 `.entry-list`。
+`# self-intro`→侧栏 photo + 联系方式 side-block + 基本信息 side-block；`name/role`→主体 `.head`；`# 模块`→主体 `.sec-h` + 内容；`## org|role`→`.entry`；`- bullet`→`.entry-list li`；设计工具/技能→侧栏 `.tools`（等级词文本行）；获奖→主体 `.entry-list`。

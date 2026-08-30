@@ -1,6 +1,6 @@
 # 主题 · 内容 / 媒体风（`content-green`）
 
-> 单栏 · 深森林绿单点缀色 · 证件照 · 描边 SVG 图标 · `•` 列表符 · 技能用浅底标签。
+> 单栏 · 深森林绿单点缀色 · 证件照 · 描边 SVG 图标 · `•` 列表符 · 技能为「等级词 + 技能名（方向）」文本行。
 > 适用于内容 / 运营 / 增长 / 新媒体 / 产品（内容向）。
 >
 > **用法**：渲染时把"完整 `<style>`"整段作为产物开头，再按骨架用组件装配。HTML 一律从本文件取。
@@ -74,9 +74,8 @@
   .skills{display:flex;flex-direction:column;gap:6px}
   .skill-row{display:grid;grid-template-columns:78px 1fr;gap:12px;align-items:start}
   .skill-row .cat{font-size:12.5px;font-weight:600;color:var(--muted);padding-top:2px}
-  .skill-row .tags{display:flex;flex-wrap:wrap;gap:5px}
-  .skill-row .tag{font-size:12.5px;color:var(--ink);border:1px solid var(--border);padding:2px 8px}
-  .skill-row .tag.strong{color:var(--accent-ink);background:var(--accent-soft);border-color:var(--accent-soft);font-weight:600}
+  .skill-row .val{font-size:12.5px;color:var(--ink);line-height:1.7}
+  .skill-row .val b{color:var(--accent-ink);font-weight:600}
 </style>
 ```
 
@@ -126,16 +125,16 @@
 <div class="awards"><div class="award"><span class="yr">{{year}}</span><span>{{name}}</span><span class="lvl">{{level}}</span></div></div>
 ```
 
-### 7. Skills（相关技能，浅底标签）
+### 7. Skills（相关技能，等级词文本行）
 ```html
 <div class="skills">
-  <div class="skill-row"><span class="cat">{{category}}</span><div class="tags"><span class="tag strong">{{skill}}</span><span class="tag">{{skill}}</span></div></div>
+  <div class="skill-row"><span class="cat">{{category}}</span><span class="val"><b>精通 {{skill}}</b>（{{方向/细分}}）· <b>熟悉 {{skill}}</b> · 了解 {{skill}}</span></div>
 </div>
 ```
-最熟的加 `class="tag strong"`。
+技能描述 = 等级词 + 技能名（括号补具体方向/细分），按等级从高到低排列；`<b>` 加粗「等级词 + 技能名」，括号内方向用常规字重。不使用标签/chip/进度条等图形化形式。
 
 ## 简历骨架
 Header → 个人简介 → 教育背景 → 实习经历 → 项目经历 → 获奖与证书 → 相关技能（按 MD 模块顺序）。
 
 ## MD → 组件映射
-`# self-intro`→Header；`# 个人简介`→Summary；`## org|role`→Entry header（`data-stick="1"`，项目用 proj+badge）；`- bullet`→每条独立 `.bullet`；`年份 | name | level`→`.award`；`类别: A, B`→`.skill-row`（最熟标 strong）。
+`# self-intro`→Header；`# 个人简介`→Summary；`## org|role`→Entry header（`data-stick="1"`，项目用 proj+badge）；`- bullet`→每条独立 `.bullet`；`年份 | name | level`→`.award`；`类别: 精通 A（…）· 熟悉 B`→`.skill-row`（等级词+技能名 `<b>` 加粗）。

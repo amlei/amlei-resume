@@ -206,15 +206,15 @@
 
 每项一个 `.award`；`{{level}}` = 国家级/省级/校级/金牌 等，无则删 `.lvl`。
 
-### 9. Skills（技能 / 英语，类别 + 标签）
+### 9. Skills（技能 / 英语，类别 + 等级词文本）
 
 ```html
 <div class="skills">
-  <div class="skills-row"><span class="cat">{{category}}</span><span class="tags">{{tags}}</span></div>
+  <div class="skills-row"><span class="cat">{{category}}</span><span class="tags">{{items}}</span></div>
 </div>
 ```
 
-每类一个 `.skills-row`；`{{tags}}` 里最熟的几项用 `<b>` 加重（如 `<b>PyTorch</b> · JAX · …`）。
+每类一个 `.skills-row`；`{{items}}` = 等级词 + 技能名（括号补具体方向/细分），按等级从高到低排列，「等级词 + 技能名」用 `<b>` 加重（如 `<b>精通 PyTorch</b>（分布式训练）· 熟悉 JAX · …`）。
 
 ## 简历骨架（装配顺序）
 
@@ -244,7 +244,7 @@
 | `##` 下 `- bullet` | 独立 Bullet（6.） | 每条一条；STAR + 量化；数字 `<span class="num">` |
 | 论文模块条目 | Pubs（7.） | 类型标/venue/年份/本人下划线 |
 | 获奖模块条目 | Awards（8.） | 年/名/级别 |
-| `- 类别: 值`（技能） | Skills（9.）的 `.skills-row` | cat + tags |
+| `- 类别: 值`（技能） | Skills（9.）的 `.skills-row` | cat + items（等级词文本） |
 
 ## 配色约束（本主题已遵守，换色时保持）
 

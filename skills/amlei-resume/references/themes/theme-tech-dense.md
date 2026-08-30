@@ -1,6 +1,6 @@
 # 主题 · 互联网技术硬核风（`tech-dense`）
 
-> 单栏 · 高密度 · 工程蓝单点缀色 · 技术栈前置（mono chips）· 描边 SVG 图标 · `•` 列表符。
+> 单栏 · 高密度 · 工程蓝单点缀色 · 技术栈前置（mono 等级词文本行）· 描边 SVG 图标 · `•` 列表符。
 > 适用于互联网技术 / 算法 / 后端 / 基础架构 / AI 工程校招。
 >
 > **用法**：渲染时把"完整 `<style>`"整段作为产物开头，再按"简历骨架"用各组件（带 `{{占位符}}`）装配正文原子。HTML 一律从本文件取。
@@ -17,7 +17,7 @@
 | `--border` / `--hair` | `oklch(87% .008 240)` / `oklch(90% .006 240)` | 边框 / 发丝线 |
 | `--accent` | `oklch(46% .17 242)` | **唯一**点缀色（工程蓝） |
 | `--accent-ink` | `oklch(38% .15 242)` | 强调字色 |
-| `--accent-soft` | `oklch(95% .03 242)` | 强调浅底（role 胶囊 / strong chip） |
+| `--accent-soft` | `oklch(95% .03 242)` | 强调浅底（role 胶囊） |
 
 ## 完整 `<style>`（渲染时整段贴在产物最前）
 
@@ -53,13 +53,12 @@
   .sec-head::after{content:"";flex:1;height:1px;background:var(--hair)}
   .summary p{font-size:13px;line-height:1.7;text-align:justify;text-wrap:pretty}
   .summary p strong{color:var(--accent-ink);font-weight:600}
-  /* 技术栈 chips */
+  /* 技术栈文本行（mono） */
   .stack{display:flex;flex-direction:column;gap:6px}
   .stack-row{display:grid;grid-template-columns:64px 1fr;gap:10px;align-items:start}
   .stack-row .cat{font-family:var(--font-mono);font-size:11px;color:var(--accent);padding-top:3px;letter-spacing:.04em}
-  .chips{display:flex;flex-wrap:wrap;gap:4px}
-  .chip{font-family:var(--font-mono);font-size:11.5px;color:var(--ink);border:1px solid var(--border);padding:1.5px 7px}
-  .chip.strong{color:var(--accent-ink);background:var(--accent-soft);border-color:oklch(80% .04 242);font-weight:600}
+  .stack-row .val{font-family:var(--font-mono);font-size:11.5px;color:var(--ink);line-height:1.7}
+  .stack-row .val b{color:var(--accent-ink);font-weight:600}
   /* Entry */
   .entry{margin-bottom:10px}
   .entry-main{display:flex;align-items:baseline;justify-content:space-between;gap:14px;flex-wrap:nowrap}
@@ -120,13 +119,13 @@
 ```
 关键短语用 `<strong>`（转强调字色）。
 
-### 4. 技术栈 Stack（mono chips，技术栈模块用它，**前置**）
+### 4. 技术栈 Stack（mono 等级词文本行，技术栈模块用它，**前置**）
 ```html
 <div class="stack">
-  <div class="stack-row"><span class="cat">{{category}}</span><div class="chips"><span class="chip strong">{{skill}}</span><span class="chip">{{skill}}</span></div></div>
+  <div class="stack-row"><span class="cat">{{category}}</span><span class="val"><b>精通 {{skill}}</b>（{{方向/细分}}）· <b>熟练 {{skill}}</b> · 熟悉 {{skill}}</span></div>
 </div>
 ```
-最熟的技能加 `class="chip strong"`。每类一个 `.stack-row`。
+技能描述 = 等级词 + 技能名（括号补具体方向/细分），按等级从高到低排列；`<b>` 加粗「等级词 + 技能名」。保持 mono 字体（工程感）但为纯文本行，不使用 chip/标签。每类一个 `.stack-row`。
 
 ### 5. Entry header（教育 / 实习 / 工作头；项目用 `.proj` + `.company` + `.badge`）
 ```html
@@ -135,7 +134,7 @@
   <div class="entry-meta"><span>{{meta}}</span></div>
 </div>
 ```
-项目经历是三段式单行：`.proj`（左）· `.company`（居中）· `.entry-date`（右），**无任何符号、无 `.role`**——职责由下方 bullet 体现，避免与实习/工作段重复。`.company` 是 `.entry-main` 的直接子节点（不包在 `.entry-title` 里）；在本主题用 mono（工程感，与技术栈 chips 同语汇）。个人项目可写「个人项目」或留空删 `.company`。`data-stick="1"` 让 header 和第一条 bullet 同页不分家。
+项目经历是三段式单行：`.proj`（左）· `.company`（居中）· `.entry-date`（右），**无任何符号、无 `.role`**——职责由下方 bullet 体现，避免与实习/工作段重复。`.company` 是 `.entry-main` 的直接子节点（不包在 `.entry-title` 里）；在本主题用 mono（工程感，与技术栈 mono 文本同语汇）。个人项目可写「个人项目」或留空删 `.company`。`data-stick="1"` 让 header 和第一条 bullet 同页不分家。
 
 ### 6. Bullet（单条经历要点 — 独立原子，自由换页）
 ```html
@@ -157,4 +156,4 @@
 Header → 技术栈（**建议前置**）→ 个人简介 → 教育/实习/项目（按 MD 模块顺序）→ 论文与竞赛。每模块先 SectionHead 再正文组件。
 
 ## MD → 组件映射
-`# self-intro`→Header；`# 技术栈`下`类别: A, B, C`→`.stack-row`（最熟项标 strong）；`# 个人简介`→Summary；`## org|role`→Entry header（`data-stick="1"`）；`date:/meta:`→Entry 内；`- bullet`→每条独立 `.bullet`；论文行→`.pub`；`tag | name | level`→`.award`。
+`# self-intro`→Header；`# 技术栈`下`类别: 精通 A（…）· 熟悉 B`→`.stack-row`（等级词+技能名 `<b>` 加粗）；`# 个人简介`→Summary；`## org|role`→Entry header（`data-stick="1"`）；`date:/meta:`→Entry 内；`- bullet`→每条独立 `.bullet`；论文行→`.pub`；`tag | name | level`→`.award`。

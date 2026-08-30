@@ -9,7 +9,7 @@
 | 主题 | 标识 | 主色 | 适用场景 | 组件库文件 |
 |------|------|------|----------|-----------|
 | 学术 / 科研 CV | `academic` | 墨蓝 `oklch(33% .05 258)` | 升学 / PhD 申请 / 科研岗；含论文、奖项、研究兴趣；单栏、证件照 | [theme-academic.md](theme-academic.md) |
-| 技术密排 | `tech-dense` | 工程蓝 `oklch(46% .17 242)` | 互联网技术 / 算法 / 后端 / 基础架构岗；技术栈前置 chips、项目数据导向 | [theme-tech-dense.md](theme-tech-dense.md) |
+| 技术密排 | `tech-dense` | 工程蓝 `oklch(46% .17 242)` | 互联网技术 / 算法 / 后端 / 基础架构岗；技术栈前置（mono 等级词文本行）、项目数据导向 | [theme-tech-dense.md](theme-tech-dense.md) |
 | 内容运营·绿 | `content-green` | 深森林绿 `oklch(40% .06 155)` | 内容 / 运营 / 增长 / 新媒体 / 内容产品岗 | [theme-content-green.md](theme-content-green.md) |
 | 外企 / 英文 MNC | `english-mnc` | 酒红 `oklch(40% .13 25)` | 外企管培 / BA / 咨询；**英文**、UPPERCASE 标题 | [theme-english-mnc.md](theme-english-mnc.md) |
 | 侧栏创意 | `sidebar-creative` | 暖珊瑚 `oklch(56% .15 38)` | 创意 / UI·UX / 视觉 / 设计岗；**双栏单页**（特殊结构，见主题文件） | [theme-sidebar-creative.md](theme-sidebar-creative.md) |

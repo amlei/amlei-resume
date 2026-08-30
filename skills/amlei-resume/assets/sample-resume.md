@@ -84,6 +84,6 @@ date: 2024.09 — 2025.02
 
 # 技能与英语
 
-科研工具: PyTorch · JAX · HuggingFace · DeepSpeed · CUDA · LaTeX · Linux · Git
-编程语言: Python · C++ · Julia · SQL · Rust
+科研工具: 精通 PyTorch（分布式训练、自定义算子）· 熟练 JAX · HuggingFace · 熟悉 DeepSpeed · CUDA · LaTeX · Linux · Git
+编程语言: 精通 Python（科研工程、性能优化）· 熟练 C++ · 熟悉 Julia · SQL · 了解 Rust
 英语: TOEFL 112（口语 26）· GRE 328（V158 Q170）· 可全英文科研交流

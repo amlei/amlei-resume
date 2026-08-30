@@ -135,14 +135,15 @@
 <div class="awards"><div class="award"><span class="yr">{{year}}</span><span>{{name}}</span><span class="lvl">{{level}}</span></div></div>
 ```
 
-### 6. Skills（技能与证书，类别 + 标签）
+### 6. Skills（技能与证书，类别 + 等级词文本）
 ```html
 <div class="skills">
-  <div class="row"><span class="cat">{{专业技能}}</span><span class="tags"><b>{{财务建模}}</b> · {{估值分析}} · …</span></div>
+  <div class="row"><span class="cat">{{专业技能}}</span><span class="tags"><b>精通 {{技能}}</b>（{{方向/细分}}）· <b>熟练 {{技能}}</b> · 熟悉 {{技能}} · …</span></div>
   <div class="row"><span class="cat">{{资格证书}}</span><span class="tags"><b>{{证券从业}}</b> · <b>{{基金从业}}</b> · …</span></div>
 </div>
 ```
-资格证书单独一行，已取得的用 `<b>`。
+技能行 = 等级词 + 技能名（括号补具体方向/细分），按等级从高到低排列，「等级词 + 技能名」用 `<b>` 加重。
+资格证书单独一行（证书无等级词），已取得的用 `<b>`。
 
 ### 7. Summary（自我评价，左竖条引用块，**放末尾**）
 ```html

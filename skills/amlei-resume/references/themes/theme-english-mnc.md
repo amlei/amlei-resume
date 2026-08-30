@@ -114,13 +114,13 @@
 ```
 Each `- bullet` becomes one `.bullet` atom. Numbers → `<span class="num">`, key terms → `<b>`.
 
-### 6. Skills（双列 key:value 行）
+### 6. Skills（双列 key:value 行，英文等级词文本）
 ```html
 <div class="grid2">
-  <div class="skill-line"><span class="k">{{Analytics}}</span><span>{{Excel · SQL · Tableau}}</span></div>
+  <div class="skill-line"><span class="k">{{Analytics}}</span><span><b>Proficient in {{SQL}}</b> ({{complex queries, reporting}}) · familiar with {{Tableau}}</span></div>
 </div>
 ```
-每行一个 `.skill-line`，`.grid2` 自动两列排布。
+每行一个 `.skill-line`，`.grid2` 自动两列排布。值 = 英文等级词（Proficient in / Skilled in / Familiar with / Working knowledge of，按程度从高到低）+ 技能名（括号补具体方向）；「等级词 + 技能名」用 `<b>` 加重。不使用标签/chip。
 
 ## 简历骨架
 Header → Profile → Education → Experience → Leadership & Projects → Skills & Languages（按 MD 模块顺序；无单独 Awards 模块时并入 Experience/Skills）。
