@@ -47,7 +47,7 @@ amlei-resume 是消费者——它通过 `identities/{id}/emphasis/` 引用本 s
 |---|---|---|
 | 身份事实 | `identity.json` | 1:1 与用户。姓名/性别/联系方式/常驻地/链接/avatar/教育 |
 | 经历事实 | `experiences.json` | 树形：每个经历内嵌 projects。项目 id 全局唯一；跨经历项目用 `cross_project_refs` |
-| 能力证明 | `capabilities.json` | **每条必须有 `proven_by` 至少一个 project id**——无证据的能力不下沉到事实层 |
+| 能力证明 | `capabilities.json` | **每条必须有 `proven_by` 至少一个 project id**——无证据的能力不下沉到事实层；可选 `proficiency` 定级（见 R1） |
 | 原始素材 | `files/` | docx/pdf/pptx 等永久存档；markitdown 转换结果同目录 |
 
 ## 关键规则
@@ -55,6 +55,8 @@ amlei-resume 是消费者——它通过 `identities/{id}/emphasis/` 引用本 s
 ### R1：能力必须有证据
 
 `capabilities.json` 每条 `proven_by` 不能为空。LLM 提出能力 claim 时必须同时给出"由哪个项目证明"。无法举证的 claim 是强调层产物（写进 emphasis/capabilities.json 的 skill_axis），不是事实。
+
+**熟练度定级（`proficiency`，可选）**：判据分四档（面试官会按程度词调整提问深度，必须实事求是）——`expert`=精通：深入理解底层原理（读过源码级），能解决该领域复杂/疑难问题，具备架构设计或"造轮子"能力，**慎用**——写了精通就会被往底层和源码追问；`proficient`=熟练：日常主力技术，能独立、高效完成复杂业务开发，了解核心原理、常见坑点及性能调优；`familiar`=熟悉：实际项目中使用过，能完成日常开发任务，了解基本概念和常用 API，未深入研究底层；`aware`=了解：知道基本概念，写过 Demo 或做过简单应用，不具备独立负责复杂模块的能力。定级同样必须有 `proven_by` 证据支撑，并经用户确认后写入；证据不足以支撑高等级时就低不就高。缺失 = 未定级。简历技能行的程度词即取自本字段（技能句式与排版规范见 amlei-resume SKILL.md「简历格式」表）；能力方向/应用场景由简历侧按岗位从证据组装，是强调层产物，不入事实层。
 
 ### R2：项目存储多粒度
 

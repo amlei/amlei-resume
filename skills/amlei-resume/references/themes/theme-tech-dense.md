@@ -53,11 +53,11 @@
   .sec-head::after{content:"";flex:1;height:1px;background:var(--hair)}
   .summary p{font-size:13px;line-height:1.7;text-align:justify;text-wrap:pretty}
   .summary p b{color:var(--accent-ink);font-weight:600}
-  /* Skills（技术栈 mono 文本行） */
+  /* Skills（技术栈 mono 文本行：分类行内顶格，续行自然顶格） */
   .skills{display:flex;flex-direction:column;gap:6px}
-  .skills-row{display:grid;grid-template-columns:64px 1fr;gap:10px;align-items:start}
-  .skills-row .cat{font-family:var(--font-mono);font-size:11px;color:var(--accent);padding-top:3px;letter-spacing:.04em}
-  .skills-row .tags{font-family:var(--font-mono);font-size:11.5px;color:var(--ink);line-height:1.7}
+  .skills-row{font-family:var(--font-mono);font-size:11.5px;color:var(--ink);line-height:1.7}
+  .skills-row .cat{color:var(--accent);letter-spacing:.04em}
+  .skills-row .tags{color:var(--ink)}
   .skills-row .tags b{color:var(--accent-ink);font-weight:600}
   /* Entry */
   .entry{margin-bottom:10px}
@@ -98,7 +98,7 @@
 
 - **启用组件**：Header / SectionHead / Summary / Entry / Bullet / Pubs / Awards / Skills；**不用** Interests。
 - **Header 默认字段集**：`{{gender}}` · `{{location}}` · `{{phone}}` · `{{email}}` · `<a href="{{github-url}}">{{github}}</a>`；`{{role}}` = 求职意向（本主题带浅底胶囊，style 已实现）。
-- **Skills = 技术栈**（技术栈模块用，**骨架前置**）：HTML 与共享库完全一致（`.skills-row`，cat + tags）；mono 字体纯文本行由本主题 style 实现，等级词规则同共享库。不使用 chip/标签。
+- **Skills = 技术栈**（技术栈模块用，**骨架前置**）：HTML 与共享库完全一致（`.skills-row`，分类行内顶格——cat 与描述同行、续行自然顶格，不用分类栅格列）；句读式排版（条目间「；」、行末「。」）；mono 字体纯文本行由本主题 style 实现，程度词规则同共享库。不使用 chip/标签。
 - **SectionHead**：无英文标签。
 - **Entry**：项目 `.company` 用 mono（工程感）；个人项目可写「个人项目」或留空删 `.company`。
 - **Bullet**：数字 `<span class="num">`（mono 由 style 实现），术语 `<b>`。

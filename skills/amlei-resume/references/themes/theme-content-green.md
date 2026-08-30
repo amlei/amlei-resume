@@ -1,6 +1,6 @@
 # 主题 · 内容 / 媒体风（`content-green`）
 
-> 单栏 · 深森林绿单点缀色 · 证件照 · 描边 SVG 图标 · `•` 列表符 · 技能为「等级词 + 技能名（方向）」文本行。
+> 单栏 · 深森林绿单点缀色 · 证件照 · 描边 SVG 图标 · `•` 列表符 · 技能为「程度词 + 技能名（能力/场景/原理）」文本行（分类行内顶格）。
 > 适用于内容 / 运营 / 增长 / 新媒体 / 产品（内容向）。
 >
 > **用法**：基准组件（Header/SectionHead/Summary/Entry/Bullet 等）读 [component-library.md](component-library.md)，本文只含本主题的设计令牌、`<style>` 与差异。渲染时把"完整 `<style>`"整段作为产物开头，再按共享库骨架用基准组件 + 本文差异装配。HTML 一律从文件取，不要凭记忆手写。
@@ -72,9 +72,9 @@
   .award .yr{font-family:var(--font-mono);font-size:10.5px;color:var(--accent)}
   .award .lvl{font-size:11px;color:var(--accent-ink);font-weight:600}
   .skills{display:flex;flex-direction:column;gap:6px}
-  .skills-row{display:grid;grid-template-columns:78px 1fr;gap:12px;align-items:start}
-  .skills-row .cat{font-size:12.5px;font-weight:600;color:var(--muted);padding-top:2px}
-  .skills-row .tags{font-size:12.5px;color:var(--ink);line-height:1.7}
+  .skills-row{font-size:12.5px;color:var(--ink);line-height:1.7}
+  .skills-row .cat{font-weight:600;color:var(--muted)}
+  .skills-row .tags{color:var(--ink)}
   .skills-row .tags b{color:var(--accent-ink);font-weight:600}
 </style>
 ```

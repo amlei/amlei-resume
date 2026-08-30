@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://amlei.dev/skills/amlei-profile/schemas/capabilities.json",
   "title": "Capabilities Facts",
-  "description": "能力证明。每条必须带 proven_by 引用至少一个 project id（无证据的能力不下沉到事实层）。能力是跨项目抽象，一个 claim 可被多个项目共同证明。",
+  "description": "能力证明。每条必须带 proven_by 引用至少一个 project id（无证据的能力不下沉到事实层）。能力是跨项目抽象，一个 claim 可被多个项目共同证明。简历技能行 = [程度词(proficiency)] + [技能名(claim)] + 能力方向/场景（由简历侧按岗位从证据行文组装，不入事实层）。",
   "type": "object",
   "additionalProperties": false,
   "required": ["_meta", "items"],
@@ -20,7 +20,7 @@
       "required": ["facts_version", "schema_version"],
       "properties": {
         "facts_version": { "type": "string", "format": "date-time" },
-        "schema_version": { "type": "integer", "const": 2 },
+        "schema_version": { "type": "integer", "const": 3 },
         "created": { "type": "string", "format": "date-time" }
       }
     },
@@ -34,6 +34,11 @@
           "type": "string",
           "minLength": 1,
           "description": "能力声明，中粒度（如 '并发系统设计'，不过于泛化也不过细）"
+        },
+        "proficiency": {
+          "type": "string",
+          "enum": ["expert", "proficient", "familiar", "aware"],
+          "description": "熟练度定级（岗位无关的长期事实），面试官会按程度词调整提问深度，必须实事求是：expert=精通（深入理解底层原理/读过源码，能解决复杂疑难问题，具备架构设计或造轮子能力，慎用）；proficient=熟练（日常主力技术，独立高效完成复杂业务开发，懂核心原理、常见坑点与调优）；familiar=熟悉（实际项目使用过，能完成日常开发，了解基本概念和常用 API，未深入底层）；aware=了解（知道基本概念，写过 Demo 或简单应用，不能独立负责复杂模块）。缺失=未定级。定级须有 proven_by 证据支撑并经用户确认"
         },
         "proven_by": {
           "type": "array",

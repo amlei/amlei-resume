@@ -92,10 +92,10 @@
   .award{display:grid;grid-template-columns:42px 1fr auto;gap:8px;align-items:baseline;font-size:12.5px;padding:3px 0;border-bottom:1px dashed var(--hair)}
   .award .yr{font-family:var(--font-mono);font-size:10.5px;color:var(--accent)}
   .award .lvl{font-size:11px;color:var(--accent-ink);font-weight:600}
-  /* Skills */
-  .skills-row{display:grid;grid-template-columns:84px 1fr;gap:12px;padding:4px 0;border-bottom:1px dashed var(--hair)}
-  .skills-row .cat{font-size:12.5px;font-weight:600;color:var(--muted)}
-  .skills-row .tags{font-size:12.5px;color:var(--ink)}
+  /* Skills（分类行内顶格，续行自然顶格） */
+  .skills-row{padding:4px 0;border-bottom:1px dashed var(--hair);font-size:12.5px;color:var(--ink)}
+  .skills-row .cat{font-weight:600;color:var(--muted)}
+  .skills-row .tags{color:var(--ink)}
   .skills-row .tags b{color:var(--accent-ink)}
 </style>
 ```

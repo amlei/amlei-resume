@@ -75,9 +75,9 @@
   .award .yr{font-family:var(--font-mono);font-size:11px;color:var(--navy)}
   .award .lvl{font-size:11px;color:var(--navy-deep);font-weight:600}
   .skills{display:flex;flex-direction:column}
-  .skills .skills-row{display:grid;grid-template-columns:78px 1fr;gap:12px;padding:5px 0;border-bottom:1px dashed var(--hair)}
-  .skills .cat{font-weight:700;font-size:12.5px;color:var(--navy-deep);letter-spacing:.04em}
-  .skills .tags{font-size:12.5px;color:var(--ink)}
+  .skills .skills-row{padding:5px 0;border-bottom:1px dashed var(--hair);font-size:12.5px;color:var(--ink);line-height:1.7}
+  .skills .cat{font-weight:700;color:var(--navy-deep);letter-spacing:.04em}
+  .skills .tags{color:var(--ink)}
   .skills .tags b{color:var(--navy-deep);font-weight:600}
   .summary p{font-size:13px;line-height:1.82;color:var(--ink);text-align:justify;text-wrap:pretty;border-left:3px solid var(--navy-soft);padding-left:11px}
   .summary p b{color:var(--navy-deep)}
@@ -120,7 +120,7 @@
 - **SectionHead**：可带 `.en` 英文小标签（style 自动大写）。
 - **Entry**：课题/学生工作用 `<span class="proj">{{项目/组织}}</span>` + 可选 `<span class="badge">{{课题主笔 / 党支部书记}}</span>`。
 - **Awards**：含「优秀共产党员」等荣誉。
-- **Skills**：技能行同共享库（等级词文本）；**资格证书单独一行**（证书无等级词），已取得的用 `<b>`。
+- **Skills**：技能行同共享库（程度词文本行，分类行内顶格）；**资格证书单独一行**（证书无程度词），已取得的用 `<b>`。
 - **Summary**：自我评价（左竖条引用块，style 已实现），**骨架放末尾**。
 - **骨架**：Header（含基本信息表）→ 教育背景 → 实习经历 → 课题与研究项目 → 校园经历与学生工作 → 荣誉奖项 → 技能与证书 → 自我评价（末尾）。
 - **映射补充**：`# self-intro` 的 `political/birth/hometown/ethnicity` 等填进 `bio-form`；`# 自我评价` → 末尾 Summary 引用块。

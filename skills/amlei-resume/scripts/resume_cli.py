@@ -505,7 +505,7 @@ def cmd_new_snapshot(args):
     print(f"✓ snapshot 已建：{args.slug}/resumes/{args.app_id}")
     print(f"  source_operation={args.operation}")
     print(f"  facts_version_at_creation={facts_version}")
-    print(f"  下一步：LLM 渲染 简历.md + jd.md + materials.md 到此目录")
+    print(f"  下一步：LLM 渲染 简历.md + research/jd.md + research/materials.md 到此目录")
 
 
 def cmd_fork(args):

@@ -82,10 +82,13 @@ amlei-resume 是**消费者**。一个用户可有多个职业身份（后端 / 
         │   ├── capabilities.json
         │   └── narrative.json
         └── resumes/{app-id}/           # 一次具体投递的快照
-            ├── 简历.md
-            ├── _meta.json
-            ├── jd.md
-            └── materials.md
+            ├── 简历.md                 # 简历本体（时间戳备份 .bak.* 同级）
+            ├── avatar.png              # 证件照（简历相对路径引用）
+            ├── _meta.json              # 快照元数据（CLI 维护）
+            ├── files/                  # 原始素材归档（docx/pdf/导出 md/Notion 等）
+            ├── research/               # 准备资料：jd.md / 市场报告.md / 分析.md / materials.md
+            ├── review/                 # 评估与检查：评估.md（历史版本同目录）、分页检查截图
+            └── export/                 # 导出产物（自包含）：预览.html、_body-*.html、PDF、长图、avatar 副本
 ```
 
 身份的创建/切换/删除、emphasis 维护、needs_review 处理详见 [references/identity-management.md](references/identity-management.md)。快照的 fork / fact diff / 不可变性详见 [references/snapshot-fork.md](references/snapshot-fork.md)。
@@ -122,7 +125,7 @@ amlei-resume 是**消费者**。一个用户可有多个职业身份（后端 / 
 | 经历/项目日期 | `date: 2024.07 — 2025.03`（经历级用 experience.period；项目级用 project.period，没设则继承父经历） |
 | 经历补充 | `meta: GPA 3.9/4.0 · 排名 1/60`（关键数字用 `**`） |
 | 经历要点 | `- 成就（STAR + 量化）` |
-| 技能 | `- 类别: 值` 或 `类别: 精通 A（方向）· 熟悉 B · 了解 C`——每项用**等级词 + 技能名（括号补具体方向/细分）**，按等级从高到低排列；等级词慎用（精通=能独立解决复杂问题，熟练=独立完成常规工作，熟悉=有系统认识与实践，了解=仅基础操作），只对经得起面试追问的项写高等级。类别须按专业领域拆分（如 AI/Agent、编程语言、框架、数据存储、工程化各独立一类），不能跨域混放。渲染为文本行，不用标签/chip/进度条等图形化形式 |
+| 技能 | `- 类别: 值`，值为**句读式能力短句**：每句 = **程度词 + 核心技术 + 具体能力/动作 + 深度/结果**（如「熟练掌握多智能体编排与上下文工程，能够独立实现子 Agent 调度与工具并发调用，并落地上下文自压缩以降低 Token 消耗」）；条目间用「；」、行末用「。」、同程度并列用「、」，按程度从高到低排列。**括号克制（硬规则）**：整行至多一处轻量补充（如分数、版本号），单句超 40 字或出现 2 个括号必须拆句重写——写能力边界与业务价值，不写操作手册与纯名词堆砌。程度词可用同义变体（深入掌握/熟练掌握/熟练应用/具备…经验）避免行内重复，等级语义对齐四级判据（唯一源：amlei-profile SKILL.md R1；精通慎用——写了会被往底层和源码追问），与事实层 `capabilities.proficiency` 对应；程度词与技能名间距按中西文混排（技能名中文开头不加空格、拉丁/数字开头加一个空格）。类别须按专业领域拆分（如编程语言、框架、数据存储、工程化、业务/领域知识各独立一类），不能跨域混放。渲染为文本行（分类与描述同行顶格起、续行自然顶格；分类标题「分类：」或「【分类】」行内形式），不用标签/chip/进度条等图形化形式 |
 
 `name:` 必填；`avatar:` 给照片相对路径；`links` 放可线上展示自己的链接，如个人博客、飞书文档、作品集等（key: value）。完整范例：[sample-resume.md](assets/sample-resume.md)。
 
@@ -134,7 +137,7 @@ amlei-resume 是**消费者**。一个用户可有多个职业身份（后端 / 
 
 ### 简历评估
 
-润色完成后，**必须以 subagent 方式执行** [references/resume-evaluator.md](references/resume-evaluator.md) 的 6 维度评估流程，根据结果迭代修改直到所有维度通过。评估报告写入 `identities/{identity-id}/resumes/{app-id}/评估.md`。
+润色完成后，**必须以 subagent 方式执行** [references/resume-evaluator.md](references/resume-evaluator.md) 的 6 维度评估流程，根据结果迭代修改直到所有维度通过。评估报告写入 `identities/{identity-id}/resumes/{app-id}/review/评估.md`。
 
 **⏸️ 人工确认**：评估通过后，展示评估报告，等用户确认后才保存简历并进入导出。
 

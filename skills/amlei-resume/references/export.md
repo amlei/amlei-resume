@@ -4,7 +4,7 @@
 
 ## 产物目录
 
-所有产物归集到 `identities/{identity-id}/resumes/{app-id}/`——相对引用不会断、换身份/换照片互不干扰。
+所有导出/渲染产物归集到 `identities/{identity-id}/resumes/{app-id}/export/`——**自包含**：把快照根的 `avatar.png` 复制一份进 `export/`，保证 `预览.html` 头像不断链；`简历.md` 与 `avatar.png` 本体留在快照根目录（简历相对引用不变）。准备资料在 `research/`、评估在 `review/`，与导出产物分离。
 
 ## 选主题
 
@@ -39,7 +39,7 @@
 
 ## 套预览壳
 
-用 `scripts/wrap_preview.py`（`--help` 看参数）。产出 `identities/{identity-id}/resumes/{app-id}/预览.html`（自动建目录），`document.title` = `姓名-岗位`（=「另存为 PDF」默认文件名）；用 `--name` 覆盖。
+用 `scripts/wrap_preview.py`（`--help` 看参数）。产出 `identities/{identity-id}/resumes/{app-id}/export/预览.html`（自动建目录），`document.title` = `姓名-岗位`（=「另存为 PDF」默认文件名）；用 `--name` 覆盖。**产出前确认 `export/` 里已有 `avatar.png` 副本**（从快照根复制），否则预览页头像断链。
 
 外壳（[assets/preview-shell.html](../assets/preview-shell.html)）做的事：
 - **Paged.js 行级分页**（vendor 在 `assets/vendor/paged.polyfill.js`，`wrap_preview.py` 默认内联进产物，使预览页自包含 / 离线可用；`--no-inline-js` 改相对引用，仓库内参考 sample 用）。

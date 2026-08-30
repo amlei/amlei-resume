@@ -48,8 +48,9 @@
 identities/{identity-id}/resumes/{app-id}/
 ├── 简历.md
 ├── _meta.json
-├── jd.md
-├── materials.md          # 本次简历任务的项目讨论 / framing 想法
+├── research/
+│   ├── jd.md
+│   └── materials.md      # 本次简历任务的项目讨论 / framing 想法
 └── files/                # （可选）本次任务相关的额外文件
 ```
 

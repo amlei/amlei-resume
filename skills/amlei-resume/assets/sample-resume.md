@@ -84,6 +84,6 @@ date: 2024.09 — 2025.02
 
 # 技能与英语
 
-科研工具: 精通 PyTorch（分布式训练、自定义算子）· 熟练 JAX · HuggingFace · 熟悉 DeepSpeed · CUDA · LaTeX · Linux · Git
-编程语言: 精通 Python（科研工程、性能优化）· 熟练 C++ · 熟悉 Julia · SQL · 了解 Rust
-英语: TOEFL 112（口语 26）· GRE 328（V158 Q170）· 可全英文科研交流
+科研工具: 精通 PyTorch，能够独立完成分布式训练与自定义算子开发；熟练使用 JAX 与 HuggingFace 搭建模型实验与推理管线；熟悉 DeepSpeed、CUDA 训练加速工具链，日常以 LaTeX、Linux、Git 支撑科研协作。
+编程语言: 精通 Python，长期用于科研工程与性能优化；熟练 C++；熟悉 Julia 与 SQL；了解 Rust。
+英语: TOEFL 112（口语 26）；GRE 328（V158 Q170）；可全英文科研交流。

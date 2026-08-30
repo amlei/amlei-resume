@@ -36,6 +36,7 @@ ID_PATTERNS = {
     "cap": re.compile(r"^cap_[a-z0-9_]+$"),
 }
 VALID_GRAINS = {"project", "milestone", "technique", "module", "version", "other"}
+VALID_PROFICIENCY = {"expert", "proficient", "familiar", "aware"}
 
 
 def _now():
@@ -121,7 +122,7 @@ def _empty_experiences():
 
 
 def _empty_capabilities():
-    return {"_meta": {"facts_version": _now(), "schema_version": 2, "created": _now()},
+    return {"_meta": {"facts_version": _now(), "schema_version": 3, "created": _now()},
             "items": []}
 
 
@@ -393,7 +394,8 @@ def cmd_capability(args):
             print("（暂无能力）")
             return
         for it in items:
-            print(f"  · {it['id']}  {it.get('claim','-')}  proven_by={it.get('proven_by',[])}")
+            lvl = {"expert": "精通", "proficient": "熟练", "familiar": "熟悉", "aware": "了解"}.get(it.get("proficiency", ""), "未定级")
+            print(f"  · {it['id']}  {it.get('claim','-')}  [{lvl}]  proven_by={it.get('proven_by',[])}")
         return
     if args.action == "add":
         cid = args.id or _next_id("cap", items)
@@ -412,6 +414,9 @@ def cmd_capability(args):
         if args.evidence_grain and args.evidence_grain not in VALID_GRAINS:
             print(f"✗ evidence_grain 不合法，可选：{sorted(VALID_GRAINS)}")
             sys.exit(1)
+        if args.proficiency and args.proficiency not in VALID_PROFICIENCY:
+            print(f"✗ proficiency 不合法，可选：{sorted(VALID_PROFICIENCY)}")
+            sys.exit(1)
         # 校验 proven_by 的 project 存在
         exp_data = _load(_shared_paths(base)["experiences"])
         all_pids = _all_project_ids(exp_data)
@@ -425,12 +430,14 @@ def cmd_capability(args):
             "claim": args.claim or "",
             "proven_by": proven_by,
             "evidence_grain": args.evidence_grain or "",
+            "proficiency": args.proficiency or "",
             "added": _now(),
             "last_updated": _now(),
         }
         items.append(entry)
         _save(p, data)
-        print(f"✓ 已添加 capability/{cid}（proven_by={proven_by}）")
+        lvl = {"expert": "精通", "proficient": "熟练", "familiar": "熟悉", "aware": "了解"}.get(args.proficiency or "", "未定级")
+        print(f"✓ 已添加 capability/{cid}（proven_by={proven_by}，{lvl}）")
         return
     if args.action == "update":
         it = next((x for x in items if x["id"] == args.id), None)
@@ -439,6 +446,11 @@ def cmd_capability(args):
             sys.exit(1)
         if args.claim is not None:
             it["claim"] = args.claim
+        if args.proficiency is not None:
+            if args.proficiency and args.proficiency not in VALID_PROFICIENCY:
+                print(f"✗ proficiency 不合法，可选：{sorted(VALID_PROFICIENCY)}")
+                sys.exit(1)
+            it["proficiency"] = args.proficiency or ""
         if args.proven_by is not None:
             new_pb = [x.strip() for x in args.proven_by.split(",") if x.strip()]
             if not new_pb:
@@ -744,6 +756,7 @@ def main():
     s.add_argument("--claim")
     s.add_argument("--proven-by", help="逗号分隔的 project id")
     s.add_argument("--evidence-grain", choices=sorted(VALID_GRAINS))
+    s.add_argument("--proficiency", choices=["", *sorted(VALID_PROFICIENCY)], help="熟练度定级：expert=精通 / proficient=熟练 / familiar=熟悉 / aware=了解（update 传空可清除）")
     s.set_defaults(func=cmd_capability)
 
     s = sub.add_parser("find")

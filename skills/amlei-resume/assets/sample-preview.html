@@ -91,7 +91,7 @@
   .entry-list li,.bullet{break-inside:avoid}             /* 单条 bullet / 列表项不从中间断 */
   .pubs li{break-inside:avoid}
   .award{break-inside:avoid}
-  .skills-row,.stack-row{break-inside:avoid}
+  .skills-row{break-inside:avoid}
   /* .summary p / .desc / .interests / .stack 不设 avoid → 可跨页 */
 
   /* 主题样式由 wrap_preview.py 注入到下方槽位（渲染产物开头的 <style>，整段） */
@@ -384,7 +384,7 @@
        不在 A4 分页 DOM 上直接编辑——Paged.js 会把元素跨页切分（data-split-*），
        原子映射与光标定位都不可靠；编辑主源最稳。
        ============================================================ */
-    var EDIT_SEL='.name,.role,.edu-line,.contact,.sec-head h2,.summary p,.entry-title .org,.entry-title .proj,.entry-title .company,.entry-title .role,.entry-date,.entry-meta span,.bullet,.pubs li,.pub,.award .lvl,.award span:not(.yr):not(.lvl),.skills-row .cat,.skills-row .tags,.stack-row .cat,.chip,.interests .it,.desc';
+    var EDIT_SEL='.name,.role,.edu-line,.contact,.sec-head h2,.summary p,.entry-title .org,.entry-title .proj,.entry-title .company,.entry-title .role,.entry-date,.entry-meta span,.bullet,.pubs li,.pub,.award .lvl,.award span:not(.yr):not(.lvl),.skills-row .cat,.skills-row .tags,.chip,.interests .it,.desc';
     var editing=false;
     var editBtn=document.getElementById('rvEditBtn'), saveBtn=document.getElementById('rvSaveBtn'), pdfBtn=document.getElementById('rvPdfBtn');
 
@@ -511,7 +511,7 @@
             md+='- '+parts.join(' ').replace(/\s+\|/,'|').trim()+'\n';
           });
         } else if(cl.contains('skills')||cl.contains('stack')){
-          atom.querySelectorAll('.skills-row,.stack-row').forEach(function(row){
+          atom.querySelectorAll('.skills-row').forEach(function(row){
             var cat=row.querySelector('.cat'); var tagsEl=row.querySelector('.tags,.chips');
             if(!cat||!tagsEl) return;
             /* 清掉 + 按钮再取文本 */
