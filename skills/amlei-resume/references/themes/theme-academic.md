@@ -100,7 +100,7 @@
 </style>
 ```
 
-> 上面**不含** `.viewport / .page / #source / @media print`——那些归预览外壳 `assets/preview-shell.html`，`wrap_preview.py` 会把本 `<style>` 注入到 `<head>`。
+> 上面**不含** `.viewport / .page / #source / @media print`——那些归预览外壳 `../../scripts/preview-shell.html`，`wrap_preview.py` 会把本 `<style>` 注入到 `<head>`。
 
 ## 主题差异（相对共享组件库）
 

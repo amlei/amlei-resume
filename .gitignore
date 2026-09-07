@@ -4,7 +4,6 @@ resume/
 test/
 .opencode/
 .claude/
-boss_state.json
 *.docx
 *.pdf
 !assets/张昀-计算机科学直博 · 简历 A4 预览.pdf

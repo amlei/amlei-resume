@@ -6,7 +6,7 @@
 >
 > 例外：`sidebar-creative` 是双栏单页特殊主题，**自包含**（令牌 + style + 组件 + 骨架 + 映射全在一个文件），不使用共享库。
 >
-> **想看某主题效果**：用 `assets/sample-resume.md` 渲染该主题（→ `wrap_preview.py`）生成预览 HTML 即可。
+> **想看某主题效果**：用 `../sample-resume.md` 渲染该主题（→ `wrap_preview.py`）生成预览 HTML 即可。
 
 ## 主题清单
 
@@ -47,4 +47,4 @@
 
 1. 写成 `references/theme-{标识}.md`，含上面对应部分。
 2. 在本表登记一行（主题 / 标识 / 主色 / 适用场景 / 文件）。
-3. **查看效果 = 用 `assets/sample-resume.md` 渲染该主题 → `wrap_preview.py` → 浏览器打开预览**，确认可用。
+3. **查看效果 = 用 `../sample-resume.md` 渲染该主题 → `wrap_preview.py` → 浏览器打开预览**，确认可用。

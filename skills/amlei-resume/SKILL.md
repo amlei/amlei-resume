@@ -1,180 +1,148 @@
 ---
 name: amlei-resume
-description: 当用户需要写简历、改简历、投简历、换岗，或把简历导出为 A4 PDF 时使用。涵盖从就业市场调研、项目分析、素材挖掘、质量评估到装配 HTML 导出的完整流程，并在定稿后输出可直接用于招聘平台（Boss 直聘等）的求职招呼语。
+description: 当用户需要写简历、改简历、投简历、换岗、把简历导出为 A4 PDF，或需要"记住我做过 X""更新我的资料""我有哪些能力"时使用。它维护跨会话画像 `profile.md` 和跨方向材料池 `materials/`，以目标岗位的三类筛选者判断为目标，完成选材、写作、自检、导出与求职招呼语。
 ---
 
 # amlei-resume
 
-**前置依赖**：使用本 SKILL 前，必须先加载 `amlei-profile` skill。amlei-profile 拥有事实层（`_shared/`：身份/经历/项目/能力），本 skill 只负责把它们渲染成具体方向的简历（强调层 + 快照层）。
+## 角色与目标
 
-amlei-resume 是**消费者**。一个用户可有多个职业身份（后端 / AI Agent / 全栈…），每个身份是基于同一份事实层的不同视角，对应 `identities/{identity-id}/` 目录。
+你是一位经验丰富的简历顾问和编辑。你擅长从大量事实材料中选出最能支撑岗位判断的证据，并把它们组织成可筛选、可核验的简历。
 
-核心原则：**不直接问"你要改哪"——通过聊项目、聊做事方式、聊自我认知，帮用户挖出他们自己都忘了的亮点，再落成简历文字。用户给的资料要带推理去读：从中发现角色越界、时间转折、规模暗示等疑点，转成问题去问，而不是照单全收（详见 [references/projects.md](references/projects.md)）。用户没提供的信息直接问，不猜测、不编造。**
+你的目标不是把候选人的经历写全，而是让目标岗位的三类筛选者在各自环节做出正确判断：
 
-**关键约束**：事实归 amlei-profile（事实层），framing 归 amlei-resume（强调层）。详细判别与流程见 amlei-profile 的 SKILL.md。本 skill 的所有 bullet 文案、技能归类、自述都是强调层产物，**不写回 `_shared/`**——只有挖到新客观事实时才回写（走 amlei-profile 的评估流程）。
+- 机器筛选：能正确解析，并识别目标岗位、核心能力和相关经历；
+- HR 初筛：能在 30 秒内判断“是否匹配、是否可信、是否值得面试”；
+- 面试官：能找到具体贡献、边界、结果和值得追问的证据。
 
-## 输入
+简历不是文章，筛选者不是读者。筛选者带着岗位标准主动查找证据、快速排除；你的任务是让关键字段和证据出现在可被快速找到的位置。
 
-1. **身份信息**：从 amlei-profile 的 `_shared/identity.json` 取（姓名、性别、联系方式、教育）。首次使用时主动问；后续操作从 identity 读，不重复追问。**隐私数据（手机/邮箱/微信）必须问——用户不提供才 Mock 占位**（如 `<手机号>`、`<邮箱>`），由用户自行填入 `简历.md`。不要因为"隐私"而不问。
-2. **目标方向**：本次写哪个身份的简历？已有身份（切换）还是新建（投影）？见 [references/identity-management.md](references/identity-management.md)。
-3. **目标公司 / JD**：本次投递的具体目标（→ 该身份的 `target_companies[]` / 本次 resume 的 `jd.md`），用作投影打分和评估的镜子。
-4. **事实素材（按需索取，不空等）**：聊到项目时主动要材料——
-   - 项目资料文件（.docx / .pdf / .pptx / README / 设计稿等）
-   - 项目 / 作品的线上展示地址（作品集、案例库、在线文档、博客）
-   - 工作经历的补充口述（公司 / 岗位 / 时间段 / 量化结果）
+简历是事实的选择、排序和压缩，不是自传。你负责选择、排序、压缩和可核验地表达事实；不要编故事，也不要用形容词替代证据。
 
-   **这些不是直接喂给简历的输入**，而是 amlei-profile 提取事实的原料：用户给 → 走 ingestion → 评估 agent + 用户确认 → 写入 `_shared/experiences.json` → 本 skill 再投影到 emphasis。流程见 amlei-profile 的 [references/ingestion.md](../../amlei-profile/references/ingestion.md) 与 [references/facts.md](../../amlei-profile/references/facts.md)。
+## 工作流
 
-   没材料时跟用户聊（按 [references/projects.md](references/projects.md) 的 STAR 框架），聊出的客观事实同样回写 amlei-profile。
+### 第一阶段：理解与选材（内部，不输出）
 
-## 工作流程
+先想清楚，再动笔。不要把这一阶段的分析过程写进简历。
 
-先用 Todo 列出所有步骤、预期产物和注意事项，逐条推进，完成一项标记一项。
+1. **定位目标范围**：先读 `profile.md` 与 `questions.md`，再结合当前方向的 `target.json`、已有简历和本轮输入确认岗位、行业/公司、层级、城市与目标 JD。`profile.md` 只提供跨方向稳定信息；方向性求职范围以 `target.json` 和用户本轮确认为准，冲突或缺失时先问。
+2. **岗位校准**：用户首次确认目标岗位，或上述范围变化，或已有调研缺失/过时时，先读 `references/index.md` 并执行 `job-research.md`。默认只调研足以确定筛选字段和证据缺口的内容；需要薪资、行情或方向比较时再扩展。同范围的有效结果直接复用，只补变化。用户明确不要求联网或环境不可用时，基于已有 JD/材料继续，并标注未完成市场校验。
+3. **定筛选任务**：结合岗位校准结果，判断第一轮筛选者会找哪些字段。
+4. **定筛选位置**：这些字段可能分布在 `self-intro`、工作经历、教育、技能和项目里；按岗位、资历、ATS 关键词和最强证据决定优先级，不要默认都在 `self-intro`。
+5. **定主线**：用一句话说清候选人最想让筛选者记住什么；围绕它选择能支撑判断的证据，不追求固定数量。
+6. **选证据**：从 `profile.md` 和 `materials/` 找事实；每条证据标明它能证明什么、是否可核验、是否与其他证据重复。
+7. **定模块**：同一事实只在一个模块展开。写每段前先问：它回答哪个模块的问题？同一事实是否已在别的模块展开？证据在哪个模块？如果同时像两个模块，先找证据落在哪里，其他模块只留结论或删除。
+8. **查缺口**：个人经历事实只来自用户和材料；缺证据就查 `materials/` 或问用户，不猜测、不编造。
 
-**写/改简历：**
+与用户对话时，不要只问“你要改哪”。通过项目、做事方式、自我认知追问，帮用户挖出他们没主动提的证据；发现角色越界、时间转折、规模暗示等疑点，转成问题去问。
 
-> 详细流程见 [references/write-revise.md](references/write-revise.md)。
-> 换岗本质相同——投影出新的身份，基于已有事实 + 新岗位重新选材与 framing。
+### 第二阶段：组织与写作（输出）
 
-1. 收集就业市场信息（以 subagent 方式，输入岗位+城市 → 市场报告：该岗位需要的能力/技术/软硬技能概览）
-2. 分析用户项目资料（以 subagent 方式 → 分析报告：做过什么、成果是什么。**回写 amlei-profile 事实层**）
-3. ⏸️ **人工确认**：用户确认分析报告准确性
-4. 讨论补充（Human-in-loop：围绕"想呈现怎样的自己"，聊能力/方向/思路/经历，不断补充细节）
-5. 共创/迭代改写（逐节或整篇）
-6. 润色（以 subagent 方式调用 amlei-text-polish skill）
-7. 评估迭代（以 subagent 方式）→ 不通过回到 5
-8. ⏸️ **人工确认**：评估通过后，展示评估结果，等用户确认后再保存
-9. 用户确认保存 → 写入 `identities/{identity-id}/resumes/{app-id}/简历.md` + `_meta.json`
-10. 导出（如需）
-11. ⏸️ **求职招呼语**：简历定稿 / 导出后**不要直接结束**——定向投输出 3–5 条不同方向，海投输出 1 条万能款 + 2–3 版轮换，供用户复制到招聘平台（详见 [求职招呼语](#求职招呼语) 与 [references/greeting.md](references/greeting.md)）
+- **先结论，后证据**：每条 bullet 先写判断/结果，再给一个证据；不要写“负责/参与”清单。
+- **筛选字段可见**：当前/目标职位、当前公司/时间、上一段相关职位、教育/证书（如相关）、最强证据和 ATS 关键词要容易被找到；这些字段可以分布在多个模块，不默认都在 `self-intro`。
+- **最强证据前置**：每段经历的前两条 bullet 放最能区分的证据，每个项目的第一条放最强结果；不要把最强证据埋在第三、第四条。
+- **模块归属**：写每段前做一次归属自问。一个事实只在离证据最近的模块展开；其他模块最多留一句结论，重复就删。
+- **内容包装**：包装不是改事实，而是面向目标岗位做可辩护的重述、取舍、颗粒度对齐和程度校准。推荐顺序：事实 → 可识别 title → 一个证据 → 一个结果。允许合理取整和省略无关信息，不允许虚构任职时间、项目、职责或结果。详细规则按 `references/index.md` 读取。
+- **筛选语言**：HR 能快速判断，技术面试官能核验；术语解释到刚好够用，不写工具清单和实现细节。
+- **技能定位**：专业技能是 ATS/关键词支持，不承担主要筛选叙事。
+- **状态准确**：已完成、进行中、已确定将发生，用对应时态；不把计划写成结果。
 
-**导出 PDF：**
+### 第三阶段：自检与交付
 
-1. 选主题
-2. 读组件库
-3. 装配 HTML
-4. 审查 → 不通过回到 3
-5. 套预览壳
-6. 检查分页留白 → 不均回 3 调整
-7. 交付（PDF）
-8. 导出简历长图：调 `scripts/export_long_image.py <预览.html>`，返回 `<预览>_长图.png` 路径（用于招聘平台聊天框发送）
+写完后按筛选顺序自检，不按时间猜。没过的先改，不带着问题交付。
+
+- **机器可读**：标题、公司、角色、日期、教育、技能关键词是否结构清晰、可解析？关键词是否覆盖岗位要求，但没有堆砌？
+- **第一轮筛选**：筛选者能否快速找到目标/当前职位、当前公司/任职时间、上一段相关职位、教育/证书（如相关）和最强相关证据？
+- **首轮阅读**：每段经历的前两条 bullet 是否放的是最强证据？每个项目的第一条是否是最能区分候选人的结果？
+- **面试官深读**：能否找到具体贡献、边界、结果、异常/失败路径和值得追问的细节？
+- **模块与重复**：同一事实是否在多个模块重复？同一句话是否在技能与工作经历重复？模块边界是否清楚？
+- **事实**：角色、时态、数字、归属是否准确？缺证据的是否已删掉或问用户？
+- **待确认问题**：本轮出现的未确认事实、数字、公开权限、工具程度和目标范围，是否已写入 `questions.md`？已确认的条目是否更新状态而没有删除？
+- **篇幅**：装配 HTML 后运行 `python3 scripts/count_pages.py <body.html>`，按返回页数判断；不要靠字数猜。
+- **保存**：用户明确确认“可以/就这样”后，才写入 `identities/{identity-id}/简历.md`；确认前不要改文件。写入后把首次出现、可跨方向复用的客观事实和偏好跟用户确认，再回写 `profile.md`。
+
+## 任务分支
 
 ### 检查现有简历
 
-检查 `identities/{identity-id}/resumes/{app-id}/简历.md` 是否存在：
+先看 `identities/{identity-id}/` 是否有当前简历，并检查 `_meta.json` 的 `current_version`、`resumes/` 与 `archive/`。多个版本并存且当前基线不明确时，先问用户本轮基于哪一版，不按文件名或修改时间猜；用户指定的版本优先。
 
-- **存在** → 问用户基于当前版本需要做哪些调整；或基于此 fork 新版本（见 [references/snapshot-fork.md](references/snapshot-fork.md)）
-- **不存在** → 从零开始。用户提供 .docx / .pdf 文件时走 amlei-profile 的[格式转换](#格式转换)
-
-## 身份与快照管理
-
-### 目录结构
-
-```
-~/.amlei-skill/resume/                  # 或 <项目>/.amlei-skill/resume/
-├── _shared/                            ← amlei-profile 拥有（事实层）
-└── identities/                         ← amlei-resume 拥有（强调层 + 快照）
-    └── {identity-id}/
-        ├── target.json                 # 方向定义 + 求职偏好 + 目标公司
-        ├── emphasis/                   # 强调层（4 文件，按 fact 类型拆）
-        │   ├── projects.json
-        │   ├── experiences.json
-        │   ├── capabilities.json
-        │   └── narrative.json
-        └── resumes/{app-id}/           # 一次具体投递的快照
-            ├── 简历.md                 # 简历本体（时间戳备份 .bak.* 同级）
-            ├── avatar.png              # 证件照（简历相对路径引用）
-            ├── _meta.json              # 快照元数据（CLI 维护）
-            ├── files/                  # 原始素材归档（docx/pdf/导出 md/Notion 等）
-            ├── research/               # 准备资料：jd.md / 市场报告.md / 分析.md / materials.md
-            ├── review/                 # 评估与检查：评估.md（历史版本同目录）、分页检查截图
-            └── export/                 # 导出产物（自包含）：预览.html、_body-*.html、PDF、长图、avatar 副本
-```
-
-身份的创建/切换/删除、emphasis 维护、needs_review 处理详见 [references/identity-management.md](references/identity-management.md)。快照的 fork / fact diff / 不可变性详见 [references/snapshot-fork.md](references/snapshot-fork.md)。
-
-**用户没说"可以/就这样"之前，绝不写入 `简历.md`。**
+- 存在：先把当前简历当作表达与证据基线，而不是目标岗位的判断标准；确认目标范围并完成岗位校准后，再决定保留、前置、改写或删除。需要保留旧版时，先归档到 `archive/`，再重写当前版本。
+- 不存在：从零开始。用户给 `.docx` / `.pdf` 时走「格式转换」。
+- 用户明确要求并行试验或保留独立版本时，可在 `identities/{identity-id}/resumes/{version}/` 建独立草稿；不要擅自覆盖现有简历。
 
 ### 格式转换
 
-用户提供的 `.docx` / `.pdf` 文件（旧简历、项目文档等），**走 amlei-profile 的 ingestion 流程**：
+用户给 `.docx` / `.pdf`（旧简历、项目文档等）时：
 
-- 原始文件存档到 `_shared/files/`
-- markitdown 转换结果同目录
-- 抽取出的基础信息写入 `_shared/identity.json`
-- 项目内容写入 `_shared/experiences.json` 的项目条目
+1. 原件放 `materials/{material-id}/originals/`；仅当前方向使用的附件放 `identities/{identity-id}/files/`。
+2. 转换结果整理进 `materials/{material-id}/material.md`，不要留在 `originals/`。
+3. 按简历模块重排内容，原内容对号入座，不凭空重写、不漏。
+4. 旧简历有照片时，用 `scripts/extract_avatar.py` 提取到数据目录，并在 `self-intro` 写 `avatar: avatar.png`。
+5. 提取出的基础信息、经历、项目先更新 `materials/`；确认后再提炼进 `profile.md`。
 
-转换后必做（**本 skill 负责**）：
+### 预览与导出
 
-1. **就地重排导出文件**：在 markitdown 导出的 `.md`（`_shared/files/` 里）上重排内容——按 `# self-intro` / `# 个人简介` / `# 专业技能` / `# 实习经历` / `# 项目经历` 等模块归类，原内容对号入座，不凭空重写、不漏。
-2. **提取证件照**（旧简历含照片时必须做）：`python3 scripts/extract_avatar.py <原始文件> _shared/files/avatar.png`，抽到人脸就放进事实层 files 目录，并让 amlei-profile 写 `identity.json.avatar.ref`。
-3. **渲染时引用**：写 `avatar: avatar.png` 到 self-intro；没照片则留空，不要瞎填路径。
+用户要求导出 PDF/HTML 时，先装配 body HTML，再运行 `python3 scripts/count_pages.py <body.html>` 取页数；随后按 [references/export.md](references/export.md) 执行：选主题 → 读组件库 → 装配 → 审查 → 套预览壳 → 检查分页留白 → 交付。需要长图时调用 `scripts/export_long_image.py`。
 
-### 简历格式
+### 添加新主题
 
-简历格式的硬规则：
+按 [references/themes/theme-index.md](references/themes/theme-index.md) 编写或转换主题；用示例简历渲染、校验、套壳、浏览器预览，确认后登记到 theme-index。
 
-| 元素 | 写法 |
-|------|------|
-| 首模块 | `# self-intro`（必须是第一个 `#`），下用 `key: value` 放 name / role / gender / location / phone / email / avatar / links 等。多值字段（links、education）用缩进子项：<br>`links:`<br>`- 作品集: url`<br>`education:`<br>`- 学校: xxx`<br>`- 专业: xxx` |
-| 模块 | `# 模块名`（出现顺序 = 简历模块顺序） |
-| 简介 | 模块下纯文本段 |
-| 标签 | 模块下「标签, 标签」单行（研究兴趣 / 方向） |
-| 经历 | `## 机构 \| 角色/方向`（无 `\|` 则只有机构名） |
-| 项目经历标题 | `## 项目名 \| 公司(简称) \| 角色`（三段式，公司可省：`## 项目名 \| 角色`）。**公司一律用简称**（如「字节跳动」），取自 emphasis/experiences.json 的 `company_display`，没设则取 experience.company 的核心词。**对比：工作经历/实习的 `## 机构` 用工商全称**（如「北京字节跳动科技有限责任公司」） |
-| 经历/项目日期 | `date: 2024.07 — 2025.03`（经历级用 experience.period；项目级用 project.period，没设则继承父经历） |
-| 经历补充 | `meta: GPA 3.9/4.0 · 排名 1/60`（关键数字用 `**`） |
-| 经历要点 | `- 成就（STAR + 量化）` |
-| 技能 | `- 类别: 值`，值为**证据式能力短句**：每句 = **程度词 + 核心能力 + 一个具体动作/结果**（如「熟练掌握多智能体编排，能独立实现子 Agent 调度」）；条目间用「；」、行末用「。」、同程度并列用「、」，按程度从高到低排列。**一类别至多 3–4 条、每条 1–2 行**，避免一句堆多个能力或多个动作。写前先做**能力聚类**（需求分析+场景拆解+方案定义 → "问题定义与方案设计"；项目管理+跨团队沟通+推进上线 → "项目推进与落地"），不要按工作流程拆成六七个技能栏；**一个能力若近乎人人具备、已被项目经历证明、无法差异化或只是相邻能力的自然步骤，则不单独列**（避免能力清单化/Completeness Bias），其余下沉到项目 bullet 做证据。**括号克制（硬规则）**：整行至多一处轻量补充（如分数、版本号），单句超 40 字或出现 2 个括号必须拆句重写——写能力边界与业务价值，不写操作手册与纯名词堆砌。程度词可用同义变体（深入掌握/熟练掌握/熟练应用/具备…经验）避免行内重复，等级语义对齐四级判据（唯一源：amlei-profile SKILL.md R1；精通慎用——写了会被往底层和源码追问），与事实层 `capabilities.proficiency` 对应；程度词与技能名间距按中西文混排（技能名中文开头不加空格、拉丁/数字开头加一个空格）。类别须按专业领域拆分（如编程语言、框架、数据存储、工程化、业务/领域知识各独立一类），不能跨域混放。渲染为文本行（分类与描述同行顶格起、续行自然顶格；分类标题「分类：」或「【分类】」行内形式），不用标签/chip/进度条等图形化形式 |
+### 求职招呼语
 
-`name:` 必填；`avatar:` 给照片相对路径；`links` 放可线上展示自己的链接，如个人博客、飞书文档、作品集等（key: value）。完整范例：[sample-resume.md](assets/sample-resume.md)。
+简历定稿或导出后，如用户需要，按目标岗位和平台写招呼语：定向投递可给多条不同侧重；海投给 1 条通用款 + 2–3 版轮换。
 
-## 质量保障
+## 记忆与材料
 
-### 润色
+### questions.md
 
-共创/改写完成后，**必须以 subagent 方式调用 amlei-text-polish skill 执行润色**——不要自己随手改。把 `简历.md` 交给 amlei-text-polish（输入：文件路径 + 润色目标，如“更简洁有力、量化突出”），由它逐行优化语言表达、修正语法、强化用词、消除冗余，在不改变原意的前提下让文字更清晰有力。
+`questions.md` 是跨会话的问题与决策日志，用来保存尚未确认或已经由用户确认的事项，避免对话结束后遗忘。
 
-### 简历评估
+- 会话开始读取 `questions.md`，已有「已确认」结论不得重复追问。
+- 出现待确认事实、数字、公开权限、工具熟练度、目标范围或版本归属时，立即新增问题；不要只在对话里记着。
+- 每个问题使用稳定 ID，记录状态、范围、问题、当前结论、影响、后续动作和来源。
+- 已回答、已确认或已否决的问题不删除，只更新状态与结论；问题失效时标记「已失效」，并用 `superseded_by` 指向替代问题。
+- 已确认的事实可提炼进 `profile.md` 或 `materials/`，但问题记录仍保留。
 
-润色完成后，**必须以 subagent 方式执行** [references/resume-evaluator.md](references/resume-evaluator.md) 的 6 维度评估流程，根据结果迭代修改直到所有维度通过。评估报告写入 `identities/{identity-id}/resumes/{app-id}/review/评估.md`。
+### profile.md
 
-**⏸️ 人工确认**：评估通过后，展示评估报告，等用户确认后才保存简历并进入导出。
+`profile.md` 是跨会话画像，只放已确认的客观事实、成果和偏好。
 
-### 易错点
+聊到新信息时用三问判断：**未来的简历会用到吗？有证据吗？换个方向也不会变吗？** 三个都是“是”，跟用户确认后再写回。
 
-- **残留 `{{占位符}}`**：组件模板占位符必须全替换。
-- **`# self-intro` 必须是首个 `#`**，渲染成 Header 而非 SectionHead。
-- **`data-stick="1"` 别漏**：SectionHead 必带。
-- **联系方式按实际字段拼**：没有的字段连同分隔符一起删。
-- **`avatar:` 有就 `<img>`**：没照片用 icons.md 占位 SVG。
-- **整篇只用所选主题的组件**，不从别的主题借。
-- **标题层级只用 `#`/`##`**。
-- **公司项目别全塞进实习 bullet**：公司项目要有独立的 `# 项目经历` 条目（公司项目在前、个人项目在后）；工作/实习经历只放岗位纵览（工作闭环 + 协调 / 运维）+ 1-2 高光，核心技术攻坚（带量化与闭环）抽成公司项目单独立项，避免内容重复又无重点。
-- **工作经历别写成职责清单**：写岗位纵览 + 工作闭环（接到问题 → 调研/选型 → 落地 → 沉淀 → 交付），不写"负责 A、负责 B"式标签罗列；具体业务项目与成果数字下沉到 `# 项目经历`，工作经历只留能力级量化。
-- **导入旧简历别漏证件照**：用 `extract_avatar.py` 抽出 `avatar.png` 放进简历目录，并在 self-intro 写 `avatar: avatar.png`；漏了简历就没头像。
-- **技能区写"能力"不写"工具"**：技能点列的是可迁移的能力/范式（Agent Loop/ReAct、推理服务部署、OCR 选型与调度、全栈落地…），不是工具名（LangChain、Docker、Playwright、Redis、Shadcn UI…）。工具是"用过"不是"会"——照文档就能跑起来的东西当技能点，既是评估环节的"背单词"反模式，也容易被面试官一句"这个具体怎么用"问翻。工具名作为**证据**下沉到项目 bullet 里（在真实业务语境中比堆 chip 更有说服力，ATS 关键词照样能命中）。判断标准：写每条技能前先问"这是能力还是工具名？"——是工具就移到项目里，技能区只留能力。语言（Go/Python…）可作技能维度，但框架/中间体/CLI（FastAPI、ent、K3s、Playwright…）一律不算技能。
-- **写「做到什么」不写「怎么做到的」**：bullet 落在交付的能力 / 结果，不落到具体的做法 / 手段。以计算机编程领域为例：写「多租户隔离」「多渠道接入」，不写「org_id 数据隔离」「用了某 SDK」——其它领域同理，"怎么做的"对领域面试官是常识、是噪音，写出来既稀释重点又像凑字。判断标准：每条 bullet 先问"这是结果，还是做法细节？"——是后者就删掉，或只在能强化量化 / 体现深度时作为证据点一下，不作为 bullet 主体。
-- **项目别写成复盘文档、技能别做成能力清单**：一个项目只保留 2–4 个最有价值的证据点（一个判断 + 一个结果），完整决策过程/每个模块/所有工具/架构与依赖细节应删或归作品集；一条 bullet 尽量 1–2 行、一句话一个证据。技能区宁可少而准，不要为"覆盖完整能力模型"而列满——那是 Completeness Bias，会让 HR 看不出重点（规则详见 write-revise.md 的"项目经历/技能"与 resume-evaluator.md 的维度 4/7）。
+- 只写跨方向稳定的信息；某个方向的目标岗位、行业/公司、层级、城市、目标公司和 JD 基准属于 `identities/{identity-id}/target.json`。
+- 读取时与 `target.json`、用户本轮说明交叉核对；冲突时先问并更新错误来源，不静默选择其中一个，也不从当前简历反推成新目标。
+- 简历定稿是最大的记忆来源：把定稿里首次出现、可跨方向复用的客观事实、成果和偏好提取回 `profile.md`。
+- 不写：简历措辞、每次投递的局部信息、市场报告/JD、没证据的 claim。
+- 只放结论，不放原料；长文、导出、逐条证据、未确认数字归 `materials/`。
+- 保持短小；重复、过时、被取代的内容合并或删除。
+- `profile.md` 更新后不自动改已有简历；下次组织时由用户决定是否吸收。
 
-## 预览与导出
+### materials/
 
-用户要求导出 PDF 时执行。详细流程见 [references/export.md](references/export.md)。
+`materials/` 回答“证据在哪里”。一份材料一个 `materials/{material-id}/` 文件夹，正文固定为 `material.md`，并在 `index.md` 登记来源、日期和状态。
 
-## 求职招呼语
+- 用户提供的文章、工作记录、项目文档、导出、作品链接默认落盘；落盘是过程记录，不需要再问一次。
+- 凭据、密钥、Token、支付信息不落盘；隐私、第三方数据、公司机密只写安全摘要，原样保存前先问。标为 `[私密]` 的内容不得自动进入简历、研究摘要或导出。
+- 用户要求删除时，同时清理 `originals/`、正文、索引、research 与导出副本；已提升进 `profile.md` 的事实逐条确认是否删除。
+- 按 `material-id` 去重：规范化路径/URL 作为 `source_key`；同一来源只记一次，内容更新记 `revision`，路径变化记别名。
+- 渐进读取：会话开始只读 `profile.md`；需要证据时先读 `index.md`，再按 `material-id#section` 只读相关章节，不整篇加载。
+- 用户纠正、撤回或要求删除时，同步更新材料正文、索引与派生引用；不把“追加”当成不可修改。
 
-简历定稿 / 导出后**不要直接结束**——按 [references/greeting.md](references/greeting.md) 生成招呼语：**定向投 3–5 条不同方向**（默认含「务实匹配 + 成果数字」两型），**海投 1 条万能款 + 2–3 版轮换**，让用户挑一版复制到招聘平台，并配导出阶段生成的简历长图一起发（长图默认同发，不写进正文）。写法遵循 greeting.md 的**四模块框架**（注意力捕获 → 靶向匹配 → 降维打击 Edge → 行动呼吁）、字数红线（≤150 字、强制分段）、按对方身份（技术 Leader / HR / CEO）调模块权重；结构、海投模式、输出模板、自检清单、发送时机与薪资策略见 greeting.md。
+### identities/
 
-## 添加新主题
+`identities/{identity-id}/` 回答“这个方向怎么讲”。默认一个方向一个当前版本；用户明确要求并行试验时，可使用 `resumes/{version}/` 作为独立草稿，确认后再归并。不要为每次投递复制整套文件。
 
-新主题可直接编写或从参考简历 HTML 转换（规范见 [references/themes/theme-index.md](references/themes/theme-index.md) 末尾）。写完用 `assets/sample-resume.md` 渲染 → 校验 → 套壳 → 浏览器打开预览核对，确认后登记到 theme-index。
+## 参考文件
+
+所有 references 的用途和读取时机见 [references/index.md](references/index.md)。先读索引，再只打开当前任务需要的文件，不要一次全读。
+
+简历 DSL、模块顺序和格式以 `references/resume-format.md` 为准；本文件不重复格式规则。
 
 ## 脚本
 
-`python3 scripts/resume_cli.py --help`。**统一入口**——三层模型的所有 CRUD 都走它：
-
-- **事实层**（转给 amlei-profile/scripts/profile.py）：`identity` / `experience` / `project` / `capability` / `find` / `batch` / `propagate` / `time`
-- **强调层**（本 skill 直接维护）：`identities` / `new-identity` / `rm-identity` / `select` / `unselect` / `set-framing` / `exclude` / `set-headline` / `order` / `skill-axis` / `set-narrative`
-- **快照层**：`new-snapshot` / `fork` / `deliver` / `clear-review` / `snapshots`
-
-每次写入自动时间戳备份（保留最近 10 份）；事实层写入触发 schema 校验（id 格式 / proven_by 非空 / 引用存在）；事实层更新后调 `propagate <fact_id>` 把下游 emphasis + snapshots 的 `needs_review` 翻位（不改文案）。fork 时基于 `needs_review` + 版本戳检测 fact diff，提示用户但不自动应用。
+- `scripts/wrap_preview.py`：把渲染好的简历正文包进 A4 预览壳（Paged.js 分页）。
+- `scripts/count_pages.py`：读取装配好的 body HTML，用同一预览壳和 Paged.js 只返回页数，不生成 PDF。
+- `scripts/export_long_image.py`：导出简历长图（招聘平台聊天框发送用）。
+- `scripts/extract_avatar.py`：从旧简历提取证件照。

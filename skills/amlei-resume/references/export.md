@@ -2,9 +2,9 @@
 
 用户要求导出 PDF 时执行。装配 HTML，套预览壳导出。
 
-## 产物目录
+## 导出目录
 
-所有导出/渲染产物归集到 `identities/{identity-id}/resumes/{app-id}/export/`——**自包含**：把快照根的 `avatar.png` 复制一份进 `export/`，保证 `预览.html` 头像不断链；`简历.md` 与 `avatar.png` 本体留在快照根目录（简历相对引用不变）。准备资料在 `research/`、评估在 `review/`，与导出产物分离。
+目录结构以 [file.md](file.md) 为准。所有导出/渲染产物归集到 `identities/{identity-id}/export/`——**自包含**：把 `identities/{identity-id}/avatar.png` 复制一份进 `export/`，保证 `预览.html` 头像不断链；`简历.md` 与 `avatar.png` 本体留在 identity 根目录（简历相对引用不变）。准备资料在 `research/`、评估在 `review/`，与导出产物分离。
 
 ## 选主题
 
@@ -29,7 +29,7 @@
    `##` 下的描述段（项目说明）→ 渲染成描述段组件（用主题差异节指定的形态，如 `.summary`），**作为独立原子放在 Entry 之后**，不塞进 Entry。
 4. 行内强调：`**词**` → 强调字色；关键数字 → 等宽强调（如 `<span class="num">`）。
 
-> **不要再加 `data-stick="1"`**——旧版手动分页用它防"标题孤立页底"，新版由预览壳的 CSS `break-*` 规则按 class（`.sec-head`/`.entry`）自动处理，加了也是 no-op。主题模板里若仍带着，照抄无害、不强制。
+> **不要再加 `data-stick="1"`**。分页由预览壳的 CSS `break-*` 规则按 class（`.sec-head`/`.entry`）处理；主题模板里自带的可保留，新模板不必添加。
 
 产物 = `<style>…</style>` + 各原子，**不要**包 `<!DOCTYPE>/<html>/<head>/<body>`（预览壳负责），也**不要**外层包 `.resume-root`（`wrap_preview.py` 会自动包）。
 
@@ -37,12 +37,16 @@
 
 读取产物 HTML 和 `简历.md`，逐模块对比结构、模块标题、bullet 内容，确认无遗漏、无顺序错乱。发现缺失回「装配 HTML」修复，通过才走下一步。
 
+## 先取页数
+
+装配完 body HTML 后，先运行 `python3 scripts/count_pages.py <body.html>`。脚本复用预览壳和 Paged.js，只返回页数，不生成 PDF、不写 `export/`；页数不达标先精简，再进入预览与正式导出。
+
 ## 套预览壳
 
-用 `scripts/wrap_preview.py`（`--help` 看参数）。产出 `identities/{identity-id}/resumes/{app-id}/export/预览.html`（自动建目录），`document.title` = `姓名-岗位`（=「另存为 PDF」默认文件名）；用 `--name` 覆盖。**产出前确认 `export/` 里已有 `avatar.png` 副本**（从快照根复制），否则预览页头像断链。
+用 `scripts/wrap_preview.py`（`--help` 看参数）。产出 `identities/{identity-id}/export/预览.html`（自动建目录），`document.title` = `姓名-岗位`（=「另存为 PDF」默认文件名）；用 `--name` 覆盖。**产出前确认 `export/` 里已有 `avatar.png` 副本**（从 identity 根目录复制），否则预览页头像断链。
 
-外壳（[assets/preview-shell.html](../assets/preview-shell.html)）做的事：
-- **Paged.js 行级分页**（vendor 在 `assets/vendor/paged.polyfill.js`，`wrap_preview.py` 默认内联进产物，使预览页自包含 / 离线可用；`--no-inline-js` 改相对引用，仓库内参考 sample 用）。
+外壳（[preview-shell.html](../scripts/preview-shell.html)）做的事：
+- **Paged.js 行级分页**（`../scripts/paged.polyfill.js`，`wrap_preview.py` 默认内联进产物，使预览页自包含 / 离线可用；`--no-inline-js` 改相对引用，仓库内参考 sample 用）。
 - 主题 `<style>` 注入被 Paged.js 处理的 `<style>` 槽（`@page{size:A4;margin:14mm 16mm 13mm}` + 分页规则 + 主题 CSS）。
 - chrome（工具条 / 舞台 / 页间距 / 打印开关）放 `<style data-pagedjs-ignore>` 绕过 polisher，由浏览器直套——Paged.js 会剥掉针对 `.pagedjs_*` 的用户规则，故页间距等必须放这段。
 
@@ -66,8 +70,6 @@
 4. **检查末页填充**：Paged.js 会把每页填满（无需手动调 spacing）。末页若 < 30% 才考虑精简 bullet 内容重装——分页本身已无留白问题。
 5. **确认无重复源**：`#source` 在分页后应 `display:none`，页面下方不应出现第二份未分页副本（外壳已处理）。
 
-参考产物：[sample-preview.html](../assets/sample-preview.html)（academic 主题渲染 sample-resume.md）、[sample-body.html](../assets/sample-body.html)（装配后 body 样例）。
-
 > 预览页自带「✏️ 编辑」按钮（草稿视图改文字 + 完成后重排、「📝 导出 Markdown」回写 `.md`）——这是预览壳的 UI 能力，用户在页面上直接用，无需在这里记流程。
 
 ## 配色方案
@@ -81,7 +83,7 @@
 
 ## 简历长图
 
-PDF 导出后，再导出一张简历长图，用于招聘平台（Boss / 拉勾 / 智联 / 前程无忧）聊天框发送——图片比 PDF 少一次「点击下载」，首轮即可发，HR 可直接滑着看完，常与求职招呼语一起发出。
+PDF 导出后，再导出一张简历长图，用于招聘平台聊天框发送——图片比 PDF 少一次「点击下载」，首轮即可发，HR 可直接滑着看完，常与求职招呼语一起发出。
 
 - 调 `scripts/export_long_image.py <预览.html>`，返回 `<预览>_长图.png` 路径。
 - 脚本默认截 `.pagedjs_sheet`（每个 A4 页），截图前自动藏掉工具条（否则 sticky 工具条像素会盖进第 1 页顶部），等「共 N 页」出现再逐页截图纵向拼接。
