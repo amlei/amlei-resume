@@ -12,3 +12,4 @@ boss_state.json
 .agents/
 __pycache__/
 .playwright-cli/
+docs/
