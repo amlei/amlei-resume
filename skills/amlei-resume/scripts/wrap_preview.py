@@ -5,7 +5,7 @@
 搬页造成 ~10 行留白）。本脚本只做机械包装：
   · 产物开头的 <style>（主题样式，CSS 文本）→ 注入外壳 B) <style> 的 <!--RESUME_STYLE-->
   · 其余原子 → 注入 #source 的 <!--RESUME_BODY-->（外层 .resume-root 已在外壳里）
-  · vendored paged.polyfill.js → 内联进 <!--PAGEDJS-->，使预览页自包含 / 离线可用
+  · scripts/paged.polyfill.js → 内联进 <!--PAGEDJS-->，使预览页自包含 / 离线可用
 姓名 / 岗位自动抽取做 document.title（= PDF 默认文件名）。默认输出与 body.html 同目录的
 预览.html；--output 覆盖。
 """
@@ -16,8 +16,8 @@ import re
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-SHELL = os.path.normpath(os.path.join(HERE, "..", "assets", "preview-shell.html"))
-PAGEDJS = os.path.normpath(os.path.join(HERE, "..", "assets", "vendor", "paged.polyfill.js"))
+SHELL = os.path.join(HERE, "preview-shell.html")
+PAGEDJS = os.path.join(HERE, "paged.polyfill.js")
 
 # 捕获产物开头的 <style ...>CSS</style>，group(1) = 标签，group(2) = 内联 CSS 文本
 STYLE_RE = re.compile(r"^\s*(<style\b[^>]*>)(.*?)</style>\s*(.*)", re.I | re.S)
@@ -50,7 +50,7 @@ def main():
     ap.add_argument("output", nargs="?", help="输出路径，默认 <body 同目录>/预览.html")
     ap.add_argument("--name", help="覆盖 document.title（= PDF 默认文件名）；默认自动取 姓名-求职岗位")
     ap.add_argument("--no-inline-js", action="store_true",
-                    help="不内联 paged.polyfill.js，改为相对引用 assets/vendor/（用于仓库内的参考 sample）")
+                    help="不内联 paged.polyfill.js，改为相对引用同目录文件（用于仓库内的参考 sample）")
     args = ap.parse_args()
 
     for f in (args.body, SHELL, PAGEDJS):

@@ -6,15 +6,15 @@
 
 ## 硬约束（所有单栏主题遵守）
 
-- **class 命名不可随意改**：预览外壳 `assets/preview-shell.html` 按 class 识别原子、分页行为与行内编辑（`.sec-head` / `.entry` / `.bullet` / `.skills-row` / `.stack-row` / `.pubs li` / `.award` 等）。本文的命名即 canonical 命名，主题 `<style>` 向它对齐。
-- `data-stick="1"` 是旧版手动分页遗留，现由外壳 CSS `break-*` 按 class 自动处理；模板里保留、照抄无害。
+- **class 命名不可随意改**：预览外壳 `../../scripts/preview-shell.html` 按 class 识别原子、分页行为与行内编辑（`.sec-head` / `.entry` / `.bullet` / `.skills-row` / `.stack-row` / `.pubs li` / `.award` 等）。本文的命名即 canonical 命名，主题 `<style>` 向它对齐。
+- `data-stick="1"` 不影响分页：外壳 CSS 会按 class 处理；模板里保留无妨，新模板不必添加。
 - **bullet 原子化**：每条 `- bullet` 拆成独立 `.bullet` 兄弟节点，不包进 Entry / `<ul>`（分页原子）。
 - **项目经历三段式单行**：`.proj`（左）· `.company`（居中，是 `.entry-main` 的直接子节点，不包进 `.entry-title`）· `.entry-date`（右），**无任何符号、无 `.role`**——职责由下方 bullet 体现。
 - **行内强调统一用 `<b>`**（转强调字色）；关键数字用 `<span class="num">`（等宽 + 强调色）。
 - **单点缀色**：一个 accent + 同色系更深强调字色；姓名 24–28px（非巨标题）；分割线用 1px 发丝 / 虚线。
 - **联系方式占位符全主题统一命名**：核心三元组顺序固定 `{{location}}` → `{{phone}}` → `{{email}}`；链接类字段统一写 `<a href="{{x-url}}">{{x}}</a>`（x = `github` / `site` / `linkedin` …）；其余扩展字段（`{{gender}}` / `{{age}}` / `{{political}}` / `{{platform}}` / `{{relocation}}` …）统一小写，gender 类前置、其余追加在尾部。具体放哪些字段 = 主题差异节的「默认字段集」∧ `self-intro` 实际字段；字段间用 `<span class="sep">·</span>`，缺失字段连同它的 `sep` 一起删，不留空段。
 - `{{education}}` 单独一行（`education:` 字段，子项 ` · ` 拼接），无则删整行。
-- `{{photo}}`：有真实头像用 `<div class="photo"><img src="{{avatar}}" alt="证件照"></div>`；没有用 [icons.md](icons.md) 的证件照占位（`{{photo}}` 处放占位组件）。
+- `{{photo}}`：有真实头像用 `<div class="photo"><img src="{{avatar}}" alt="证件照"></div>`；没有用 [icons.md](../icons.md) 的证件照占位（`{{photo}}` 处放占位组件）。
 
 ## 基准组件（带 `{{占位符}}`，class 与主题 `<style>` 对应）
 
@@ -40,7 +40,7 @@
 <div class="sec-head" data-stick="1">{{icon}}<h2>{{title}}<span class="en">{{en}}</span></h2></div>
 ```
 
-- `{{icon}}`：按模块语义从 [icons.md](icons.md) 选一个 `<svg class="ico" …>…</svg>`。
+- `{{icon}}`：按模块语义从 [icons.md](../icons.md) 选一个 `<svg class="ico" …>…</svg>`。
 - `{{en}}`：英文小标签（可选），无则连 `<span class="en">` 一起删。
 
 ### 3. Summary（个人简介段落）

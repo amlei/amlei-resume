@@ -1,26 +1,22 @@
 {
   "name": "amlei-resume",
-  "version": "0.1.0",
-  "description": "简历全流程 skill — 事实层 + 强调层 + 快照层，装配 HTML 导出 A4 PDF",
+  "version": "0.2.0",
+  "description": "简历全流程 skill — 记忆底座 profile.md + 多方向简历 + 按需市场调研，装配 HTML 导出 A4 PDF",
   "scripts": {},
   "keywords": [
     "claude-code",
     "claude",
     "skills",
     "resume",
-    "boss-zhipin",
     "求职",
     "ai-resume"
   ],
   "files": [
+    "LICENSE",
     ".claude-plugin/plugin.json",
     "skills/amlei-resume/SKILL.md",
-    "skills/amlei-resume/assets/",
     "skills/amlei-resume/references/",
-    "skills/amlei-resume/scripts/",
-    "skills/amlei-profile/",
-    "skills/amlei-text-polish/",
-    "skills/amlei-job-market-research/"
+    "skills/amlei-resume/scripts/"
   ],
   "author": "amlei",
   "license": "MIT",
