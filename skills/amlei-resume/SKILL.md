@@ -1,6 +1,20 @@
 ---
 name: amlei-resume
+display_name: 简历命中
+display_name_en: Bullseye Resume
 description: 当用户需要写简历、改简历、投简历、换岗、把简历导出为 A4 PDF，或需要"记住我做过 X""更新我的资料""我有哪些能力"时使用。它维护跨会话画像 `profile.md` 和跨方向材料池 `materials/`，以目标岗位的三类筛选者判断为目标，完成选材、写作、自检、导出与求职招呼语。
+description_zh: 从真实经历出发产出可投递简历：跨会话画像记忆、按岗位定制选材、装配导出 A4 PDF 与求职招呼语。
+description_en: Turns real experience into application-ready resumes with a persistent career profile, per-role tailoring, and A4 PDF export.
+examples_zh:
+- "我想针对目标岗位写一份简历，请基于我的真实经历一步步帮我产出可投递的 A4 PDF。"
+- "这是我的现有简历和目标 JD，请帮我改到高度匹配，缺的证据直接追问我。"
+- "帮我调研这个岗位的筛选标准，再告诉我简历各模块该突出哪些证据。"
+examples_en:
+- "Help me write a resume for my target role based on my real experience and deliver an application-ready A4 PDF."
+- "Here is my current resume and the target JD. Tailor it for a strong match and ask me for any missing evidence."
+- "Research what this role's screeners look for, then tell me which evidence each resume section should highlight."
+version: 0.2.0
+author: "amlei"
 ---
 
 # amlei-resume

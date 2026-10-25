@@ -1,10 +1,15 @@
 # amlei-resume
 
-写简历最浪费的地方，是每投一个方向，都要把自己重讲一遍。
+求职材料最浪费的地方，是每投一个方向，都要把自己重讲一遍。
 
-amlei-resume 是一个装进 AI 助手的 [Agent Skill](https://agentskills.io)：你的经历和能力只沉淀一次，之后想投哪个方向，就把这份画像投影成那个方向的简历。支持 Claude Code、Cursor、Codex、Gemini CLI、OpenCode、Copilot。
+这个仓库包含两个独立的 [Agent Skill](https://agentskills.io)：
 
-## 它是什么
+- **amlei-resume**：维护职业画像与证据，按目标岗位产出可投递简历和 A4 PDF。
+- **amlei-portfolio**：从真实项目中选案例、组织证据，为每个求职方向产出可发布的作品集 Markdown。
+
+两个 Skill 有独立入口与 reference 契约，一起打包。作品集运行数据归属于简历数据根下的 `portfolio/`，素材跨方向共用；不再单独维护一个与简历平级的作品集目录。
+
+## 简历 Skill：amlei-resume
 
 三个词：**记得住、分得清、管到底**。
 
@@ -12,9 +17,16 @@ amlei-resume 是一个装进 AI 助手的 [Agent Skill](https://agentskills.io)�
 - **分得清**——「做过什么」是事实，全局只记一遍；「怎么讲」是强调，每个求职方向各有一版。换岗不是重写，是重新选材。
 - **管到底**——从按需岗位调研、挖素材、写改，到导出矢量 A4 PDF、生成招聘平台招呼语，一条流程走完。
 
+## 作品集 Skill：amlei-portfolio
+
+作品集不是简历加长版，也不是项目截图合集。它面向通过初筛后的深入阅读，重点证明问题判断、产品取舍、交付结果与证据边界。
+
+`amlei-portfolio` 按简历方向维护项目案例与公开信息，通常输出 2-5 个主案例。每个案例回答：为谁解决什么问题、本人负责什么、做了哪些关键判断、形成了什么交付、结果如何、证据在哪里、边界是什么。
+
 ## 核心设计：一份画像，多个方向，每个方向一个当前版本
 
 ```
+简历数据根：.amlei-skill/resume/ 或 ~/.amlei-skill/resume/
 profile.md（跨会话画像）
   已确认的短事实——经历、项目、能力
         ↑ 提炼
@@ -25,6 +37,12 @@ identities/{方向}/简历.md
   这个方向怎么选材、怎么组织、怎么措辞
         ↓ 导出
 export/（预览 HTML、A4 PDF、长图）
+
+portfolio/
+  {identity-id}-作品集.md（该方向内容与证据的唯一源）
+  assets/（跨方向共用素材）
+        ↓ 发布
+  飞书在线版本
 ```
 
 判断标准只有一个：**两次不同方向的面试里，这件事你会讲得不一样吗？** 不会变的事实进 `profile.md`，证据留在 `materials/`；会变的表达属于某一份简历。
@@ -115,22 +133,35 @@ date: 2025.04 — 2025.11
 
 ![8 套点缀配色](assets/color-schemes.png)
 
-## 一个 skill，一条流水线
+## 作品集怎么写
 
-`amlei-resume` 一个 skill 管到底：记忆底座 `profile.md` + 多方向简历 + 按需岗位调研 + 预览导出。
+作品集是单文件产物，定位、案例、结果、证据和发布信息都写在对应方向的 `{identity-id}-作品集.md` 中。默认结构是：
+
+```text
+.amlei-skill/resume/portfolio/
+├── ai-pm-作品集.md
+├── ai-agent-作品集.md      # 有其他方向时才创建
+└── assets/{images,videos,documents,diagrams}/
+```
+
+素材跨作品集方向共用，使用稳定项目 ID 命名，并在 Markdown 中通过相对路径或公开 URL 引用。未脱敏的客户信息、内部系统和业务数据不会进入公开版本。
+
+作品集数据优先放在当前项目的 `.amlei-skill/resume/portfolio/`；当前工作区没有 `.amlei-skill/` 时，回退到 `~/.amlei-skill/resume/portfolio/`。作品集不提供 HTML、PDF、长图或其他本地导出，发布只面向飞书等在线载体。
+
+## 两个 Skill，各有完整工作流
+
+`amlei-resume` 负责简历：记忆底座 `profile.md` + 多方向简历 + 按需岗位调研 + 预览导出。
+`amlei-portfolio` 负责作品集：在简历数据根下按方向组织公开信息、案例、证据、共用素材与发布信息。
+
+两个 Skill 都遵循开放的 Agent Skill 目录结构，可由支持该格式的 AI 助手按需加载。
 
 内部结构：
 
-- `SKILL.md`：主流程、记忆与材料、每轮筛选决策自问
-- `references/index.md`：参考文件索引与按任务读取顺序
-- `references/resume-format.md`：`简历.md` 的 DSL 与格式约束
-- `references/file.md`：整个 `.amlei-skill/resume/` 的目录、命名与材料池规范
-- `references/profile.md`：`profile.md` 模板与熟练度判据
-- `references/job-research.md`：按需调研 JD、岗位、行业与市场行情
-- `references/content-packaging.md`：岗位化包装、程度校准与事实边界
-- `references/export.md`：预览、配色与 A4 PDF 导出
-- `references/themes/`：六套主题的组件库与规范
-- `scripts/`：预览壳、页数检查、长图与证件照
+- `skills/amlei-resume/SKILL.md`：简历工作流
+- `skills/amlei-resume/references/`：简历格式、材料、筛选、包装、调研、导出与主题
+- `skills/amlei-resume/scripts/`：预览壳、页数检查、长图与证件照
+- `skills/amlei-portfolio/SKILL.md`：作品集工作流
+- `skills/amlei-portfolio/references/portfolio-format.md`：案例、Markdown、素材与发布规范
 
 ## 上手
 
@@ -145,16 +176,18 @@ claude plugin add amlei/amlei-resume
 - 「做了三年后端，想转 AI Agent 方向，这是我的旧简历，帮我重新讲一版。」
 - 「帮我看看 AI Agent 开发在北京的行情，再按这个方向改一版简历。」
 - 「简历定稿了，导出 A4 PDF，再帮我写几条招聘平台的开场白。」
+- 「把我的项目重做成 AI 产品经理作品集，重点讲产品判断和证据。」
+- 「检查这份作品集缺哪些信息，并把项目案例重新组织。」
 
 更建议把目标、经历、材料来源一次说全，它就能照着画像开工。说漏了也没关系，细节是边聊边冒出来的。
 
 ## 几条较真的原则
 
-- **能力必须有证据**——写进 `profile.md` 的每条能力，都要能指回证明它的项目；举不出证据的，只能算讲法。
+- **能力必须有证据**——简历与作品集中的每条强结论，都要能指回真实项目、结果或公开材料。
 - **写「做到什么」，不写「怎么做到的」**——bullet 落在结果，做法细节是面试官的常识，写出来只会稀释重点。
 - **事实更新只提醒，不动你的文案**——底层事实变了，它标记出来等你决定，绝不自动改写你敲定的措辞。
-- **记忆只记事实，不记措辞**——简历怎么讲、怎么组织，不写回 `profile.md`。
-- **定稿即沉淀**——一份简历写完，里面首次出现的客观事实、成果、偏好会回写画像，下次不用重讲。
+- **记忆只记事实，不记措辞**——简历和作品集的组织方式不写回事实档案。
+- **定稿即沉淀**——首次出现的客观事实、成果和边界会回写各自的资料库，下次不用重讲。
 
 ## 依赖
 

@@ -1,11 +1,12 @@
 {
   "name": "amlei-resume",
-  "description": "简历全流程：记忆底座 profile.md + 0→1 写/改/换岗/迭代 + 按需岗位调研 + 装配 HTML 导出 A4 PDF",
+  "version": "0.3.0",
+  "description": "求职材料双工作流：独立维护简历与作品集，覆盖岗位调研、选材写作、证据核验与导出",
+  "author": {
+    "name": "amlei"
+  },
   "skills": [
-    {
-      "name": "amlei-resume",
-      "file-path": "skills/amlei-resume/SKILL.md",
-      "description": "简历全流程：记忆底座 profile.md + 写/改/换岗/迭代 + 按需岗位调研 + 装配 HTML 导出 A4 PDF"
-    }
+    "./skills/amlei-resume/",
+    "./skills/amlei-portfolio/"
   ]
 }

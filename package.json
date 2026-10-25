@@ -1,13 +1,14 @@
 {
   "name": "amlei-resume",
-  "version": "0.2.0",
-  "description": "简历全流程 skill — 记忆底座 profile.md + 多方向简历 + 按需市场调研，装配 HTML 导出 A4 PDF",
+  "version": "0.3.0",
+  "description": "求职材料 Skill 包 — 独立工作流的简历与作品集，作品集数据归属于简历数据根",
   "scripts": {},
   "keywords": [
     "claude-code",
     "claude",
     "skills",
     "resume",
+    "portfolio",
     "求职",
     "ai-resume"
   ],
@@ -16,7 +17,9 @@
     ".claude-plugin/plugin.json",
     "skills/amlei-resume/SKILL.md",
     "skills/amlei-resume/references/",
-    "skills/amlei-resume/scripts/"
+    "skills/amlei-resume/scripts/",
+    "skills/amlei-portfolio/SKILL.md",
+    "skills/amlei-portfolio/references/"
   ],
   "author": "amlei",
   "license": "MIT",

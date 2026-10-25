@@ -12,3 +12,6 @@ test/
 __pycache__/
 .playwright-cli/
 docs/
+
+# WorkBuddy 市场包产物
+*.zip

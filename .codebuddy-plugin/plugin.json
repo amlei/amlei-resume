@@ -1,0 +1,83 @@
+{
+  "name": "amlei-resume",
+  "version": "0.3.0",
+  "description": "A career-materials studio with independent resume and portfolio workflows built from real evidence.",
+  "author": {
+    "name": "amlei",
+    "email": "lixiang.altr@qq.com"
+  },
+  "keywords": [
+    "resume",
+    "portfolio",
+    "job-search",
+    "career",
+    "resume-writing",
+    "pdf-export"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/amlei/amlei-resume",
+  "expertType": "agent",
+  "agentName": "amlei-resume",
+  "agents": [
+    "./agents/amlei-resume.md"
+  ],
+  "skills": [
+    "./skills/amlei-resume",
+    "./skills/amlei-portfolio"
+  ],
+  "displayName": {
+    "en": "Career Materials Studio",
+    "zh": "求职材料工坊"
+  },
+  "profession": {
+    "en": "Senior Career Materials Consultant",
+    "zh": "资深求职材料顾问"
+  },
+  "displayDescription": {
+    "en": "Turns real experience into application-ready resumes and evidence-backed portfolios through independent, focused workflows.",
+    "zh": "从真实经历出发产出可投递简历与可信作品集：两个独立 Skill，分别负责筛选表达与项目证据。"
+  },
+  "avatar": "avatars/expert.png",
+  "categoryId": "09-OperationsHR",
+  "defaultInitPrompt": {
+    "zh": "我想针对目标岗位写一份简历，请基于我的真实经历一步步帮我产出可投递的 A4 PDF。",
+    "en": "Help me write a resume for my target role based on my real experience and deliver an application-ready A4 PDF."
+  },
+  "plugin": "amlei-resume",
+  "tags": [
+    {
+      "en": "Resume Tailoring",
+      "zh": "简历定制"
+    },
+    {
+      "en": "Job Research",
+      "zh": "岗位调研"
+    },
+    {
+      "en": "A4 PDF Export",
+      "zh": "A4 导出"
+    },
+    {
+      "en": "Portfolio",
+      "zh": "作品集"
+    }
+  ],
+  "quickPrompts": [
+    {
+      "zh": "我想针对目标岗位写一份简历，请基于我的真实经历一步步帮我产出可投递的 A4 PDF。",
+      "en": "Help me write a resume for my target role based on my real experience and deliver an application-ready A4 PDF."
+    },
+    {
+      "zh": "这是我的现有简历和目标 JD，请帮我改到高度匹配，缺的证据直接追问我。",
+      "en": "Here is my current resume and the target JD. Tailor it for a strong match and ask me for any missing evidence."
+    },
+    {
+      "zh": "帮我调研这个岗位的筛选标准，再告诉我简历各模块该突出哪些证据。",
+      "en": "Research what this role's screeners look for, then tell me which evidence each resume section should highlight."
+    },
+    {
+      "zh": "请根据我的项目材料重做一份作品集，缺哪些证据直接告诉我。",
+      "en": "Build an evidence-backed portfolio from my project materials and tell me what evidence is missing."
+    }
+  ]
+}
