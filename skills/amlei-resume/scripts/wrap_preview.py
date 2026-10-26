@@ -3,7 +3,8 @@
 
 分页由 Paged.js 行级断行完成（替代旧版 JS 手动量原子高度装箱——后者会把整条 bullet
 搬页造成 ~10 行留白）。本脚本只做机械包装：
-  · 产物开头的 <style>（主题样式，CSS 文本）→ 注入外壳 B) <style> 的 <!--RESUME_STYLE-->
+  · 产物开头的 <style>（第一个是主题样式，后续可放产物定制样式）
+    → 按「主题 → 共享 refinement → 产物定制」顺序注入外壳 B) <style> 的 <!--RESUME_STYLE-->
   · 其余原子 → 注入 #source 的 <!--RESUME_BODY-->（外层 .resume-root 已在外壳里）
   · scripts/paged.polyfill.js → 内联进 <!--PAGEDJS-->，使预览页自包含 / 离线可用
 姓名 / 岗位自动抽取做 document.title（= PDF 默认文件名）。默认输出与 body.html 同目录的
@@ -18,9 +19,10 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 SHELL = os.path.join(HERE, "preview-shell.html")
 PAGEDJS = os.path.join(HERE, "paged.polyfill.js")
+REFINEMENT = os.path.join(HERE, "theme-refinement.css")
 
-# 捕获产物开头的 <style ...>CSS</style>，group(1) = 标签，group(2) = 内联 CSS 文本
-STYLE_RE = re.compile(r"^\s*(<style\b[^>]*>)(.*?)</style>\s*(.*)", re.I | re.S)
+# 捕获产物开头的连续 <style ...>CSS</style>，group(2) = 内联 CSS 文本
+STYLE_RE = re.compile(r"^\s*(<style\b[^>]*>)(.*?)</style>\s*", re.I | re.S)
 NAME_RE = re.compile(r'class="(?:name|cn)"[^>]*>\s*([^<]+?)\s*<', re.I)
 ROLE_RE = re.compile(r'class="role"[^>]*>\s*([^<]+?)\s*<', re.I)
 PLACEHOLDER_RE = re.compile(r"\{\{[^}]+\}\}")
@@ -44,6 +46,18 @@ def derive_role(body_html):
     return _clean_role(m.group(1)) if m else ""
 
 
+def split_leading_styles(content):
+    """Return (CSS blocks in source order, remaining body HTML)."""
+    styles = []
+    body_html = content.strip()
+    while True:
+        m = STYLE_RE.match(body_html)
+        if not m:
+            return styles, body_html.strip()
+        styles.append(m.group(2).strip())
+        body_html = body_html[m.end():]
+
+
 def main():
     ap = argparse.ArgumentParser(description="把简历正文包进 Paged.js A4 预览外壳（带导出 PDF）。")
     ap.add_argument("body", help="渲染产物 HTML（开头 <style> + 原子）路径")
@@ -53,7 +67,7 @@ def main():
                     help="不内联 paged.polyfill.js，改为相对引用同目录文件（用于仓库内的参考 sample）")
     args = ap.parse_args()
 
-    for f in (args.body, SHELL, PAGEDJS):
+    for f in (args.body, SHELL, PAGEDJS, REFINEMENT):
         if not os.path.isfile(f):
             print(f"✗ 找不到文件: {f}")
             sys.exit(1)
@@ -61,13 +75,13 @@ def main():
     content = open(args.body, encoding="utf-8").read().strip()
     shell = open(SHELL, encoding="utf-8").read()
 
-    # 1) 拆出开头的 <style>（主题样式）和正文原子
-    m = STYLE_RE.match(content)
-    if m:
-        style_css = m.group(2).strip()        # 只取 CSS 文本（不含 <style> 标签）
-        body_html = m.group(3).strip()
-    else:
-        style_css, body_html = "", content
+    # 1) 拆出开头的连续 <style> 和正文原子。第一个是主题样式，
+    #    其余是当前产物的定制覆盖；共享 refinement 固定在二者之间。
+    styles, body_html = split_leading_styles(content)
+    theme_css = styles[0] if styles else ""
+    custom_css = "\n".join(styles[1:])
+    refinement_css = open(REFINEMENT, encoding="utf-8").read().strip()
+    style_css = "\n\n".join(part for part in (theme_css, refinement_css, custom_css) if part)
 
     if not body_html:
         print("✗ 正文为空：渲染产物里没有除 <style> 以外的内容")

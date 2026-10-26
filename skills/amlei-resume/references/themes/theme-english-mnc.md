@@ -55,7 +55,7 @@
   .entry-title .org{font-size:14.5px;font-weight:700;letter-spacing:.01em}
   .entry-main .proj{font-size:14.5px;font-weight:700;letter-spacing:.01em}
   .entry-main .company{font-size:11.5px;color:var(--muted);font-weight:500;letter-spacing:.03em}
-  .entry-title .role{font-size:13px;color:var(--accent-ink);font-style:italic}
+  .entry-secondary .role,.entry-title .role{font-size:13px;color:var(--accent-ink);font-style:italic}
   .entry-date{font-family:var(--font-mono);font-size:10.5px;color:var(--faint);white-space:nowrap;letter-spacing:.04em}
   .entry-list{list-style:none;margin-top:4px}
   .entry-list li{position:relative;padding-left:13px;font-size:12.5px;line-height:1.48;color:var(--ink);margin-bottom:2px;text-align:justify;text-wrap:pretty}
@@ -79,7 +79,7 @@
 - **内容全部写英文**（self-intro 中文内容译成英文）；SectionHead 写正常大小写，CSS 自动全大写。
 - **启用组件**：Header / SectionHead / Summary / Entry / Bullet / Skills（双列）；**不用** Interests、Pubs、Awards（奖项内容并入 Experience/Skills）。
 - **Header 默认字段集**：`{{location}}` · `{{phone}}` · `{{email}}` · `<a href="{{linkedin-url}}">{{linkedin}}</a>` · `{{relocation}}`（值如 "Open to relocation"）；name 行 = `{{name}}`（英文姓名）· `{{中文名}}`；`{{photo}}` 占位 span 写 `PHOTO`（大写）。
-- **Entry**：role 斜体（style 已实现）；entry-title 内三段 `<span class="org">{{Org}}</span><span class="company">{{Company short}}</span><span class="role">{{Role — detail}}</span>`；**无 meta 行**——GPA 等放进首条 bullet 用 `<b>`；日期写英文月份（`Sep 2024 — Dec 2024`）。项目经历仍走共享库三段式（`.proj`/`.company`/`.entry-date`）。
+- **Entry**：role 斜体（style 已实现）；左侧 `.entry-title` 放 `<span class="org">{{Org}}</span><span class="company">{{Company short}}</span>`，中央 `.entry-secondary` 放 `<span class="role">{{Role — detail}}</span>`；**无 meta 行**——GPA 等放进首条 bullet 用 `<b>`；日期写英文月份（`Sep 2024 — Dec 2024`）。项目经历同走共享库三槽结构。
 - **Bullet**：数字 → `<span class="num">`，关键术语 → `<b>`。
 - **Skills**：容器 `.skills` 两列 grid（style 已实现），行结构同共享库 `.skills-row`（cat + tags）：
 

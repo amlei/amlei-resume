@@ -241,7 +241,7 @@
        不在 A4 分页 DOM 上直接编辑——Paged.js 会把元素跨页切分（data-split-*），
        原子映射与光标定位都不可靠；编辑主源最稳。
        ============================================================ */
-    var EDIT_SEL='.name,.role,.edu-line,.contact,.sec-head h2,.summary p,.entry-title .org,.entry-title .proj,.entry-title .company,.entry-title .role,.entry-date,.entry-meta span,.bullet,.pubs li,.pub,.award .lvl,.award span:not(.yr):not(.lvl),.skills-row .cat,.skills-row .tags,.chip,.interests .it,.desc';
+    var EDIT_SEL='.name,.role,.edu-line,.contact,.sec-head h2,.summary p,.entry-title .org,.entry-title .proj,.entry-title .company,.entry-secondary .role,.entry-secondary .badge,.entry-title .role,.entry-date,.entry-meta span,.bullet,.pubs li,.pub,.award .lvl,.award span:not(.yr):not(.lvl),.skills-row .cat,.skills-row .tags,.chip,.interests .it,.desc';
     var editing=false;
     var editBtn=document.getElementById('rvEditBtn'), saveBtn=document.getElementById('rvSaveBtn'), pdfBtn=document.getElementById('rvPdfBtn');
 
@@ -342,7 +342,7 @@
         } else if(cl.contains('entry')){
           md+='\n';
           var org=atom.querySelector('.org,.proj');
-          var erole=atom.querySelector('.entry-title .role');
+          var erole=atom.querySelector('.entry-secondary .role,.entry-title .role');
           var company=atom.querySelector('.company');
           if(org) md+='## '+org.textContent.trim();
           if(company) md+=' | '+company.textContent.replace(/^@\s*/,'').trim();

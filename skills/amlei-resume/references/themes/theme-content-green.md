@@ -53,8 +53,8 @@
   .entry-title .org{font-size:14px;font-weight:700}
   .entry-main .proj{font-size:14.5px;font-weight:700;letter-spacing:.01em}
   .entry-main .company{font-size:11.5px;color:var(--muted);font-weight:500;letter-spacing:.02em}
-  .entry-title .role{font-size:13px;font-weight:500;color:var(--accent-ink)}
-  .entry-title .badge{font-size:11px;font-weight:600;color:var(--accent-ink);background:var(--accent-soft);padding:2px 7px}
+  .entry-secondary .role,.entry-title .role{font-size:13px;font-weight:500;color:var(--accent-ink)}
+  .entry-secondary .badge,.entry-title .badge{font-size:11px;font-weight:600;color:var(--accent-ink);background:var(--accent-soft);padding:2px 7px}
   .entry-date{font-family:var(--font-mono);font-size:11px;color:var(--faint);white-space:nowrap;letter-spacing:.02em}
   .entry-meta{margin-top:3px;font-size:11.5px;color:var(--muted);display:flex;gap:14px;flex-wrap:wrap}
   .entry-meta b{color:var(--ink);font-weight:600}

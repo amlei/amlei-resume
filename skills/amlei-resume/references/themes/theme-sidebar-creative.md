@@ -68,7 +68,7 @@
   .entry-title .org{font-size:14px;font-weight:700}
   .entry-main .proj{font-size:14.5px;font-weight:700;letter-spacing:.01em}
   .entry-main .company{font-size:11.5px;color:var(--muted);font-weight:500;letter-spacing:.02em}
-  .entry-title .role{font-size:13px;color:var(--accent-ink)}
+  .entry-secondary .role,.entry-title .role{font-size:13px;color:var(--accent-ink)}
   .entry-date{font-family:var(--font-mono);font-size:11px;color:var(--faint);white-space:nowrap;letter-spacing:.02em}
   .entry-meta{font-size:12px;color:var(--muted);margin-top:2px}
   .entry-meta b{color:var(--ink)}
@@ -147,10 +147,10 @@
 
 ### 主体 · entry / entry-list（同单栏结构；项目用 `.proj` + `.company`）
 
-注：项目经历是三段式单行 `.proj`（左）· `.company`（居中，`.entry-main` 直接子节点）· `.entry-date`（右），**无任何符号、无 `.role`**——职责由 bullet 体现。主体栏窄，`.company` 用 11.5px 次要灰，别喧宾夺主。
+注：工作与项目经历共用三槽单行：左侧 `.entry-title`（公司/项目 + 可选公司简称）、中央 `.entry-secondary .role`、右侧 `.entry-date`。主体栏窄，中央身份先按内容自然占宽，只有放不下才在中央槽内换行；不得为了省高度把身份强制搬到第二行。`.company` 用 11.5px 次要灰，别喧宾夺主。
 ```html
 <div class="entry">
-  <div class="entry-main"><div class="entry-title"><span class="org">{{org}}</span><span class="role">{{role}}</span></div><span class="entry-date">{{date}}</span></div>
+  <div class="entry-main"><div class="entry-title"><span class="org">{{org}}</span></div><div class="entry-secondary"><span class="role">{{role}}</span></div><span class="entry-date">{{date}}</span></div>
   <ul class="entry-list"><li>{{bullet，数字用 <span class="num">}}</li></ul>
 </div>
 ```

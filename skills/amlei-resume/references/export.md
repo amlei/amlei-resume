@@ -31,7 +31,19 @@
 
 > **不要再加 `data-stick="1"`**。分页由预览壳的 CSS `break-*` 规则按 class（`.sec-head`/`.entry`）处理；主题模板里自带的可保留，新模板不必添加。
 
-产物 = `<style>…</style>` + 各原子，**不要**包 `<!DOCTYPE>/<html>/<head>/<body>`（预览壳负责），也**不要**外层包 `.resume-root`（`wrap_preview.py` 会自动包）。
+产物 = 主题 `<style>…</style>` + 各原子，**不要**包 `<!DOCTYPE>/<html>/<head>/<body>`（预览壳负责），也**不要**外层包 `.resume-root`（`wrap_preview.py` 会自动包）。
+
+如需当前产物专用样式，可在主题 `<style>` 后追加一个 `<style>` 块，再写正文原子：
+
+```html
+<style>/* 主题完整 style */</style>
+<style>/* 当前产物 custom overrides */</style>
+<!-- 正文原子 -->
+```
+
+`wrap_preview.py` 会把连续样式块按 **主题 → 共享 `theme-refinement.css` → 产物定制样式** 的顺序合并进预览页，所以产物定制可以覆盖共享规则。定制样式不得引用远程字体、背景图或其他网络资源，保持 HTML/PDF 离线自包含。
+
+共享 refinement 负责所有主题的 Header 求职方向浅底、工作/项目身份中线、长文本换行和侧栏窄栏上限；主题文件只保留各自的令牌与视觉差异。新产物必须使用共享库的三槽 Entry HTML，旧 `.entry-title` 结构继续由原主题样式兼容。
 
 ## 装配后审查
 

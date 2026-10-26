@@ -9,7 +9,9 @@
 - **class 命名不可随意改**：预览外壳 `../../scripts/preview-shell.html` 按 class 识别原子、分页行为与行内编辑（`.sec-head` / `.entry` / `.bullet` / `.skills-row` / `.stack-row` / `.pubs li` / `.award` 等）。本文的命名即 canonical 命名，主题 `<style>` 向它对齐。
 - `data-stick="1"` 不影响分页：外壳 CSS 会按 class 处理；模板里保留无妨，新模板不必添加。
 - **bullet 原子化**：每条 `- bullet` 拆成独立 `.bullet` 兄弟节点，不包进 Entry / `<ul>`（分页原子）。
-- **项目经历三段式单行**：`.proj`（左）· `.company`（居中，是 `.entry-main` 的直接子节点，不包进 `.entry-title`）· `.entry-date`（右），**无任何符号、无 `.role`**——职责由下方 bullet 体现。
+- **经历标题三槽**：工作经历为 `.org`（左）· `.role`（中央）· `.entry-date`（右）；项目经历为 `.proj`（左）· 项目身份 `.role`（中央）· `.entry-date`（右）。三段式项目 `项目名 | 公司 | 身份` 中，公司简称放在左侧 `.entry-title` 内，身份仍走中央 `.role`。
+- **中央身份自然占宽**：`.entry-secondary` 是 `.entry-main` 的直接子节点；短内容保持单行，只有超过共享上限才换行。左右列等宽，中央列的位置才是真正的几何中线。
+- **浅底只用于 self-intro**：Header 的 `.role` 使用 `--accent-soft`（无该变量时回退 `--navy-soft`）；工作/项目身份不加深色块或背景。
 - **行内强调统一用 `<b>`**（转强调字色）；关键数字用 `<span class="num">`（等宽 + 强调色）。
 - **单点缀色**：一个 accent + 同色系更深强调字色；姓名 24–28px（非巨标题）；分割线用 1px 发丝 / 虚线。
 - **联系方式占位符全主题统一命名**：核心三元组顺序固定 `{{location}}` → `{{phone}}` → `{{email}}`；链接类字段统一写 `<a href="{{x-url}}">{{x}}</a>`（x = `github` / `site` / `linkedin` …）；其余扩展字段（`{{gender}}` / `{{age}}` / `{{political}}` / `{{platform}}` / `{{relocation}}` …）统一小写，gender 类前置、其余追加在尾部。具体放哪些字段 = 主题差异节的「默认字段集」∧ `self-intro` 实际字段；字段间用 `<span class="sep">·</span>`，缺失字段连同它的 `sep` 一起删，不留空段。
@@ -63,26 +65,32 @@
 
 ```html
 <div class="entry" data-stick="1">
-  <div class="entry-main"><div class="entry-title"><span class="org">{{org}}</span><span class="role">{{role}}</span><span class="badge">{{badge}}</span></div><span class="entry-date">{{date}}</span></div>
+  <div class="entry-main">
+    <div class="entry-title"><span class="org">{{org}}</span></div>
+    <div class="entry-secondary"><span class="role">{{role}}</span><span class="badge">{{badge}}</span></div>
+    <span class="entry-date">{{date}}</span>
+  </div>
   <div class="entry-meta"><span>{{meta}}</span></div>
 </div>
 ```
 
-- `{{org}}` = `##` 标题 `|` 左侧；`{{role}}` = `|` 右侧；无 `|` 则 `{{role}}` 连 `<span class="role">` 删。
+- `{{org}}` = `##` 标题 `|` 左侧；`{{role}}` = `|` 右侧；无 `|` 则整个 `.entry-secondary` 删除。
 - `.badge`（可选）：头衔/职务徽标；无则删。
 - `{{date}}` 来自 `##` 下 `date:` 行，无则删 `.entry-date`。
 - `.entry-meta` 来自 `meta:` 行或 GPA/排名等，关键数字 `<b>`；无 meta 整个 div 删。
-- 项目经历 → 三段式单行（见硬约束）：
+- 项目经历 → 三槽单行（见硬约束）：
 
   ```html
   <div class="entry" data-stick="1">
     <div class="entry-main">
-      <span class="proj">{{项目名}}</span>
-      <span class="company">{{公司/项目类型}}</span>
+      <div class="entry-title"><span class="proj">{{项目名}}</span><span class="company">{{公司简称}}</span></div>
+      <div class="entry-secondary"><span class="role">{{项目身份}}</span></div>
       <span class="entry-date">{{date}}</span>
     </div>
   </div>
   ```
+
+- 二段式项目 `项目名 | 身份` 把第二段放进中央 `.role`；三段式项目 `项目名 | 公司 | 身份` 把公司放进左侧 `.entry-title`，身份放中央。公司缺失时连 `.company` 删除，身份缺失时连 `.entry-secondary` 删除。
 
 ### 6. Bullet（单条经历要点 — 独立原子，自由换页）
 
@@ -154,8 +162,9 @@
 | `# 其它模块标题` | SectionHead（2.） | icon 按语义选；英文标签可选 |
 | 模块下纯文本段 | Summary（3.） | 关键短语 `<b>` |
 | 模块下「标签, 标签, 标签」单行 | Interests（4.） | 方向/兴趣标签 |
-| `## org \| role` | Entry header（5.）org/role | `\|` 分割；无 `\|` 则只有 org |
-| `## 项目名 \| 公司/项目类型` | Entry 三段式 proj/company | 无符号、无 `.role`；见组件 5. 示例 |
+| `## org \| role` | Entry header（5.）org/中央 role | `\|` 分割；无 `\|` 则只有 org |
+| `## 项目名 \| 身份` | Entry 的 proj/中央 role | 二段式项目，第二段是项目身份 |
+| `## 项目名 \| 公司 \| 身份` | Entry 的 proj/company/中央 role | 公司留在左侧，身份居中 |
 | `##` 下 `date: …` | Entry 的 `.entry-date` | |
 | `##` 下 `meta: …` | Entry 的 `.entry-meta` | 关键数字 `<b>` |
 | `##` 下 `- bullet` | 独立 Bullet（6.） | 每条一条；STAR + 量化；`.num` |

@@ -56,8 +56,8 @@
   .entry-title .org{font-weight:700;font-size:14px}
   .entry-main .proj{font-weight:700;font-size:14.5px;letter-spacing:.01em}
   .entry-main .company{font-size:11.5px;color:var(--muted);font-weight:500;letter-spacing:.02em}
-  .entry-title .role{font-size:13px;color:var(--navy-deep)}
-  .entry-title .badge{font-size:10.5px;color:var(--navy-deep);background:var(--navy-soft);padding:1.5px 7px;letter-spacing:.04em}
+  .entry-secondary .role,.entry-title .role{font-size:13px;color:var(--navy-deep)}
+  .entry-secondary .badge,.entry-title .badge{font-size:10.5px;color:var(--navy-deep);background:var(--navy-soft);padding:1.5px 7px;letter-spacing:.04em}
   .entry-date{font-family:var(--font-mono);font-size:11px;color:var(--faint);white-space:nowrap;letter-spacing:.02em}
   .entry-meta{margin-top:2px;font-size:11.5px;color:var(--muted);display:flex;gap:14px;flex-wrap:wrap}
   .entry-meta b{color:var(--ink);font-weight:600}

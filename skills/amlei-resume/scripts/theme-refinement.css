@@ -1,0 +1,75 @@
+/*
+ * Shared runtime refinement for all resume themes.
+ *
+ * Only self-intro gets a soft accent background. Entry identities stay
+ * background-free but share one true center line. :has() scopes the new
+ * three-slot layout to new artifacts, leaving older .entry-title-only
+ * artifacts on their original layout.
+ */
+:root {
+  --entry-center-max: 22em;
+}
+
+.resume-header .role,
+.head .role,
+.name-block .intent .role {
+  display: inline-block;
+  background: var(--accent-soft, var(--navy-soft, oklch(95% 0.02 250)));
+  color: var(--accent-ink, var(--navy-deep, var(--ink)));
+  padding: 2px 8px;
+  border-radius: 4px;
+  line-height: 1.45;
+}
+
+.entry-main:has(> .entry-secondary) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: baseline;
+  column-gap: 14px;
+  row-gap: 2px;
+}
+
+.entry-main:has(> .entry-secondary) > .entry-title {
+  grid-column: 1;
+  justify-self: start;
+  min-width: 0;
+}
+
+.entry-main:has(> .entry-secondary) > .entry-secondary {
+  grid-column: 2;
+  justify-self: center;
+  min-width: 0;
+  width: max-content;
+  max-width: var(--entry-center-max);
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+  color: var(--accent-ink, var(--navy-deep, var(--ink)));
+  text-align: center;
+  line-height: 1.45;
+}
+
+.entry-main:has(> .entry-secondary) > .entry-date {
+  grid-column: 3;
+  justify-self: end;
+}
+
+.entry-secondary .role,
+.entry-secondary .badge {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  font-family: inherit;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.two-col {
+  --entry-center-max: 9.5em;
+}
+
+.two-col .entry-main:has(> .entry-secondary) {
+  column-gap: 8px;
+}

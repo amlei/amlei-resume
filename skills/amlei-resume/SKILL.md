@@ -162,6 +162,7 @@ author: "amlei"
 ## 脚本
 
 - `scripts/wrap_preview.py`：把渲染好的简历正文包进 A4 预览壳（Paged.js 分页）。
+- `scripts/theme-refinement.css`：所有主题共享的运行时布局层（self-intro 浅底、经历三槽中线与换行边界）；由 `wrap_preview.py` 自动注入。
 - `scripts/count_pages.py`：读取装配好的 body HTML，用同一预览壳和 Paged.js 只返回页数，不生成 PDF。
 - `scripts/export_long_image.py`：导出简历长图（招聘平台聊天框发送用）。
 - `scripts/extract_avatar.py`：从旧简历提取证件照。

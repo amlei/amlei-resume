@@ -4,6 +4,8 @@
 >
 > 5 个单栏主题共用一份**共享组件库** [component-library.md](component-library.md)（基准组件 HTML + 简历骨架 + MD→组件映射）；每个主题文件只含三节：设计变量速查表 + 完整 `<style>` + 「主题差异」（相对共享库的增删改变体）。装配 = 共享库基准组件 + 主题差异覆盖。
 >
+> 所有主题在预览壳中还会叠加共享 [theme-refinement.css](../../scripts/theme-refinement.css)：只给 self-intro 求职方向加浅底，并让工作/项目身份共用三槽中线。当前产物如需更进一步定制，在正文主题 `<style>` 后追加第二个 `<style>`，包装器会把它放在共享 refinement 之后。
+>
 > 例外：`sidebar-creative` 是双栏单页特殊主题，**自包含**（令牌 + style + 组件 + 骨架 + 映射全在一个文件），不使用共享库。
 >
 > **想看某主题效果**：用 `../sample-resume.md` 渲染该主题（→ `wrap_preview.py`）生成预览 HTML 即可。
