@@ -66,6 +66,25 @@
   white-space: normal;
 }
 
+.entry-title a,
+.summary a,
+.bullet a,
+.skills-row a,
+.entry-meta a,
+.pubs a,
+.award a {
+  color: var(--accent-ink, var(--navy-deep, var(--ink)));
+  text-decoration: underline;
+  text-decoration-thickness: 0.06em;
+  text-decoration-color: var(--accent, var(--navy, currentColor));
+  text-underline-offset: 0.14em;
+}
+
+.entry-title a {
+  color: inherit;
+  font: inherit;
+}
+
 .two-col {
   --entry-center-max: 9.5em;
 }

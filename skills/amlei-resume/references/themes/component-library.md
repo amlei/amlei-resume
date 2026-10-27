@@ -12,6 +12,7 @@
 - **经历标题三槽**：工作经历为 `.org`（左）· `.role`（中央）· `.entry-date`（右）；项目经历为 `.proj`（左）· 项目身份 `.role`（中央）· `.entry-date`（右）。三段式项目 `项目名 | 公司 | 身份` 中，公司简称放在左侧 `.entry-title` 内，身份仍走中央 `.role`。
 - **中央身份自然占宽**：`.entry-secondary` 是 `.entry-main` 的直接子节点；短内容保持单行，只有超过共享上限才换行。左右列等宽，中央列的位置才是真正的几何中线。
 - **浅底只用于 self-intro**：Header 的 `.role` 使用 `--accent-soft`（无该变量时回退 `--navy-soft`）；工作/项目身份不加深色块或背景。
+- **本人成果链接**：只有用户明确提供或确认的链接才能装配。项目/成果主链接包住 `.proj` 内标题文字；正文链接保持行内。不得新增独立链接行，不在模块标题、`.role`、`.company` 或 `.entry-date` 中放链接。
 - **行内强调统一用 `<b>`**（转强调字色）；关键数字用 `<span class="num">`（等宽 + 强调色）。
 - **单点缀色**：一个 accent + 同色系更深强调字色；姓名 24–28px（非巨标题）；分割线用 1px 发丝 / 虚线。
 - **联系方式占位符全主题统一命名**：核心三元组顺序固定 `{{location}}` → `{{phone}}` → `{{email}}`；链接类字段统一写 `<a href="{{x-url}}">{{x}}</a>`（x = `github` / `site` / `linkedin` …）；其余扩展字段（`{{gender}}` / `{{age}}` / `{{political}}` / `{{platform}}` / `{{relocation}}` …）统一小写，gender 类前置、其余追加在尾部。具体放哪些字段 = 主题差异节的「默认字段集」∧ `self-intro` 实际字段；字段间用 `<span class="sep">·</span>`，缺失字段连同它的 `sep` 一起删，不留空段。
@@ -91,6 +92,17 @@
   ```
 
 - 二段式项目 `项目名 | 身份` 把第二段放进中央 `.role`；三段式项目 `项目名 | 公司 | 身份` 把公司放进左侧 `.entry-title`，身份放中央。公司缺失时连 `.company` 删除，身份缺失时连 `.entry-secondary` 删除。
+
+- 用户确认项目标题可点击时：
+
+  ```html
+  <div class="entry-title">
+    <span class="proj"><a href="{{project-url}}" target="_blank" rel="noopener noreferrer">{{项目名}}</a></span>
+    <span class="company">{{公司简称}}</span>
+  </div>
+  ```
+
+- 正文 `[文字](URL)` → `<a href="{{URL}}" target="_blank" rel="noopener noreferrer">{{文字}}</a>`。
 
 ### 6. Bullet（单条经历要点 — 独立原子，自由换页）
 

@@ -275,6 +275,9 @@
         el.contentEditable = on ? 'true' : 'inherit';
         el.style.outline = on ? '1px dashed var(--accent,#888)' : '';
       });
+      src.querySelectorAll('a').forEach(function(a){
+        a.style.pointerEvents = on ? 'none' : '';
+      });
       /* chip × / +，以及 bullet 区末尾的 + 要点 */
       src.querySelectorAll('.chips').forEach(function(chips){
         chips.querySelectorAll('.chip-del,.chip-add').forEach(function(b){b.remove();});
@@ -307,6 +310,30 @@
       }
     });
 
+    function inlineMarkdown(node){
+      var out='';
+      Array.prototype.forEach.call(node.childNodes,function(child){
+        if(child.nodeType===3){ out+=child.nodeValue; return; }
+        if(child.nodeType!==1) return;
+        var tag=child.tagName.toLowerCase();
+        if(child.classList.contains('chip-del')||child.classList.contains('chip-add')) return;
+        if(tag==='a'){
+          var label=inlineMarkdown(child).trim();
+          var href=child.getAttribute('href')||'';
+          if(!href){ out+=label; return; }
+          var mdHref=/[\s()]/.test(href) ? '<'+href+'>' : href;
+          out+='['+label.replace(/]/g,'\\]')+']('+mdHref+')';
+        } else if(tag==='b'||tag==='strong'){
+          out+='**'+inlineMarkdown(child).trim()+'**';
+        } else if(tag==='br'){
+          out+='\n';
+        } else {
+          out+=inlineMarkdown(child);
+        }
+      });
+      return out;
+    }
+
     /* 导出 Markdown：遍历 .resume-root 还原成 简历.md */
     saveBtn.addEventListener('click',function(){
       var md='';
@@ -335,36 +362,36 @@
           md+='\n# '+title.textContent.trim()+'\n';
           curEntryOpen=false;
         } else if(cl.contains('summary')){
-          atom.querySelectorAll('p').forEach(function(p){ md+=p.textContent.trim()+'\n'; });
+          atom.querySelectorAll('p').forEach(function(p){ md+=inlineMarkdown(p).trim()+'\n'; });
         } else if(cl.contains('interests')){
-          var tags=Array.prototype.map.call(atom.querySelectorAll('.it'),function(it){return it.textContent.trim();});
+          var tags=Array.prototype.map.call(atom.querySelectorAll('.it'),function(it){return inlineMarkdown(it).trim();});
           if(tags.length) md+=tags.join(', ')+'\n';
         } else if(cl.contains('entry')){
           md+='\n';
           var org=atom.querySelector('.org,.proj');
           var erole=atom.querySelector('.entry-secondary .role,.entry-title .role');
           var company=atom.querySelector('.company');
-          if(org) md+='## '+org.textContent.trim();
-          if(company) md+=' | '+company.textContent.replace(/^@\s*/,'').trim();
-          if(erole) md+=' | '+erole.textContent.trim();
+          if(org) md+='## '+inlineMarkdown(org).trim();
+          if(company) md+=' | '+inlineMarkdown(company).replace(/^@\s*/,'').trim();
+          if(erole) md+=' | '+inlineMarkdown(erole).trim();
           md+='\n';
           var date=atom.querySelector('.entry-date'); if(date) md+='date: '+date.textContent.trim()+'\n';
-          var meta=atom.querySelector('.entry-meta'); if(meta){var ms=meta.textContent.replace(/\s+/g,' ').trim(); if(ms) md+='meta: '+ms+'\n';}
+          var meta=atom.querySelector('.entry-meta'); if(meta){var ms=inlineMarkdown(meta).replace(/\s+/g,' ').trim(); if(ms) md+='meta: '+ms+'\n';}
           curEntryOpen=true;
         } else if(cl.contains('bullet')){
           /* 去掉 chip-del 残留 */
           var b=atom.cloneNode(true); b.querySelectorAll('.chip-del,.chip-add').forEach(function(x){x.remove();});
-          md+='- '+b.textContent.trim()+'\n';
+          md+='- '+inlineMarkdown(b).trim()+'\n';
         } else if(cl.contains('pubs')){
           atom.querySelectorAll('li').forEach(function(li){
             var t=li.cloneNode(true); t.querySelectorAll('.chip-del,.chip-add').forEach(function(x){x.remove();});
-            md+='- '+t.textContent.replace(/\s+/g,' ').trim()+'\n';
+            md+='- '+inlineMarkdown(t).replace(/\s+/g,' ').trim()+'\n';
           });
         } else if(cl.contains('awards')){
           atom.querySelectorAll('.award').forEach(function(a){
             var yr=a.querySelector('.yr'),nm=a.querySelector('span:not(.yr):not(.lvl)'),lvl=a.querySelector('.lvl');
             var parts=[]; if(yr) parts.push(yr.textContent.trim());
-            parts.push(nm?nm.textContent.trim():''); if(lvl) parts.push('| '+lvl.textContent.trim());
+            parts.push(nm?inlineMarkdown(nm).trim():''); if(lvl) parts.push('| '+inlineMarkdown(lvl).trim());
             md+='- '+parts.join(' ').replace(/\s+\|/,'|').trim()+'\n';
           });
         } else if(cl.contains('skills')||cl.contains('stack')){
@@ -373,9 +400,9 @@
             if(!cat||!tagsEl) return;
             /* 清掉 + 按钮再取文本 */
             var tc=tagsEl.cloneNode(true); tc.querySelectorAll('.chip-add').forEach(function(x){x.remove();});
-            var chips=Array.prototype.map.call(tc.querySelectorAll('.chip'),function(c){var cc=c.cloneNode(true);cc.querySelectorAll('.chip-del').forEach(function(x){x.remove();});return cc.textContent.trim();});
-            var val=chips.length?chips.join(' · '):tc.textContent.trim();
-            md+='- '+cat.textContent.trim()+': '+val+'\n';
+            var chips=Array.prototype.map.call(tc.querySelectorAll('.chip'),function(c){var cc=c.cloneNode(true);cc.querySelectorAll('.chip-del').forEach(function(x){x.remove();});return inlineMarkdown(cc).trim();});
+            var val=chips.length?chips.join(' · '):inlineMarkdown(tc).trim();
+            md+='- '+inlineMarkdown(cat).trim()+': '+val+'\n';
           });
         }
       });
